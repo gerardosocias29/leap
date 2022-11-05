@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../auth_service.dart';
 import '../providers/navigator.dart';
+import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 
@@ -18,10 +19,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _userNameTextController = TextEditingController();
-
+  final userStorage = StorageProvider().userStorage();
   final _passwordFocusNode = FocusNode();
-
-  var _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -149,43 +148,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(
                       height: 30  ,
                     ),
-                    if (_isLoading)
-                      const CircularProgressIndicator()
-                    else
-                      MaterialButton(
-                        color: Theme.of(context).primaryColor,
-                        onPressed: () {
-                          if (!_formKey.currentState!.validate()) {
-                            return ;
-                          }
-                          _formKey.currentState?.save();
-                          setState(() {
-                            _isLoading = true;
-                          });
-                          AuthService().createUserWithEmailAndPassword(_emailTextController, _passwordTextController).then((value){
-                            NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
-                          }).onError((error, stackTrace) {
-                            var errorString = error.toString();
-                            var errorMessage = errorString.contains('[firebase_auth/email-already-in-use]') ? "This email is already in use." :
-                            (errorString.contains('[firebase_auth/weak-password]') ? "The password is weak." : "Invalid email address or operations not allowed!");
-                            _showErrorDialogBox(errorMessage);
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          });
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        minWidth: double.infinity,
-                        padding: const EdgeInsets.only(top: 15, bottom: 15),
-                        child: const Text(
-                          'SIGN UP',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                    MaterialButton(
+                      color: Theme.of(context).primaryColor,
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) {
+                          return ;
+                        }
+                        _formKey.currentState?.save();
+                        var loadingContext = context;
+                        progressDialogue(loadingContext);
+                        AuthService().createUserWithEmailAndPassword(_emailTextController, _passwordTextController).then((value) async {
+                          var user_id = (await AuthService().getUserId());
+                          StorageProvider().storageAddItem(userStorage, 'user_id', user_id);
+                          Navigator.pop(loadingContext);
+                          NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
+                        }).onError((error, stackTrace) {
+                          Navigator.pop(loadingContext);
+                          var errorString = error.toString();
+                          var errorMessage = errorString.contains('[firebase_auth/email-already-in-use]') ? "This email is already in use." :
+                          (errorString.contains('[firebase_auth/weak-password]') ? "The password is weak." : "Invalid email address or operations not allowed!");
+                          _showErrorDialogBox(errorMessage);
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      minWidth: double.infinity,
+                      padding: const EdgeInsets.only(top: 15, bottom: 15),
+                      child: const Text(
+                        'SIGN UP',
+                        style: TextStyle(
+                          color: Colors.white,
                         ),
                       ),
+                    ),
                   ]
                 ),
               ),

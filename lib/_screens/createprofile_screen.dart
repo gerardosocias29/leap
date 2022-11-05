@@ -28,8 +28,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  var _isLoading = false;
-
   void _showErrorDialogBox(String message) async {
     return showDialog(
       context: context,
@@ -218,63 +216,59 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   const SizedBox(
                     height: 30
                   ),
-                  if (_isLoading)
-                    const CircularProgressIndicator()
-                  else
-                    MaterialButton(
-                      color: Theme.of(context).primaryColor,
-                      onPressed: () async {
-                        if (!_formKey.currentState!.validate()) {
-                          return ;
-                        }
-                        _formKey.currentState?.save();
-                        setState(() {
-                          _isLoading = true;
+                  MaterialButton(
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () async {
+                      if (!_formKey.currentState!.validate()) {
+                        return ;
+                      }
+                      _formKey.currentState?.save();
+                      var loadingContext = context;
+                      progressDialogue(loadingContext);
+                      CollectionReference users = FirebaseFirestore.instance.collection('users');
+                      var user = await AuthService().getCurrentUser();
+                      print(user);
+                      Future<void> addUser() {
+                        return users.doc(user.uid).set({
+                          'id': user.uid,
+                          'address': _address.text,
+                          'birthday': _birthday.text,
+                          'course': coursedropdownValue,
+                          'deleted_at': 0,
+                          'email': user.email,
+                          'first_name': _firstname.text,
+                          'gender': dropdownValue,
+                          'last_name': _lastname.text,
+                          'phone': "",
+                          'role_id': 1,
+                          'school_id': 1,
+                          'username': _username.text,
+                          'year': _year.text,
+                          'photoURL': "",
+                        })
+                        .then((value) => {
+                          Navigator.pop(loadingContext),
+                          NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false),
+                        })
+                        .catchError((error) => {
+                          Navigator.pop(loadingContext),
+                          print("Failed to add user: $error")
                         });
-                        CollectionReference users = FirebaseFirestore.instance.collection('users');
-                        var user = await AuthService().getCurrentUser();
-                        print(user);
-                        print("print(user);");
-                        Future<void> addUser() {
-                          return users.doc(user.uid).set({
-                            'id': user.uid,
-                            'address': _address.text,
-                            'birthday': _birthday.text,
-                            'course': coursedropdownValue,
-                            'deleted_at': 0,
-                            'email': user.email,
-                            'first_name': _firstname.text,
-                            'gender': dropdownValue,
-                            'last_name': _lastname.text,
-                            'phone': "",
-                            'role_id': 1,
-                            'school_id': 1,
-                            'username': _username.text,
-                            'year': _year.text,
-                            'photoURL': "",
-                          })
-                          .then((value) => {
-                            NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false),
-                            setState(() {
-                              _isLoading = false;
-                            })
-                          })
-                          .catchError((error) => print("Failed to add user: $error"));
-                        }
-                        addUser();
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      minWidth: double.infinity,
-                      padding: const EdgeInsets.only(top: 15, bottom: 15),
-                      child: const Text(
-                        'PROCEED',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                      }
+                      addUser();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minWidth: double.infinity,
+                    padding: const EdgeInsets.only(top: 15, bottom: 15),
+                    child: const Text(
+                      'PROCEED',
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
                     ),
+                  ),
                   const SizedBox(
                     height: 60
                   ),

@@ -46,6 +46,10 @@ dependencies:
   google_sign_in: ^5.4.2
   intl: ^0.17.0
   flutter_spinkit: ^5.1.0
+  shared_preferences: ^2.0.15
+  localstorage: ^4.0.0+1
+  wave: ^0.2.2
+  percent_indicator: ^4.2.2
 
 dev_dependencies:
   flutter_test:

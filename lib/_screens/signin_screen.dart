@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
-import 'package:leap/_screens/loading_screen.dart';
 import 'package:leap/_screens/reset_password.dart';
 import 'package:leap/auth_service.dart';
 import 'package:leap/utils/color_utils.dart';
@@ -11,6 +10,7 @@ import '../_screens/home_screen.dart';
 import '../_screens/signup_screen.dart';
 import '../data_services/user_services.dart';
 import '../providers/navigator.dart';
+import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -22,16 +22,14 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
-
   final _passwordFocusNode = FocusNode();
-  var _isLoading = false;
-
   final _formKey = GlobalKey<FormState>();
+  final userStorage = StorageProvider().userStorage();
 
   bool _showPassword = true;
 
-  var _uid = null;
   void _togglevisibility() {
+    print(StorageProvider().storageGetItem(userStorage, 'user_id') == null);
     setState(() {
       _showPassword = !_showPassword;
     });
@@ -64,26 +62,6 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  progressDialogue(BuildContext context) {
-    //set up the AlertDialog
-    AlertDialog alert = const AlertDialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      content: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-    showDialog(
-      //prevent outside touch
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        //prevent Back button press
-        return WillPopScope(onWillPop: () async => false, child: alert);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) => Scaffold(
       body: Container(
@@ -105,7 +83,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 children: <Widget>[
                   const Align(
                     alignment: Alignment.centerLeft,
-                    child: Text( 'Hi, Welcome to LEAP! 👋',
+                    child: Text( 'Hi, Welcome to LEMA! 👋',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 30
@@ -207,12 +185,15 @@ class _SignInScreenState extends State<SignInScreen> {
                       var loadingContext = context;
                       progressDialogue(loadingContext);
                       AuthService().signInWithEmailAndPassword(_emailTextController, _passwordTextController).then((value) async {
-                          Navigator.pop(loadingContext);
+
                         var user_id = (await AuthService().getUserId());
+                        StorageProvider().storageAddItem(userStorage, 'user_id', user_id);
                         var loggedUser = (await UserServices().retrieveIndividualUser(user_id));
                         if(loggedUser != null){
+                          Navigator.pop(loadingContext);
                           NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
                         } else {
+                          Navigator.pop(loadingContext);
                           NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
                         }
                       }).onError((error, stackTrace) {
@@ -265,13 +246,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           Buttons.Google,
                           text: "Sign in with Google",
                           onPressed: () {
-                            setState(() {
-                              _isLoading = true;
-                            });
                             AuthService().signInWithGoogle().then((value) async {
-                              setState(() {
-                                _isLoading = false;
-                              });
                               var user_id = (await AuthService().getUserId());
                               var loggedUser = (await UserServices().retrieveIndividualUser(user_id));
                               if(loggedUser != null){
@@ -284,9 +259,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               var errorMessage = errorString.contains('[firebase_auth/user-disabled]') ? "This user has been disabled." :
                               (errorString.contains('[firebase_auth/invalid-verification-code]') ? "The user has invalid verification code." : "Operations are not allowed!");
                               _showErrorDialogBox(errorMessage);
-                              setState(() {
-                                _isLoading = false;
-                              });
                             });
                           },
                         ),
