@@ -7,6 +7,8 @@ import '../auth_service.dart';
 import '../providers/navigator.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
+import 'package:http/http.dart' as http;
+
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({Key? key}) : super(key: key);
 

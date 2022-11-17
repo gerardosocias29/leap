@@ -50,6 +50,11 @@ dependencies:
   localstorage: ^4.0.0+1
   wave: ^0.2.2
   percent_indicator: ^4.2.2
+  carousel_slider: ^4.1.1
+  scrollable_positioned_list: ^0.3.5
+  url_launcher: ^6.1.6
+  font_awesome_flutter: ^9.2.0
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
