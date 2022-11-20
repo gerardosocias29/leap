@@ -1,16 +1,11 @@
-# leap
+# LEMA
 
 A new Flutter project.
 
-## Getting Started
+## Generating Android Debug Key
+> keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
 
-This project is a starting point for a Flutter application.
+## Show SHA1 and SHA256
+> keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://raw.githubusercontent.com/gerardosocias29/leap/main/assets/Screenshot%20from%202022-11-20%2022-25-32.png">
