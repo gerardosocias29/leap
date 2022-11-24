@@ -7,7 +7,6 @@ exports.create = (req, res) => {
         req.headers['content-type'] = 'application/json';
     }
 
-    console.log(req.headers['content-type'], req.body);
     if (!req.body || req.body == "") {
       return res.status(400).send({
         message: "Content can not be empty!"
@@ -16,7 +15,7 @@ exports.create = (req, res) => {
     var params = req.body;
     // Create a User
     const user = new User({
-        id : params.id,
+        uid : params.uid,
         first_name : params.first_name,
         last_name : params.last_name,
         username : params.username,
@@ -53,3 +52,47 @@ exports.findAll = (req, res) => {
         else return res.send(data);
     });
 };
+
+exports.findOne = (req, res) => {
+  User.findById(req.params.uid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found User with uid ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Tutorial with id " + req.params.id
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+// Update a User identified by the id in the request
+exports.update = (req, res) => {
+    // Validate Request
+    if (!req.body) {
+      res.status(400).send({
+        message: "Content can not be empty!"
+      });
+    }
+  
+    User.updateById(
+      req.params.id,
+      new User(req.body),
+      (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                return res.status(404).send({
+                message: `Not found User with id ${req.params.id}.`
+                });
+            } else {
+                return res.status(500).send({
+                message: "Error updating User with id " + req.params.id
+                });
+            }
+        } else return res.send(data);
+      }
+    );
+  };

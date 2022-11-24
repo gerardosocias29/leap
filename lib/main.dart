@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:leap/_screens/home_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'auth_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp().then((value) => { print(value), print("value") });
+  await dotenv.load();
   runApp(const MyApp());
 }
 

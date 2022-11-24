@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:leap/_screens/home_screen.dart';
 
@@ -7,7 +10,7 @@ import '../auth_service.dart';
 import '../providers/navigator.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({Key? key}) : super(key: key);
@@ -47,6 +50,29 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ),
     );
   }
+
+  makePostRequest(requestBody) async {
+    var backendUrl = dotenv.env['API_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/users/create");
+    final uri = Uri.parse("$backendUrl/api/users/create");
+    final headers = {'content-type': 'application/json'};
+    Map<String, dynamic> body = requestBody;
+    String jsonBody = json.encode(body);
+    final encoding = Encoding.getByName('utf-8');
+
+    Response response = await post(
+      uri,
+      headers: headers,
+      body: jsonBody,
+      encoding: encoding,
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+    String responseBody = response.body;
+    print("responseBody::$responseBody");
+  }
+
   @override
   Widget build(BuildContext context) {
     String dropdownValue = gender_list.first;
@@ -176,7 +202,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         lastDate: DateTime(DateTime.now().year-2),
                       );
                       if (pickedDate != null) {
-                        String formattedDate = DateFormat.yMMMd().format(pickedDate);
+                        DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+
+                        String formattedDate = dateFormat.format(pickedDate);
                         setState(() {
                           _birthday.text = formattedDate.toString(); //set output date to TextField value.
                         });
@@ -230,7 +258,28 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       CollectionReference users = FirebaseFirestore.instance.collection('users');
                       var user = await AuthService().getCurrentUser();
                       print(user);
-                      Future<void> addUser() {
+
+                      makePostRequest({
+                        'uid': user.uid,
+                        'address': _address.text,
+                        'birthday': _birthday.text,
+                        'course': coursedropdownValue,
+                        'deleted_at': 0,
+                        'email': user.email,
+                        'first_name': _firstname.text,
+                        'gender': dropdownValue,
+                        'last_name': _lastname.text,
+                        'phone': "",
+                        'role_id': 1,
+                        'school_id': 1,
+                        'username': _username.text,
+                        'year': _year.text,
+                        'photoURL': "",
+                      });
+
+                      Navigator.pop(loadingContext);
+
+                      /*Future<void> addUser() {
                         return users.doc(user.uid).set({
                           'id': user.uid,
                           'address': _address.text,
@@ -257,7 +306,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           print("Failed to add user: $error")
                         });
                       }
-                      addUser();
+                      addUser();*/
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

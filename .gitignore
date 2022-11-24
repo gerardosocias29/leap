@@ -46,3 +46,4 @@ app.*.map.json
 # backend
 /backend/node_modules
 /backend/package-lock.json
+.env

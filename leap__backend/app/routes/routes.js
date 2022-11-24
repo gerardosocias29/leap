@@ -9,7 +9,9 @@ module.exports = app => {
   // router.delete("/:id", tutorials.delete);
 
   router.get("/users/all", users.findAll);
+  router.get("/users/:uid", users.findAll);
   router.post("/users/create", users.create);
+  router.put("/users/update/:id", users.create);
 
   app.use('/api', router);
 };

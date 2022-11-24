@@ -2,7 +2,7 @@ const sql = require("./db.js");
 
 // constructor
 const User = function(user) {
-    this.id = user.id;
+    this.uid = user.uid;
     this.first_name = user.first_name;
     this.last_name = user.last_name;
     this.username = user.username;
@@ -33,8 +33,8 @@ User.create = (newUser, result) => {
   });
 };
 
-User.findById = (id, result) => {
-  sql.query(`SELECT * FROM users WHERE id = ${id}`, (err, res) => {
+User.findById = (uid, result) => {
+  sql.query(`SELECT * FROM users WHERE uid = ${uid}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
