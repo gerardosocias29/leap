@@ -51,8 +51,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-  makePostRequest(requestBody) async {
-    var backendUrl = dotenv.env['API_URL'] ?? 'http://192.168.0.186:8081';
+  makePostRequest(requestBody, loadingContext) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
     print("backendUrl::$backendUrl/api/users/create");
     final uri = Uri.parse("$backendUrl/api/users/create");
     final headers = {'content-type': 'application/json'};
@@ -69,8 +69,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
-    String responseBody = response.body;
-    print("responseBody::$responseBody");
+
+    if(statusCode == 200){
+      Navigator.pop(loadingContext);
+      NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
+    } else {
+      Navigator.pop(loadingContext);
+      _showErrorDialogBox('Unexpected Error occured!');
+    }
+
   }
 
   @override
@@ -275,9 +282,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         'username': _username.text,
                         'year': _year.text,
                         'photoURL': "",
-                      });
-
-                      Navigator.pop(loadingContext);
+                      }, loadingContext);
 
                       /*Future<void> addUser() {
                         return users.doc(user.uid).set({

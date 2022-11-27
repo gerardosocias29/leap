@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:leap/_screens/reset_password.dart';
 import 'package:leap/auth_service.dart';
@@ -60,6 +62,30 @@ class _SignInScreenState extends State<SignInScreen> {
         ],
       ),
     );
+  }
+
+  getUserDetails(id, loadingContext) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/users");
+    final uri = Uri.parse("$backendUrl/api/users/$id");
+    final headers = {'content-type': 'application/json'};
+
+    Response response = await get(
+      uri,
+      headers: headers
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+
+    if(statusCode == 404 || statusCode == 500){
+      Navigator.pop(loadingContext);
+      NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
+    } else {
+      Navigator.pop(loadingContext);
+      NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
+    }
+
   }
 
   @override
@@ -188,14 +214,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
                         var user_id = (await AuthService().getUserId());
                         StorageProvider().storageAddItem(userStorage, 'user_id', user_id);
-                        var loggedUser = (await UserServices().retrieveIndividualUser(user_id));
+                        getUserDetails(user_id, loadingContext);
+                        /*var loggedUser = (await UserServices().retrieveIndividualUser(user_id));
                         if(loggedUser != null){
                           Navigator.pop(loadingContext);
                           NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
                         } else {
                           Navigator.pop(loadingContext);
                           NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
-                        }
+                        }*/
                       }).onError((error, stackTrace) {
                         Navigator.pop(loadingContext);
                         var errorString = error.toString();

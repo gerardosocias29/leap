@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -28,24 +30,42 @@ class _HomeScreenState extends State<HomeScreen> {
     { 'title': 'Grammar and Vocabulary', 'topics': 20, 'image': 'assets/logo.png',},
     { 'title': 'Speech', 'topics': 20, 'image': 'assets/logo.png',}
   ];
-  Future _initRetrieval() async {
-    setState(() {
-      _isloading = true;
-    });
-    var user_id = StorageProvider().storageGetItem(userStorage, 'user_id');
-    var loggedUser = (await user_services.retrieveIndividualUser(user_id));
-    if(loggedUser == null){
+
+  getUserDetails(user_id) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/users");
+    final uri = Uri.parse("$backendUrl/api/users/$user_id");
+    final headers = {'content-type': 'application/json'};
+
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+
+    if(statusCode == 404 || statusCode == 500){
       NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
     } else {
       StorageProvider().storageRemoveItem(userStorage, 'user_details');
-      StorageProvider().storageAddItem(userStorage, 'user_details', loggedUser);
+      StorageProvider().storageAddItem(userStorage, 'user_details', response.body);
       setState(() {
         _isloading = false;
       });
     }
     setState(() {
-      userDetails = StorageProvider().storageGetItem(userStorage, 'user_details');
+      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
     });
+
+  }
+
+  Future _initRetrieval() async {
+    setState(() {
+      _isloading = true;
+    });
+    var user_id = StorageProvider().storageGetItem(userStorage, 'user_id');
+    getUserDetails(user_id);
   }
 
   @override

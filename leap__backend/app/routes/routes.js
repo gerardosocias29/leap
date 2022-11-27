@@ -9,7 +9,7 @@ module.exports = app => {
   // router.delete("/:id", tutorials.delete);
 
   router.get("/users/all", users.findAll);
-  router.get("/users/:uid", users.findAll);
+  router.get("/users/:uid", users.findOne);
   router.post("/users/create", users.create);
   router.put("/users/update/:id", users.create);
 

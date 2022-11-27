@@ -54,15 +54,18 @@ exports.findAll = (req, res) => {
 };
 
 exports.findOne = (req, res) => {
+  console.log(req);
   User.findById(req.params.uid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found User with uid ${req.params.id}.`
+          message: `Not found User with uid ${req.params.uid.`,
+          status: false
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving Tutorial with id " + req.params.id
+          message: "Error retrieving Tutorial with id " + req.params.uid,
+          status: false
         });
       }
     } else res.send(data);
