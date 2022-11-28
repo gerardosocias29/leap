@@ -1,6 +1,6 @@
 module.exports = {
-  HOST: "localhost",
-  USER: "gerardo",
+  HOST: "db4free.net",
+  USER: "lemaapp",
   PASSWORD: "password",
-  DB: "leap"
+  DB: "lemaapp"
 };
