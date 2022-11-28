@@ -59,7 +59,7 @@ exports.findOne = (req, res) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found User with uid ${req.params.uid.`,
+          message: `Not found User with uid ${req.params.uid}`,
           status: false
         });
       } else {
