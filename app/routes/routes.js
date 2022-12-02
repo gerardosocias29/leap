@@ -20,17 +20,17 @@ module.exports = app => {
   router.put("/users/update/:id", users.update);
 
   router.get("/chapters/all", chapters.findAll);
-  router.get("/chapters/:uid", chapters.findOne);
+  router.get("/chapters/:id", chapters.findOne);
   router.post("/chapters/create", chapters.create);
   router.put("/chapters/update/:id", chapters.update);
 
   router.get("/lessons/all", lessons.findAll);
-  router.get("/lessons/:uid", lessons.findOne);
+  router.get("/lessons/:id", lessons.findOne);
   router.post("/lessons/create", lessons.create);
   router.put("/lessons/update/:id", lessons.update);
 
   router.get("/topics/all", topics.findAll);
-  router.get("/topics/:uid", topics.findOne);
+  router.get("/topics/:id", topics.findOne);
   router.post("/topics/create", topics.create);
   router.put("/topics/update/:id", topics.update);
 
