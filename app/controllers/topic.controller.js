@@ -1,4 +1,4 @@
-const User = require("../models/user.model.js");
+const Topic = require("../models/topic.model.js");
 
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
@@ -13,41 +13,30 @@ exports.create = (req, res) => {
       });
     }
     var params = req.body;
-    // Create a User
-    const user = new User({
-        uid : params.uid,
-        first_name : params.first_name,
-        last_name : params.last_name,
-        username : params.username,
-        email : params.email,
-        phone : params.phone,
-        gender : params.gender,
-        address : params.address,
-        birthday : params.birthday,
-        school_id : params.school_id,
-        role_id : params.role_id,
-        course : params.course,
-        year : params.year,
-        photoURL : params.photoURL,
+    // Create a Topic
+    const chapter = new Topic({
+        lesson_id : params.lesson_id,
+        topic_details : params.topic_details,
+        topic_title : params.topic_title,
     });
   
-    // Save User in the database
-    User.create(user, (err, data) => {
+    // Save Topic in the database
+    Topic.create(chapter, (err, data) => {
         if (err)
             return res.status(500).send({
             message:
-                err.message || "Some error occurred while creating the User."
+                err.message || "Some error occurred while creating the Topic."
             });
         else return res.send(data);
     });
 };
 
 exports.findAll = (req, res) => {
-    User.getAll((err, data) => {
+    Topic.getAll((err, data) => {
         if (err)
             return res.status(500).send({
             message:
-                err.message || "Some error occurred while retrieving user."
+                err.message || "Some error occurred while retrieving topic."
             });
         else return res.send(data);
     });
@@ -55,16 +44,16 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   console.log(req);
-  User.findById(req.params.uid, (err, data) => {
+  Topic.findById(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found User with uid ${req.params.uid}`,
+          message: `Not found Topic with id ${req.params.id}`,
           status: false
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving Tutorial with id " + req.params.uid,
+          message: "Error retrieving Topic with id " + req.params.id,
           status: false
         });
       }
@@ -72,7 +61,7 @@ exports.findOne = (req, res) => {
   });
 };
 
-// Update a User identified by the id in the request
+// Update a Topic identified by the id in the request
 exports.update = (req, res) => {
     // Validate Request
     if (!req.body) {
@@ -81,18 +70,18 @@ exports.update = (req, res) => {
       });
     }
   
-    User.updateById(
+    Topic.updateById(
       req.params.id,
-      new User(req.body),
+      new Topic(req.body),
       (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 return res.status(404).send({
-                message: `Not found User with id ${req.params.id}.`
+                message: `Not found Topic with id ${req.params.id}.`
                 });
             } else {
                 return res.status(500).send({
-                message: "Error updating User with id " + req.params.id
+                message: "Error updating Topic with id " + req.params.id
                 });
             }
         } else return res.send(data);
