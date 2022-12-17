@@ -10,7 +10,6 @@ import 'package:leap/utils/color_utils.dart';
 
 import '../_screens/home_screen.dart';
 import '../_screens/signup_screen.dart';
-import '../data_services/user_services.dart';
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -273,14 +272,11 @@ class _SignInScreenState extends State<SignInScreen> {
                           Buttons.Google,
                           text: "Sign in with Google",
                           onPressed: () {
+                            var loadingContext = context;
+                            progressDialogue(loadingContext);
                             AuthService().signInWithGoogle().then((value) async {
                               var user_id = (await AuthService().getUserId());
-                              var loggedUser = (await UserServices().retrieveIndividualUser(user_id));
-                              if(loggedUser != null){
-                                NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
-                              } else {
-                                NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
-                              }
+                              getUserDetails(user_id, loadingContext);
                             }).onError((error, stackTrace) {
                               var errorString = error.toString();
                               var errorMessage = errorString.contains('[firebase_auth/user-disabled]') ? "This user has been disabled." :

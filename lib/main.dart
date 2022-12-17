@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/utils/color_utils.dart';
 
-import 'auth_service.dart';
+import 'package:leap/reusable_widgets/reusable_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp().then((value) => { print(value), print("value") });
+  await Firebase.initializeApp().then((value) => { print(StorageProvider().storageGetItem(StorageProvider().userStorage(), 'user_id')), print("value") });
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
@@ -51,7 +51,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final userStorage = StorageProvider().userStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
       // ignore: unnecessary_null_comparison
-      nextScreen: (StorageProvider().storageGetItem(userStorage, 'user_id') != null ) ? const HomeScreen() : const SignInScreen(),
+      nextScreen: (StorageProvider().storageGetItem(StorageProvider().userStorage(), 'user_id') == null) ? const SignInScreen() : const HomeScreen(),
       splashIconSize: 200,
       splashTransition: SplashTransition.fadeTransition
     );

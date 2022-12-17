@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
+import 'package:leap/_screens/signin_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
@@ -27,8 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   late final userDetails;
   late var _isloading = false;
   List<Object> lists = [
-    { 'title': 'Grammar and Vocabulary', 'topics': 20, 'image': 'assets/logo.png',},
-    { 'title': 'Speech', 'topics': 20, 'image': 'assets/logo.png',}
+    { 'title': 'Grammar', 'topics': 20, 'image': 'assets/grammar.png',},
+    { 'title': 'Speech', 'topics': 20, 'image': 'assets/pronunciation.jpg',}
+  ];
+
+  List<Object> leaderBoardItems = [
+    {'name': 'Me', 'score': 1000, 'icon': Icons.home},
+    {'name': 'Myself', 'score': 900, 'icon': Icons.home},
+    {'name': 'I', 'score': 700, 'icon': Icons.home},
   ];
 
   getUserDetails(user_id) async {
@@ -46,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print("statusCode::$statusCode");
 
     if(statusCode == 404 || statusCode == 500){
-      NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => false );
     } else {
       StorageProvider().storageRemoveItem(userStorage, 'user_details');
       StorageProvider().storageAddItem(userStorage, 'user_details', response.body);
@@ -116,29 +124,31 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const Text(
-                      "Lessons",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        letterSpacing: 1.9,
-                        fontWeight: FontWeight.w700),
-                    ),
-                    Text(
-                      "See all",
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                        letterSpacing: 1.9,
-                        fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Insights",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    letterSpacing: 1.9,
+                    fontWeight: FontWeight.w700),
+                )
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Lessons",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    letterSpacing: 1.9,
+                    fontWeight: FontWeight.w700),
+                )
               ),
               Container(
                 height: 210,
@@ -153,12 +163,184 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
+
+              const SizedBox(
+                height: 30,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Leaderboards",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    letterSpacing: 1.9,
+                    fontWeight: FontWeight.w700),
+                )
+              ),
+
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 15.0,
+                            offset: Offset(0.75, 0.95))
+                        ],
+                        color: Colors.white
+                      ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: leaderBoardItems.length,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          print('printing list index');
+                          print(leaderBoardItems[index]);
+                          return LeaderBoard(index.toInt(), leaderBoardItems[index]);
+                        },
+                      ),
+
+                    ),
+                  ]
+                )
+              ),
             ],
           )
         )
       )
+  );
+}
+
+class LeaderBoard extends StatelessWidget {
+  final int index;
+  final leaderboard;
+
+  const LeaderBoard(
+    this.index, this.leaderboard, {super.key}
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    int ind = index + 1;
+    Widget crown;
+    crown = (ind == 1) ? Padding(
+        padding: const EdgeInsets.only(right: 0.0),
+        child: Stack(
+          alignment: Alignment.center,
+          children: const <Widget>[
+            Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.yellow,)),
+            Padding(
+              padding: EdgeInsets.only(left: 8.0, top: 6),
+              child: Center(child: Text('1', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
+            )
+          ],
+        )
+    ) : ((ind == 2) ? Padding(
+            padding: const EdgeInsets.only(right: 0.0),
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.grey[300],)),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0, top: 6),
+                  child: Center(child: Text('2', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
+                )
+              ],
+            )
+        ) : ((ind == 3) ? Padding(
+                padding: const EdgeInsets.only(right: 0.0),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.orange[300],)),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8.0, top: 6),
+                      child: Center(child: Text('3', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
+                    )
+                  ],
+                )
+            ) : CircleAvatar(
+              backgroundColor: Colors.grey,
+              radius: 13,
+              child: Text(
+                ind.toString(),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15
+                ),)
+            )) );
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        height: 100,
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(24.0)),
+            boxShadow: [BoxShadow(color: Colors.black26,blurRadius: 5.0)]
+        ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 0.0),
+                  child: Row(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 25),
+                          child: crown,
+                        ),
+                      ),
+
+                      Align(
+                        child: CircleAvatar(
+                          backgroundColor: Colors.red.shade800,
+                          child: Text('GI'),
+                          radius: 30,
+                        ),
+                      ),
+
+                      Align(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 5),
+                                child: Text(leaderboard['name'], style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
+                              ),
+                            ],
+                          )
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('${leaderboard['score']}', style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
+}
 
 class CourseCard extends StatelessWidget {
   final list;
@@ -188,7 +370,7 @@ class CourseCard extends StatelessWidget {
                       blurRadius: 15.0,
                       offset: Offset(0.75, 0.95))
                 ],
-                color: Colors.grey),
+                color: Colors.white),
           ),
           const SizedBox(
             height: 16,

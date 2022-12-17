@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 
+showErrorDialogBox(context, String message) async {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('An error occurred'),
+      content: Text(message),
+      actions: <Widget>[
+        MaterialButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+          },
+          child: const Text('Okay'),
+        ),
+      ],
+    ),
+  );
+}
+
 progressDialogue(BuildContext context) {
   //set up the AlertDialog
   AlertDialog alert = const AlertDialog(

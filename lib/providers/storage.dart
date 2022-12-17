@@ -18,5 +18,4 @@ class StorageProvider {
   storageRemoveItem(LocalStorage storage, item){
     storage.deleteItem(item);
   }
-
 }
