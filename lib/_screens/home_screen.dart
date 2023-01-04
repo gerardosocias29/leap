@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
+import 'package:leap/_screens/grammar_list_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -351,43 +352,53 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            height: 140.0,
-            width: 250.0,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('${list['image']}'), fit: BoxFit.cover),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: const <BoxShadow>[
-                  BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 15.0,
-                      offset: Offset(0.75, 0.95))
-                ],
-                color: Colors.white),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Text(
-              '${list['title']}',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.9,
-                  fontSize: 16.0),
+    return InkWell(
+      child:
+        Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+              height: 140.0,
+              width: 250.0,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('${list['image']}'), fit: BoxFit.cover),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                        color: Colors.grey,
+                        blurRadius: 15.0,
+                        offset: Offset(0.75, 0.95))
+                  ],
+                  color: Colors.white),
             ),
-          ),
-        ],
+            const SizedBox(
+              height: 16,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Text(
+                '${list['title']}',
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.9,
+                    fontSize: 16.0),
+              ),
+            ),
+          ],
+        ),
       ),
+      onTap: () {
+        if(list['title'] == "Grammar"){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const GrammarListScreen()), (route) => true );
+        } else {
+          // Pronunciation Screen
+        }
+      },
     );
   }
 }
