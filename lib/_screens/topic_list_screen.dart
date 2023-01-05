@@ -33,19 +33,19 @@ class _TopicListScreenState extends State<TopicListScreen> {
     MessageItem('Plural Noun', 'A noun is a word for a person...')
   ];
 
-  final items_copy = [
-    'Topics',
-    'Introduction',
-    'Types of Noun: Common noun',
-    'Proper Noun',
-    'Concrete nouns',
-    'Abstract nouns',
-    'Countable Nouns',
-    'Uncountable Nouns',
-    'Collective Noun',
-    'Compound Nouns',
-    'Singular Noun',
-    'Plural Noun'
+  final detailed_items = [
+    {'title': 'Topics', 'content' : ''},
+    {'title': 'Introduction', 'content' : "A noun is a word for a person, place, thing, or idea. Noun are often used with an article (the, a, an), but  not always start with a capital letter; common nouns do not. Nouns can be singular or plural, concrete or abstract. Nouns show possession by adding's. Nouns can b function in different roles within a sentence; for example, a noun can be a subject, direct object, indirect object, subject complement, or object of a preposition. \n\nNouns are among the most important words in the English language - without them, we'd have a difficult time speaking and writing about anything. There are several different types of English nouns. It is often useful to recognize what type a noun is because different types sometimes have different rules. This helps you to use them correctly."},
+    {'title': 'Types of Noun: Common noun', 'content' : 'Content Types of Noun: Common noun'},
+    {'title': 'Proper Noun', 'content' : ''},
+    {'title': 'Concrete nouns', 'content' : ''},
+    {'title': 'Abstract nouns', 'content' : ''},
+    {'title': 'Countable Nouns', 'content' : ''},
+    {'title': 'Uncountable Nouns', 'content' : ''},
+    {'title': 'Collective Noun', 'content' : ''},
+    {'title': 'Compound Nouns', 'content' : ''},
+    {'title': 'Singular Noun', 'content' : ''},
+    {'title': 'Plural Noun', 'content' : ''},
   ];
 
   Future _initRetrieval() async {
@@ -87,12 +87,12 @@ class _TopicListScreenState extends State<TopicListScreen> {
           // Convert each item into a widget based on the type of item it is.
           itemBuilder: (context, index) {
             final item = items[index];
-            final itemCp = items_copy[index];
+            final itemCp = detailed_items[index];
             return ListTile(
               title: item.buildTitle(context),
               subtitle: item.buildSubtitle(context),
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic_title: itemCp,)), (route) => true );
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: itemCp,)), (route) => true );
               }
             );
           },
