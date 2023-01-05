@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:leap/_screens/quiz_screen.dart';
 
 import '../navbar.dart';
 import '../providers/storage.dart';
@@ -150,6 +151,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           FloatingActionButton.extended(
             onPressed: () {
               //...
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const QuizScreen()), (route) => true );
             },
             heroTag: null,
             label: const Text('Take Quiz'),
