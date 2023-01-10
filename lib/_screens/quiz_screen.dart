@@ -96,7 +96,7 @@ class _QuizScreenState extends State<QuizScreen> {
               children: <Widget>[
                 Text(
                   quest,
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 20,
@@ -141,15 +141,15 @@ class _QuizScreenState extends State<QuizScreen> {
 
                   Text(
                     'You scored $_score out of ${_questions.length}',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   ElevatedButton(
-                    child: Text('Reset Quiz'),
                     onPressed: _resetQuiz,
+                    child: const Text('Reset Quiz'),
                   ),
                 ],
               ),

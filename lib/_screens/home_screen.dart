@@ -27,7 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   UserServices user_services = UserServices();
   final userStorage = StorageProvider().userStorage();
+  final commonDataStorage = StorageProvider().commonDataStorage();
   late final userDetails;
+  late final chapterLists;
   late var _isloading = false;
   List<Object> lists = [
     { 'title': 'Grammar', 'topics': 20, 'image': 'assets/grammar.png',},
@@ -39,6 +41,24 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Myself', 'score': 900, 'icon': Icons.home},
     {'name': 'I', 'score': 700, 'icon': Icons.home},
   ];
+
+  getChapterList() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/chapters/all");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    setState(() {
+      StorageProvider().storageRemoveItem(commonDataStorage, 'chapter_list');
+      StorageProvider().storageAddItem(commonDataStorage, 'chapter_list', response.body);
+      chapterLists = jsonDecode(StorageProvider().storageGetItem(commonDataStorage, 'chapter_list'));
+      print('chapterLists');
+      print(chapterLists);
+    });
+  }
 
   getUserDetails(user_id) async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -75,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     var user_id = StorageProvider().storageGetItem(userStorage, 'user_id');
     getUserDetails(user_id);
+    getChapterList();
   }
 
   @override
@@ -155,12 +176,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 210,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: lists.length,
+                  itemCount: chapterLists.length,
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     print('printing list index');
-                    print(lists[index]);
-                    return CourseCard(lists[index]);
+                    print(chapterLists[index]);
+                    return CourseCard(chapterLists[index]);
                   },
                 ),
               ),
@@ -365,7 +386,7 @@ class CourseCard extends StatelessWidget {
               width: 250.0,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('${list['image']}'), fit: BoxFit.cover),
+                    image: AssetImage('${list['photo_url']}'), fit: BoxFit.cover),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: const <BoxShadow>[
                     BoxShadow(
@@ -381,7 +402,7 @@ class CourseCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 4.0),
               child: Text(
-                '${list['title']}',
+                '${list['chapter_name']}',
                 style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -393,8 +414,8 @@ class CourseCard extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if(list['title'] == "Grammar"){
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const GrammarListScreen()), (route) => true );
+        if(list['chapter_name'] == "Grammar"){
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter_id: list['id'])), (route) => true );
         } else {
           // Pronunciation Screen
         }

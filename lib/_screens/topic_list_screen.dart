@@ -98,6 +98,24 @@ class _TopicListScreenState extends State<TopicListScreen> {
           },
         ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+              onPressed: () {
+                //...
+              },
+              heroTag: null,
+              label: const Text('Add Topic'),
+              icon: const Icon(
+                  Icons.add
+              )
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
+      ),
     );
   }
 }

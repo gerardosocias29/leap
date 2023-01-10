@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
 
 showErrorDialogBox(context, String message) async {
   return showDialog(
@@ -147,4 +151,81 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
             fontWeight: FontWeight.w400,
             color: color)))
     ]);
+}
+
+AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
+  var url = (type == "lesson") ? "lessons/create" : "";
+
+  makePostRequest(requestBody, loadingContext, url) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/$url");
+    final uri = Uri.parse("$backendUrl/api/$url");
+    final headers = {'content-type': 'application/json'};
+    Map<String, dynamic> body = requestBody;
+    String jsonBody = json.encode(body);
+    final encoding = Encoding.getByName('utf-8');
+
+    Response response = await post(
+      uri,
+      headers: headers,
+      body: jsonBody,
+      encoding: encoding,
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+    print(requestBody);
+    Navigator.pop(loadingContext);
+  }
+
+  var titleController = TextEditingController();
+  var contentController = TextEditingController();
+  return AlertDialog(
+    title: Text(title),
+    content: ListView(
+      shrinkWrap: shrinkWrap,
+      children: [
+        TextFormField(
+          decoration: reusableInputDecoration(context, 'Title', 'Lesson Title'),
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+          controller: titleController,
+          onSaved: (value) {
+            // _authData['email'] = value!;
+          },
+        ),
+        const SizedBox(
+          height: 30
+        ),
+        TextFormField(
+          controller: contentController,
+          decoration: reusableInputDecoration(context, 'Content', 'Lesson Content'),
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          maxLines: 8,
+        )
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      TextButton(
+        onPressed: () {
+          // Send them to your email maybe?
+          var title = titleController.text;
+          var content = contentController.text;
+          makePostRequest({
+            "lesson_name": title,
+            "lesson_details": content,
+            "chapter_id" : reference_id
+          }, context, url);
+
+          // Navigator.pop(context);
+        },
+        child: const Text('Send'),
+      ),
+    ],
+  );
 }

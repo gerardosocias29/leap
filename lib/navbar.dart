@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:leap/_screens/user_list_screen.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
+import '_screens/grammar_list_screen.dart';
 import '_screens/signin_screen.dart';
 import 'auth_service.dart';
 
@@ -44,36 +46,32 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           ListTile(
+            leading: const Icon(Icons.person_outlined),
+            title: const Text('Profile'),
+            onTap: () => null,
+          ),
+          ListTile(
             leading: const Icon(Icons.star_border_outlined),
             title: const Text('Achievements'),
             onTap: () => null,
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Friends'),
+            leading: const Icon(Icons.leaderboard_outlined),
+            title: const Text('Leaderboards'),
             onTap: () => null,
           ),
           ListTile(
-            leading: const Icon(Icons.share),
-            title: const Text('Share'),
-            onTap: () => null,
+            leading: const Icon(Icons.groups_outlined),
+            title: const Text('Users'),
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const UserListScreen()), (route) => true ),
           ),
-          const ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Request'),
-          ),
-          const Divider(),
+          // const Divider(),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
             onTap: () => null,
           ),
-          ListTile(
-            leading: const Icon(Icons.description),
-            title: const Text('Policies'),
-            onTap: () => null,
-          ),
-          const Divider(),
+          // const Divider(),
           ListTile(
             title: const Text('Logout'),
             leading: const Icon(Icons.exit_to_app),

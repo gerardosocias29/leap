@@ -7,6 +7,11 @@ class StorageProvider {
     return storage;
   }
 
+  commonDataStorage() {
+    final LocalStorage storage = LocalStorage('common_data');
+    return storage;
+  }
+
   storageAddItem(LocalStorage storage, item, value){
     storage.setItem(item, value);
   }
