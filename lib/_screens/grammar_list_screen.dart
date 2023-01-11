@@ -20,9 +20,8 @@ class GrammarListScreen extends StatefulWidget {
 class _GrammarListScreenState extends State<GrammarListScreen> {
   late final userDetails;
   late var _isloading = false;
-  late final lessonLists;
+  late var lessonLists;
   final userStorage = StorageProvider().userStorage();
-  final commonDataStorage = StorageProvider().commonDataStorage();
 
   List items = [
     'Noun'
@@ -44,12 +43,9 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
         headers: headers
     );
 
-    StorageProvider().storageRemoveItem(commonDataStorage, 'lesson_lists');
-    StorageProvider().storageAddItem(commonDataStorage, 'lesson_lists', response.body);
-
     setState(() {
-
-      lessonLists = jsonDecode(StorageProvider().storageGetItem(commonDataStorage, 'lesson_lists'));
+      lessonLists = jsonDecode(response.body);
+      print(lessonLists);
       _isloading = false;
     });
   }
@@ -83,49 +79,51 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
           child: CircularProgressIndicator(),
         )
         : Center(
-          child: ListView.builder(
-            // Let the ListView know how many items it needs to build.
-            itemCount: items.length,
-            // Provide a builder function. This is where the magic happens.
-            // Convert each item into a widget based on the type of item it is.
-            itemBuilder: (context, index) {
-              final item = lessonLists[index];
-
-              return
-                Card(
-                  child: ListTile(
-                    title: Text("${item['lesson_name']}"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          IconButton(
-                            icon: const Icon(
-                              Icons.edit_outlined,
-                              size: 20.0,
-                              // color: Colors.black,
+          child: RefreshIndicator(
+            onRefresh: () async { getLessonLists(); },
+            child: ListView.builder(
+              // Let the ListView know how many items it needs to build.
+              itemCount: lessonLists.length,
+              // Provide a builder function. This is where the magic happens.
+              // Convert each item into a widget based on the type of item it is.
+              itemBuilder: (context, index) {
+                final item = lessonLists[index];
+                return
+                  Card(
+                    child: ListTile(
+                      title: Text("${item['lesson_name']}"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit_outlined,
+                                size: 20.0,
+                                // color: Colors.black,
+                              ),
+                              onPressed: () {
+                                //   _onDeleteItemPressed(index);
+                              },
                             ),
-                            onPressed: () {
-                              //   _onDeleteItemPressed(index);
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete_outlined,
-                              size: 20.0,
-                              color: Colors.red,
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outlined,
+                                size: 20.0,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                //   _onDeleteItemPressed(index);
+                              },
                             ),
-                            onPressed: () {
-                              //   _onDeleteItemPressed(index);
-                            },
-                          ),
-                        ],
-                      ),
-                    onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const TopicListScreen()), (route) => true );
-                    }
-                  ),
-                );
-            },
+                          ],
+                        ),
+                      onTap: () {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'])), (route) => true );
+                      }
+                    ),
+                  );
+              },
+            ),
           ),
         ),
       floatingActionButton: userDetails['role_id'] == 0 ? Column(
@@ -136,7 +134,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               //...
               showDialog(
                 context: context,
-                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', 1, false, 'lesson'),
+                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', 1, false, 'Lesson'),
               );
             },
             heroTag: null,

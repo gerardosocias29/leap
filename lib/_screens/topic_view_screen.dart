@@ -29,7 +29,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     setState(() {
       _isloading = true;
       userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
-      text = "${widget.topic['content']}";
+      text = "${widget.topic['topic_details']}";
     });
 
     flutterTts.setStartHandler(() {
@@ -82,7 +82,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "${widget.topic['title']}",
+          "${widget.topic['topic_title']}",
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
@@ -124,7 +124,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
                 height: 10,
               ),
               Text(
-                '''${widget.topic['content']}''',
+                '''${widget.topic['topic_details']}''',
                 style: const TextStyle(fontSize: 18.0, ),
                 textAlign: TextAlign.justify,
               ),
@@ -151,7 +151,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           FloatingActionButton.extended(
             onPressed: () {
               //...
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const QuizScreen()), (route) => true );
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'])), (route) => true );
             },
             heroTag: null,
             label: const Text('Take Quiz'),

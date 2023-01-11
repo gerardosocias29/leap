@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
 import 'package:leap/_screens/topic_view_screen.dart';
 
 import '../navbar.dart';
 import '../providers/storage.dart';
+import '../reusable_widgets/reusable_widget.dart';
 
 class TopicListScreen extends StatefulWidget {
-  const TopicListScreen({Key? key}) : super(key: key);
+  final lesson_id;
+  const TopicListScreen({Key? key, required this.lesson_id}) : super(key: key);
 
   @override
   State<TopicListScreen> createState() => _TopicListScreenState();
@@ -16,10 +20,10 @@ class TopicListScreen extends StatefulWidget {
 class _TopicListScreenState extends State<TopicListScreen> {
   late final userDetails;
   late var _isloading = false;
+  late final topicLists;
   final userStorage = StorageProvider().userStorage();
 
   List<ListItem> items = [
-    HeadingItem('Topics'),
     MessageItem('Introduction', 'A noun is a word for a person, place, ...'),
     MessageItem('Types of Noun: Common noun', 'Common nouns are words used to name gen...'),
     MessageItem('Proper Noun', 'A noun is a word for a person...'),
@@ -34,7 +38,6 @@ class _TopicListScreenState extends State<TopicListScreen> {
   ];
 
   final detailed_items = [
-    {'title': 'Topics', 'content' : ''},
     {'title': 'Introduction', 'content' : "A noun is a word for a person, place, thing, or idea. Noun are often used with an article (the, a, an), but  not always start with a capital letter; common nouns do not. Nouns can be singular or plural, concrete or abstract. Nouns show possession by adding's. Nouns can b function in different roles within a sentence; for example, a noun can be a subject, direct object, indirect object, subject complement, or object of a preposition. \n\nNouns are among the most important words in the English language - without them, we'd have a difficult time speaking and writing about anything. There are several different types of English nouns. It is often useful to recognize what type a noun is because different types sometimes have different rules. This helps you to use them correctly."},
     {'title': 'Types of Noun: Common noun', 'content' : 'Content Types of Noun: Common noun'},
     {'title': 'Proper Noun', 'content' : ''},
@@ -48,6 +51,33 @@ class _TopicListScreenState extends State<TopicListScreen> {
     {'title': 'Plural Noun', 'content' : ''},
   ];
 
+  late var filteredList;
+  getTopicLists() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/topics/all");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    var res = jsonDecode(response.body);
+    filteredList = [];
+    var lesson_id = widget.lesson_id;
+    var itm;
+    for(itm in res){
+      print(itm);
+      if (itm['lesson_id'] != null && itm['lesson_id'] == lesson_id) {
+        filteredList.add(itm);
+      }
+    }
+
+    setState(() {
+      print(filteredList);
+      _isloading = false;
+    });
+  }
+
   Future _initRetrieval() async {
     setState(() {
       _isloading = true;
@@ -59,6 +89,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
   void initState() {
     super.initState();
     _initRetrieval();
+    getTopicLists();
   }
 
   @override
@@ -78,24 +109,55 @@ class _TopicListScreenState extends State<TopicListScreen> {
           color: Theme.of(context).primaryColor,
         ),
       ),
-      drawer: _isloading ? null : NavBar(userDetails: userDetails),
-      body: Center(
-        child: ListView.builder(
-          // Let the ListView know how many items it needs to build.
-          itemCount: items.length,
-          // Provide a builder function. This is where the magic happens.
-          // Convert each item into a widget based on the type of item it is.
-          itemBuilder: (context, index) {
-            final item = items[index];
-            final itemCp = detailed_items[index];
-            return ListTile(
-              title: item.buildTitle(context),
-              subtitle: item.buildSubtitle(context),
-              onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: itemCp,)), (route) => true );
-              }
-            );
-          },
+      body: _isloading ?
+      const Center(
+        child: CircularProgressIndicator(),
+      )
+      :Center(
+        child: RefreshIndicator(
+          onRefresh: () async { getTopicLists(); },
+          child: ListView.builder(
+            // Let the ListView know how many items it needs to build.
+            itemCount: filteredList.length,
+            // Provide a builder function. This is where the magic happens.
+            // Convert each item into a widget based on the type of item it is.
+            itemBuilder: (context, index) {
+              final item = filteredList[index];
+              return Card(
+                child: ListTile(
+                  title: Text("${item['topic_title']}"),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      IconButton(
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          size: 20.0,
+                          // color: Colors.black,
+                        ),
+                        onPressed: () {
+                          //   _onDeleteItemPressed(index);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outlined,
+                          size: 20.0,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          //   _onDeleteItemPressed(index);
+                        },
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item,)), (route) => true );
+                  }
+                ),
+              );
+            },
+          ),
         ),
       ),
       floatingActionButton: Column(
@@ -103,7 +165,10 @@ class _TopicListScreenState extends State<TopicListScreen> {
         children: [
           FloatingActionButton.extended(
               onPressed: () {
-                //...
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => alertDialog(context, 'Add Topic', widget.lesson_id, false, 'Topic'),
+                );
               },
               heroTag: null,
               label: const Text('Add Topic'),

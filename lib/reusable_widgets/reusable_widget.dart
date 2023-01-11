@@ -154,7 +154,7 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
 }
 
 AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
-  var url = (type == "lesson") ? "lessons/create" : "";
+  var url = (type == "Lesson") ? "lessons/create" : (type == "Topic") ? "topics/create" : "";
 
   makePostRequest(requestBody, loadingContext, url) async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -186,7 +186,7 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
       shrinkWrap: shrinkWrap,
       children: [
         TextFormField(
-          decoration: reusableInputDecoration(context, 'Title', 'Lesson Title'),
+          decoration: reusableInputDecoration(context, 'Title', '$type Title'),
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
           controller: titleController,
@@ -199,7 +199,7 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
         ),
         TextFormField(
           controller: contentController,
-          decoration: reusableInputDecoration(context, 'Content', 'Lesson Content'),
+          decoration: reusableInputDecoration(context, 'Content', '$type Content'),
           keyboardType: TextInputType.multiline,
           textInputAction: TextInputAction.newline,
           maxLines: 8,
@@ -216,11 +216,22 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
           // Send them to your email maybe?
           var title = titleController.text;
           var content = contentController.text;
-          makePostRequest({
-            "lesson_name": title,
-            "lesson_details": content,
-            "chapter_id" : reference_id
-          }, context, url);
+          var data;
+          if(type == "Lesson"){
+            data = {
+              "lesson_name": title,
+              "lesson_details": content,
+              "chapter_id" : reference_id
+            };
+          } else {
+            data = {
+              "topic_title": title,
+              "topic_details": content,
+              "lesson_id" : reference_id
+            };
+          }
+
+          makePostRequest(data, context, url);
 
           // Navigator.pop(context);
         },

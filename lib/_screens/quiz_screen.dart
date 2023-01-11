@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({Key? key}) : super(key: key);
+  final topic_id;
+  const QuizScreen({Key? key, required this.topic_id}) : super(key: key);
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -10,7 +15,8 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   int _questionIndex = 0;
   int _score = 0;
-
+  late var _isloading = false;
+  late final List<Map<String, Object>> questions = [];
   final List<Map<String, Object>> _questions = [
     {
       'question': 'Which word is a noun in this sentence? I decided to catch the bus because I was late.',
@@ -53,6 +59,48 @@ class _QuizScreenState extends State<QuizScreen> {
       ],
     },
   ];
+  late var filteredList;
+  getQuizList() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/quizzes/all");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    var res = jsonDecode(response.body);
+    filteredList = [];
+    var topic_id = widget.topic_id;
+    var itm;
+    for(itm in res){
+      print(itm);
+      if (itm['topic_id'] != null && itm['topic_id'] == topic_id) {
+        var ans = itm['quiz_choices'].split(",");
+        var answers = [];
+        for(var an in ans){
+          var score = 0;
+          if(an == itm['quiz_answer']){
+            score = 1;
+          }
+          answers.add({
+            "text": an, 'score': score
+          });
+        }
+        questions.add({
+          'question': itm['quiz_question'],
+          'answers': answers
+        });
+        print("questions");
+        print(questions);
+      }
+    }
+
+    setState(() {
+      print(filteredList);
+      _isloading = false;
+    });
+  }
 
   void _answerQuestion(int score) {
     _score += score;
@@ -69,9 +117,15 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getQuizList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (_questionIndex < _questions.length) {
-      String quest = '${_questions[_questionIndex]['question']}';
+    if (_questionIndex < questions.length) {
+      String quest = '${questions[_questionIndex]['question']}';
 
       return Scaffold(
         appBar: AppBar(
