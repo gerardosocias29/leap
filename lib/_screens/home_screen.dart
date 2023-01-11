@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:leap/_screens/grammar_list_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
@@ -31,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final userDetails;
   late final chapterLists;
   late var _isloading = false;
+  late var topicWithScore;
+  late var topics;
   List<Object> lists = [
     { 'title': 'Grammar', 'topics': 20, 'image': 'assets/grammar.png',},
     { 'title': 'Speech', 'topics': 20, 'image': 'assets/pronunciation.jpg',}
@@ -57,6 +61,42 @@ class _HomeScreenState extends State<HomeScreen> {
       chapterLists = jsonDecode(StorageProvider().storageGetItem(commonDataStorage, 'chapter_list'));
       print('chapterLists');
       print(chapterLists);
+      setState(() {
+        _isloading = false;
+      });
+    });
+  }
+
+  getTopicWithScore() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/user_topics_detailed/${userDetails['id']}");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    setState(() {
+      topicWithScore = jsonDecode(response.body);
+      print("topicWithScore::");
+      print(topicWithScore);
+    });
+  }
+
+  getTopics() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/topics/all");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+
+    setState(() {
+      topics = jsonDecode(response.body);
+      print("topics::");
+      print(topics);
+      calcPercentage();
     });
   }
 
@@ -79,14 +119,20 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       StorageProvider().storageRemoveItem(userStorage, 'user_details');
       StorageProvider().storageAddItem(userStorage, 'user_details', response.body);
-      setState(() {
-        _isloading = false;
-      });
     }
     setState(() {
       userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
+      getTopicWithScore();
+      getTopics();
     });
+  }
 
+  late double grammar_percentage = 0.0;
+  Future calcPercentage() async {
+    var percentage = (topicWithScore.length / topics.length);
+    setState(() {
+      grammar_percentage = percentage;
+    });
   }
 
   Future _initRetrieval() async {
@@ -156,6 +202,81 @@ class _HomeScreenState extends State<HomeScreen> {
                     letterSpacing: 1.9,
                     fontWeight: FontWeight.w700),
                 )
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
+                      child: Container(
+                        height: 140.0,
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 15.0,
+                              offset: Offset(0.75, 0.95))
+                          ],
+                          color: Colors.white
+                        ),
+                        child: CircularPercentIndicator(
+                          radius:50.0,
+                          lineWidth: 5.0,
+                          percent: grammar_percentage,
+                          animation: true,
+                          center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}% \n Completed", textAlign: TextAlign.center),
+                          progressColor: Colors.green,
+                          footer: const Text(
+                            "Grammar",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                          ),
+                          circularStrokeCap: CircularStrokeCap.round,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        grammar_percentage = 0;
+                      });
+                      getTopicWithScore();
+                      getTopics();
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
+                    child: Container(
+                      height: 140.0,
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 15.0,
+                                offset: Offset(0.75, 0.95))
+                          ],
+                          color: Colors.white
+                      ),
+                      child: CircularPercentIndicator(
+                        radius:50.0,
+                        lineWidth: 5.0,
+                        percent: 0,
+                        animation: true,
+                        center: const Text("0% \n Completed", textAlign: TextAlign.center),
+                        progressColor: Colors.green,
+                        footer: const Text(
+                          "Speech",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                        ),
+                        circularStrokeCap: CircularStrokeCap.round,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 30,

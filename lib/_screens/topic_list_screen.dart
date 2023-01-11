@@ -64,9 +64,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
     var res = jsonDecode(response.body);
     filteredList = [];
     var lesson_id = widget.lesson_id;
-    var itm;
-    for(itm in res){
-      print(itm);
+    for(var itm in res){
       if (itm['lesson_id'] != null && itm['lesson_id'] == lesson_id) {
         filteredList.add(itm);
       }
@@ -126,7 +124,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
               return Card(
                 child: ListTile(
                   title: Text("${item['topic_title']}"),
-                  trailing: Row(
+                  trailing: userDetails['role_id'] == 0 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
@@ -150,7 +148,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
                         },
                       ),
                     ],
-                  ),
+                  ) : null,
                   onTap: () {
                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item,)), (route) => true );
                   }
@@ -160,7 +158,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
           ),
         ),
       ),
-      floatingActionButton: Column(
+      floatingActionButton: userDetails['role_id'] == 0 ? Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton.extended(
@@ -180,7 +178,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
             height: 20,
           ),
         ],
-      ),
+      ) : null,
     );
   }
 }

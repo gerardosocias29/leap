@@ -278,6 +278,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               var user_id = (await AuthService().getUserId());
                               getUserDetails(user_id, loadingContext);
                             }).onError((error, stackTrace) {
+                              Navigator.pop(loadingContext);
                               var errorString = error.toString();
                               var errorMessage = errorString.contains('[firebase_auth/user-disabled]') ? "This user has been disabled." :
                               (errorString.contains('[firebase_auth/invalid-verification-code]') ? "The user has invalid verification code." : "Operations are not allowed!");

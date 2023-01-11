@@ -58,6 +58,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   flutter_tts: ^3.6.3
   synchronized: ^3.0.0+3
+  circular_countdown_timer: ^0.2.3
 
 dev_dependencies:
   flutter_test:

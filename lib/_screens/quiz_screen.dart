@@ -1,18 +1,25 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+import 'package:leap/_screens/topic_view_screen.dart';
+
+import '../providers/storage.dart';
 
 class QuizScreen extends StatefulWidget {
   final topic_id;
-  const QuizScreen({Key? key, required this.topic_id}) : super(key: key);
+  final topic;
+  const QuizScreen({Key? key, required this.topic_id, required this.topic}) : super(key: key);
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  final CountDownController _controller = CountDownController();
   int _questionIndex = 0;
   int _score = 0;
   late var _isloading = false;
@@ -60,6 +67,16 @@ class _QuizScreenState extends State<QuizScreen> {
     },
   ];
   late var filteredList;
+  late int timer_start = 0;
+  late final userDetails;
+  late final utqId;
+  final userStorage = StorageProvider().userStorage();
+  Future _initRetrieval() async {
+    setState(() {
+      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
+    });
+  }
+
   getQuizList() async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
     final uri = Uri.parse("$backendUrl/api/quizzes/all");
@@ -72,10 +89,10 @@ class _QuizScreenState extends State<QuizScreen> {
     var res = jsonDecode(response.body);
     filteredList = [];
     var topic_id = widget.topic_id;
-    var itm;
-    for(itm in res){
-      print(itm);
+    for(var itm in res){
       if (itm['topic_id'] != null && itm['topic_id'] == topic_id) {
+        var time = itm['timer'];
+        timer_start = timer_start + time as int;
         var ans = itm['quiz_choices'].split(",");
         var answers = [];
         for(var an in ans){
@@ -91,15 +108,14 @@ class _QuizScreenState extends State<QuizScreen> {
           'question': itm['quiz_question'],
           'answers': answers
         });
-        print("questions");
-        print(questions);
       }
     }
 
     setState(() {
-      print(filteredList);
+      print("timer:: $timer_start");
       _isloading = false;
     });
+    _controller.start();
   }
 
   void _answerQuestion(int score) {
@@ -109,16 +125,81 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
-  void _resetQuiz() {
+  void _submitScore() {
+    if(utqId != null){
+      setState(() {
+        makePostRequest({
+          'user_id': userDetails['id'],
+          'user_topic_id': widget.topic_id,
+          'quiz_id': questions.length,
+          'score': _score,
+          'status': 'taken',
+        }, 'user_topic_quiz/update/$utqId');
+      });
+    } else {
+      setState(() {
+        makePostRequest({
+          'user_id': userDetails['id'],
+          'user_topic_id': widget.topic_id,
+          'quiz_id': questions.length,
+          'score': _score,
+          'status': 'taken',
+        }, 'user_topic_quiz/create');
+      });
+    }
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
+  }
+
+  getUserTopicsQuiz() async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    final uri = Uri.parse("$backendUrl/api/user_topic_quiz/all");
+    final headers = {'content-type': 'application/json'};
+    Response response = await get(
+        uri,
+        headers: headers
+    );
+    var res = jsonDecode(response.body);
+    var utq;
+    for(var itm in res){
+      if (itm['user_id'] == userDetails['id'] && itm['user_topic_id'] == widget.topic_id) {
+        utq = itm['id'];
+      }
+    }
     setState(() {
-      _questionIndex = 0;
-      _score = 0;
+      utqId = utq;
+      print('utqId:: $utqId');
     });
+  }
+
+  makePostRequest(requestBody, url) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/$url");
+    final uri = Uri.parse("$backendUrl/api/$url");
+    final headers = {'content-type': 'application/json'};
+    Map<String, dynamic> body = requestBody;
+    String jsonBody = json.encode(body);
+    final encoding = Encoding.getByName('utf-8');
+
+    Response response = await post(
+      uri,
+      headers: headers,
+      body: jsonBody,
+      encoding: encoding,
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+    print(requestBody);
   }
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _isloading = true;
+    });
+    getUserTopicsQuiz();
+    _initRetrieval();
     getQuizList();
   }
 
@@ -129,6 +210,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           centerTitle: true,
           title: Text(
             "Quiz",
@@ -140,6 +222,9 @@ class _QuizScreenState extends State<QuizScreen> {
           iconTheme: IconThemeData(
             color: Theme.of(context).primaryColor,
           ),
+          actions: <Widget>[
+            Text('$timer_start'),
+          ]
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -148,19 +233,76 @@ class _QuizScreenState extends State<QuizScreen> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                CircularCountDownTimer(
+                  duration: timer_start,
+                  initialDuration: 0,
+                  controller: _controller,
+                  width: MediaQuery.of(context).size.width / 4,
+                  height: MediaQuery.of(context).size.height / 4,
+                  ringColor: Colors.grey[300]!,
+                  ringGradient: null,
+                  fillColor: Colors.purpleAccent[100]!,
+                  fillGradient: null,
+                  backgroundColor: Colors.purple[500],
+                  backgroundGradient: null,
+                  strokeWidth: 10.0,
+                  strokeCap: StrokeCap.round,
+                  textStyle: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  isReverse: true,
+                  isReverseAnimation: true,
+                  isTimerTextShown: true,
+                  autoStart: true,
+                  onStart: () {
+                    debugPrint('Countdown Started');
+                  },
+                  onComplete: () {
+                    debugPrint('Countdown Ended');
+                    setState(() {
+                      _questionIndex = questions.length;
+                    });
+                  },
+                  onChange: (String timeStamp) {
+                    debugPrint('Countdown Changed $timeStamp');
+                  },
+                  timeFormatterFunction: (defaultFormatterFunction, duration) {
+                    if (duration.inSeconds == 0) {
+                      // only format for '0'
+                      return "0";
+                    } else {
+                      // other durations by it's default format
+                      return Function.apply(defaultFormatterFunction, [duration]);
+                    }
+                  },
+                ),
                 Text(
-                  quest,
+                  '${_questionIndex + 1}. $quest',
                   style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                ...(_questions[_questionIndex]['answers'] as List<Map<String, Object>>)
+                ...(questions[_questionIndex]['answers'] as List)
                     .map((answer) {
                   String ans = '${answer['text']}';
-                  return ElevatedButton(
-                    child: Text(ans),
+                  return MaterialButton(
+                    color: Theme.of(context).primaryColor,
                     onPressed: () => _answerQuestion(answer["score"] as int),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minWidth: double.infinity,
+                    padding: const EdgeInsets.only(top: 15, bottom: 15),
+                    child: Text(
+                      ans,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   );
                 }).toList(),
               ],
@@ -172,6 +314,7 @@ class _QuizScreenState extends State<QuizScreen> {
     } else {
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           centerTitle: true,
           title: Text(
             "Quiz",
@@ -194,7 +337,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 children: <Widget>[
 
                   Text(
-                    'You scored $_score out of ${_questions.length}',
+                    'You scored $_score out of ${questions.length}',
                     style: const TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
@@ -202,8 +345,8 @@ class _QuizScreenState extends State<QuizScreen> {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: _resetQuiz,
-                    child: const Text('Reset Quiz'),
+                    onPressed: _submitScore,
+                    child: const Text('Submit Score'),
                   ),
                 ],
               ),

@@ -92,7 +92,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                   Card(
                     child: ListTile(
                       title: Text("${item['lesson_name']}"),
-                        trailing: Row(
+                        trailing: userDetails['role_id'] == 0 ? Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             IconButton(
@@ -116,7 +116,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                               },
                             ),
                           ],
-                        ),
+                        ) : null,
                       onTap: () {
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'])), (route) => true );
                       }

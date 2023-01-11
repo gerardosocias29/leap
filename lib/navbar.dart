@@ -60,7 +60,7 @@ class _NavBarState extends State<NavBar> {
             title: const Text('Leaderboards'),
             onTap: () => null,
           ),
-          ListTile(
+          if(widget.userDetails['role_id'] == 0) ListTile(
             leading: const Icon(Icons.groups_outlined),
             title: const Text('Users'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const UserListScreen()), (route) => true ),
