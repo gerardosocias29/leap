@@ -33,8 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late final userDetails;
   late final chapterLists;
   late var _isloading = false;
-  late var topicWithScore;
-  late var topics;
+  late var topicWithScore = [];
+  late var topics = [];
+  late var overallScore = 0;
   List<Object> lists = [
     { 'title': 'Grammar', 'topics': 20, 'image': 'assets/grammar.png',},
     { 'title': 'Speech', 'topics': 20, 'image': 'assets/pronunciation.jpg',}
@@ -76,10 +77,17 @@ class _HomeScreenState extends State<HomeScreen> {
         headers: headers
     );
 
+    var scores = 0;
+    for(var s in topicWithScore){
+      var sc = s['score'];
+      scores = scores + sc as int;
+    }
+
     setState(() {
       topicWithScore = jsonDecode(response.body);
-      print("topicWithScore::");
-      print(topicWithScore);
+      overallScore = scores;
+      print("scores::");
+      print(scores);
     });
   }
 
@@ -262,14 +270,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white
                       ),
                       child: CircularPercentIndicator(
-                        radius:50.0,
+                        radius: 50.0,
                         lineWidth: 5.0,
-                        percent: 0,
+                        percent: 1,
                         animation: true,
-                        center: const Text("0% \n Completed", textAlign: TextAlign.center),
+                        center: Text("$overallScore", textAlign: TextAlign.center),
                         progressColor: Colors.green,
                         footer: const Text(
-                          "Speech",
+                          "Overall Score",
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
                         ),
                         circularStrokeCap: CircularStrokeCap.round,
