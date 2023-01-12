@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:leap/_screens/grammar_list_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
+import 'package:leap/api.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -30,16 +31,15 @@ class _HomeScreenState extends State<HomeScreen> {
   UserServices user_services = UserServices();
   final userStorage = StorageProvider().userStorage();
   final commonDataStorage = StorageProvider().commonDataStorage();
-  late final userDetails;
-  late final chapterLists;
-  late var _isloading = false;
+  late final user_id;
+
+  late var userDetails = {};
+  late var chapterLists = [];
+  late var topicLists = [];
   late var topicWithScore = [];
-  late var topics = [];
+  late var _isloading = false;
   late var overallScore = 0;
-  List<Object> lists = [
-    { 'title': 'Grammar', 'topics': 20, 'image': 'assets/grammar.png',},
-    { 'title': 'Speech', 'topics': 20, 'image': 'assets/pronunciation.jpg',}
-  ];
+  late double grammar_percentage = 0.0;
 
   List<Object> leaderBoardItems = [
     {'name': 'Me', 'score': 1000, 'icon': Icons.home},
@@ -47,114 +47,71 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'I', 'score': 700, 'icon': Icons.home},
   ];
 
-  getChapterList() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/chapters/all");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
+  calcPercentage() {
+    var percentage = (topicWithScore.length / topicLists.length);
+    grammar_percentage = percentage;
+  }
+
+  getData() async {
+    var urls = [
+      'chapters/all', // 0
+      'topics/all', // 1
+      'user_topics_detailed/${userDetails['id']}' //2
+    ];
+    var datas = await Api().multipleGetRequest(urls);
 
     setState(() {
-      StorageProvider().storageRemoveItem(commonDataStorage, 'chapter_list');
-      StorageProvider().storageAddItem(commonDataStorage, 'chapter_list', response.body);
-      chapterLists = jsonDecode(StorageProvider().storageGetItem(commonDataStorage, 'chapter_list'));
-      print('chapterLists');
-      print(chapterLists);
-      setState(() {
-        _isloading = false;
-      });
+      setChapterList(datas[0]);
+      setTopicList(datas[1]);
+      setTopicWithScore(datas[2]);
+      calcPercentage();
+
+      _isloading = false;
     });
   }
 
-  getTopicWithScore() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/user_topics_detailed/${userDetails['id']}");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
+  setUserDetails(details) async {
+    if(details == null || details == []){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => false );
+    } else {
+      await StorageProvider().storageRemoveItem(userStorage, 'user_details');
+      await StorageProvider().storageAddItem(userStorage, 'user_details', jsonEncode(details));
+    }
 
+    setState(() {
+      userDetails = details;
+      getData();
+    });
+  }
+
+  setChapterList(chapters) {
+    chapterLists = chapters;
+  }
+
+  setTopicList(topics) {
+    topicLists = topics;
+  }
+
+  setTopicWithScore(topicWithScores) {
     var mytopics = [];
     var scores = 0;
-    var res = jsonDecode(response.body);
-    for(var s in res){
-      if(s['user_id'] == userDetails['id']){
-        mytopics.add(s);
-        var sc = s['score'];
+    for(var topic in topicWithScores){
+      if(topic['user_id'] == userDetails['id']){
+        mytopics.add(topic);
+        var sc = topic['score'];
         scores = scores + sc as int;
       }
     }
-
-    setState(() {
-      topicWithScore = mytopics;
-      overallScore = scores;
-      print("topicWithScore::");
-      print(topicWithScore);
-    });
-  }
-
-  getTopics() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/topics/all");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
-
-    setState(() {
-      topics = jsonDecode(response.body);
-      print("topics::");
-      print(topics);
-      calcPercentage();
-    });
-  }
-
-  getUserDetails(user_id) async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    print("backendUrl::$backendUrl/api/users");
-    final uri = Uri.parse("$backendUrl/api/users/$user_id");
-    final headers = {'content-type': 'application/json'};
-
-    Response response = await get(
-        uri,
-        headers: headers
-    );
-
-    int statusCode = response.statusCode;
-    print("statusCode::$statusCode");
-
-    if(statusCode == 404 || statusCode == 500){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => false );
-    } else {
-      StorageProvider().storageRemoveItem(userStorage, 'user_details');
-      StorageProvider().storageAddItem(userStorage, 'user_details', response.body);
-    }
-    setState(() {
-      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
-      getTopicWithScore();
-      getTopics();
-    });
-  }
-
-  late double grammar_percentage = 0.0;
-  Future calcPercentage() async {
-    var percentage = (topicWithScore.length / topics.length);
-    setState(() {
-      grammar_percentage = percentage;
-    });
+    topicWithScore = mytopics;
+    overallScore = scores;
   }
 
   Future _initRetrieval() async {
+    user_id = await StorageProvider().storageGetItem(userStorage, 'user_id');
     setState(() {
       _isloading = true;
     });
-    var user_id = StorageProvider().storageGetItem(userStorage, 'user_id');
-    getUserDetails(user_id);
-    getChapterList();
+    setUserDetails(await Api().getRequest('users/$user_id'));
   }
 
   @override
@@ -255,8 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       setState(() {
                         grammar_percentage = 0;
                       });
-                      getTopicWithScore();
-                      getTopics();
+                      getData();
                     },
                   ),
                   Padding(
