@@ -240,3 +240,106 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
     ],
   );
 }
+
+AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
+  var url = 'quizzes/create';
+
+  makePostRequest(requestBody, loadingContext, url) async {
+    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
+    print("backendUrl::$backendUrl/api/$url");
+    final uri = Uri.parse("$backendUrl/api/$url");
+    final headers = {'content-type': 'application/json'};
+    Map<String, dynamic> body = requestBody;
+    String jsonBody = json.encode(body);
+    final encoding = Encoding.getByName('utf-8');
+
+    Response response = await post(
+      uri,
+      headers: headers,
+      body: jsonBody,
+      encoding: encoding,
+    );
+
+    int statusCode = response.statusCode;
+    print("statusCode::$statusCode");
+    print(requestBody);
+    Navigator.pop(loadingContext);
+  }
+
+  var questionController = TextEditingController();
+  var choicesController = TextEditingController();
+  var answerController = TextEditingController();
+  var timeLimitController = TextEditingController();
+  return AlertDialog(
+    title: Text(title),
+    content: ListView(
+      shrinkWrap: shrinkWrap,
+      children: [
+        TextFormField(
+          decoration: reusableInputDecoration(context, 'Title', 'Quiz Question'),
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+          controller: questionController,
+          onSaved: (value) {
+            // _authData['email'] = value!;
+          },
+        ),
+        const SizedBox(
+            height: 30
+        ),
+        TextFormField(
+          controller: choicesController,
+          decoration: reusableInputDecoration(context, 'Quiz Choices', 'Quiz Choices (comma separated)'),
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(
+            height: 30
+        ),
+        TextFormField(
+          controller: answerController,
+          decoration: reusableInputDecoration(context, 'Quiz Answer', 'Quiz Answer'),
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(
+            height: 30
+        ),
+        TextFormField(
+          controller: timeLimitController,
+          decoration: reusableInputDecoration(context, 'Quiz Time Limit', 'Quiz Time Limit'),
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      TextButton(
+        onPressed: () {
+          // Send them to your email maybe?
+          var question = questionController.text;
+          var choices = choicesController.text;
+          var answer = answerController.text;
+          var timelimit = timeLimitController.text;
+
+          var data = {
+            'quiz_type' : 'choices',
+            'quiz_question' : question,
+            'quiz_answer' : answer,
+            'quiz_choices' : choices,
+            'timer' : timelimit,
+            'topic_id' : topic_id,
+          };
+
+          makePostRequest(data, context, url);
+          Navigator.pop(context);
+        },
+        child: const Text('Save'),
+      ),
+    ],
+  );
+}

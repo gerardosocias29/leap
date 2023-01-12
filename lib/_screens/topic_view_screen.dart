@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/quiz_screen.dart';
 
 import '../navbar.dart';
 import '../providers/storage.dart';
+import '../reusable_widgets/reusable_widget.dart';
 
 class TopicViewScreen extends StatefulWidget {
   final topic;
@@ -208,6 +210,10 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           if (userDetails['role_id'] == 0) FloatingActionButton.extended(
             onPressed: () {
               //...
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false),
+              );
             },
             heroTag: null,
             label: const Text('Add Quiz'),
