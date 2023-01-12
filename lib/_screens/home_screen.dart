@@ -77,17 +77,22 @@ class _HomeScreenState extends State<HomeScreen> {
         headers: headers
     );
 
+    var mytopics = [];
     var scores = 0;
-    for(var s in topicWithScore){
-      var sc = s['score'];
-      scores = scores + sc as int;
+    var res = jsonDecode(response.body);
+    for(var s in res){
+      if(s['user_id'] == userDetails['id']){
+        mytopics.add(s);
+        var sc = s['score'];
+        scores = scores + sc as int;
+      }
     }
 
     setState(() {
-      topicWithScore = jsonDecode(response.body);
+      topicWithScore = mytopics;
       overallScore = scores;
-      print("scores::");
-      print(scores);
+      print("topicWithScore::");
+      print(topicWithScore);
     });
   }
 

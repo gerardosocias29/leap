@@ -12,7 +12,8 @@ import '../providers/storage.dart';
 class QuizScreen extends StatefulWidget {
   final topic_id;
   final topic;
-  const QuizScreen({Key? key, required this.topic_id, required this.topic}) : super(key: key);
+  final user_topic_id;
+  const QuizScreen({Key? key, required this.topic_id, required this.topic, required this.user_topic_id}) : super(key: key);
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -126,26 +127,23 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _submitScore() {
-    if(utqId != null){
-      setState(() {
-        makePostRequest({
-          'user_id': userDetails['id'],
-          'user_topic_id': widget.topic_id,
-          'quiz_id': questions.length,
-          'score': _score,
-          'status': 'taken',
-        }, 'user_topic_quiz/update/$utqId');
-      });
+    print('utqId:: $utqId');
+    if( utqId != 0 && utqId != null ){
+      makePostRequest({
+        'user_id': userDetails['id'],
+        'user_topic_id': widget.user_topic_id,
+        'quiz_id': questions.length,
+        'score': _score,
+        'status': 'taken',
+      }, 'user_topic_quiz/update/$utqId');
     } else {
-      setState(() {
-        makePostRequest({
-          'user_id': userDetails['id'],
-          'user_topic_id': widget.topic_id,
-          'quiz_id': questions.length,
-          'score': _score,
-          'status': 'taken',
-        }, 'user_topic_quiz/create');
-      });
+      makePostRequest({
+        'user_id': userDetails['id'],
+        'user_topic_id': widget.user_topic_id,
+        'quiz_id': questions.length,
+        'score': _score,
+        'status': 'taken',
+      }, 'user_topic_quiz/create');
     }
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
   }
@@ -159,9 +157,9 @@ class _QuizScreenState extends State<QuizScreen> {
         headers: headers
     );
     var res = jsonDecode(response.body);
-    var utq;
+    var utq = 0;
     for(var itm in res){
-      if (itm['user_id'] == userDetails['id'] && itm['user_topic_id'] == widget.topic_id) {
+      if (itm['user_id'] == userDetails['id'] && itm['user_topic_id'] == widget.user_topic_id) {
         utq = itm['id'];
       }
     }

@@ -69,6 +69,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
   }
 
   bool isTopicDone = false;
+  late var userTopicId = 0;
   getUserTopics() async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
     final uri = Uri.parse("$backendUrl/api/user_topic/all");
@@ -82,11 +83,12 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
       if (itm['user_id'] == userDetails['id'] && itm['topic_id'] == widget.topic['id']) {
         setState(() {
           isTopicDone = true;
+          userTopicId = itm['id'];
         });
       }
     }
     setState(() {
-      print("isTopicDone::: $isTopicDone");
+      print("isTopicDone::: $isTopicDone $userTopicId");
       _isloading = false;
     });
   }
@@ -226,7 +228,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           ),
           if (showBtn || userDetails['role_id'] == 0 || isTopicDone) FloatingActionButton.extended(
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic)), (route) => true );
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId)), (route) => true );
             },
             heroTag: null,
             label: const Text('Take Quiz'),
