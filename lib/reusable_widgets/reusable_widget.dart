@@ -182,29 +182,32 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
   var contentController = TextEditingController();
   return AlertDialog(
     title: Text(title),
-    content: ListView(
-      shrinkWrap: shrinkWrap,
-      children: [
-        TextFormField(
-          decoration: reusableInputDecoration(context, 'Title', '$type Title'),
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          controller: titleController,
-          onSaved: (value) {
-            // _authData['email'] = value!;
-          },
-        ),
-        const SizedBox(
-          height: 30
-        ),
-        TextFormField(
-          controller: contentController,
-          decoration: reusableInputDecoration(context, 'Content', '$type Content'),
-          keyboardType: TextInputType.multiline,
-          textInputAction: TextInputAction.newline,
-          maxLines: 8,
-        )
-      ],
+    content: SizedBox(
+      width: double.maxFinite,
+      child: ListView(
+        shrinkWrap: shrinkWrap,
+        children: [
+          TextFormField(
+            decoration: reusableInputDecoration(context, 'Title', '$type Title'),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            controller: titleController,
+            onSaved: (value) {
+              // _authData['email'] = value!;
+            },
+          ),
+          const SizedBox(
+            height: 30
+          ),
+          TextFormField(
+            controller: contentController,
+            decoration: reusableInputDecoration(context, 'Content', '$type Content'),
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            maxLines: 8,
+          )
+        ],
+      ),
     ),
     actions: [
       TextButton(
@@ -272,46 +275,49 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
   var timeLimitController = TextEditingController();
   return AlertDialog(
     title: Text(title),
-    content: ListView(
-      shrinkWrap: shrinkWrap,
-      children: [
-        TextFormField(
-          decoration: reusableInputDecoration(context, 'Title', 'Quiz Question'),
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          controller: questionController,
-          onSaved: (value) {
-            // _authData['email'] = value!;
-          },
-        ),
-        const SizedBox(
-            height: 30
-        ),
-        TextFormField(
-          controller: choicesController,
-          decoration: reusableInputDecoration(context, 'Quiz Choices', 'Quiz Choices (comma separated)'),
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-        ),
-        const SizedBox(
-            height: 30
-        ),
-        TextFormField(
-          controller: answerController,
-          decoration: reusableInputDecoration(context, 'Quiz Answer', 'Quiz Answer'),
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-        ),
-        const SizedBox(
-            height: 30
-        ),
-        TextFormField(
-          controller: timeLimitController,
-          decoration: reusableInputDecoration(context, 'Quiz Time Limit', 'Quiz Time Limit'),
-          keyboardType: TextInputType.number,
-          textInputAction: TextInputAction.next,
-        ),
-      ],
+    content: SizedBox(
+      width: double.maxFinite,
+      child: ListView(
+        shrinkWrap: shrinkWrap,
+        children: [
+          TextFormField(
+            decoration: reusableInputDecoration(context, 'Title', 'Quiz Question'),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            controller: questionController,
+            onSaved: (value) {
+              // _authData['email'] = value!;
+            },
+          ),
+          const SizedBox(
+              height: 30
+          ),
+          TextFormField(
+            controller: choicesController,
+            decoration: reusableInputDecoration(context, 'Quiz Choices', 'Quiz Choices (comma separated)'),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(
+              height: 30
+          ),
+          TextFormField(
+            controller: answerController,
+            decoration: reusableInputDecoration(context, 'Quiz Answer', 'Quiz Answer'),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(
+              height: 30
+          ),
+          TextFormField(
+            controller: timeLimitController,
+            decoration: reusableInputDecoration(context, 'Quiz Time Limit', 'Quiz Time Limit'),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.next,
+          ),
+        ],
+      ),
     ),
     actions: [
       TextButton(

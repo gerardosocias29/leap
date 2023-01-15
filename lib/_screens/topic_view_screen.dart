@@ -115,7 +115,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
   }
 
   Future _readText() async {
-    await flutterTts.setVolume(2);
+    await flutterTts.setVolume(1);
     await flutterTts.setSpeechRate(0.5);
     await flutterTts.setPitch(0);
 

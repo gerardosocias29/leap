@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   double marginHorizontal = 16.0;
 
   UserServices user_services = UserServices();
@@ -53,6 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   getData() async {
+    setState(() {
+      grammar_percentage = 0;
+      overallScore = 0;
+    });
     var urls = [
       'chapters/all', // 0
       'topics/all', // 1
@@ -147,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: [0.4, 0.4, 0.8, 0.5],
+            stops: [0.2, 0.5, 0.7, 1],
             colors: [
               Color(0xffffffff),
               Color(0xfffafdff),
@@ -156,29 +160,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  "Insights",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    letterSpacing: 1.9,
-                    fontWeight: FontWeight.w700),
-                )
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  InkWell(
-                    child: Padding(
+        child: RefreshIndicator(
+          onRefresh: () => getData(),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Insights",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      letterSpacing: 1.9,
+                      fontWeight: FontWeight.w700),
+                  )
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
                       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
                       child: Container(
                         height: 140.0,
@@ -208,123 +213,119 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      setState(() {
-                        grammar_percentage = 0;
-                      });
-                      getData();
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
+                      child: Container(
+                        height: 140.0,
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 15.0,
+                                  offset: Offset(0.75, 0.95))
+                            ],
+                            color: Colors.white
+                        ),
+                        child: CircularPercentIndicator(
+                          radius: 50.0,
+                          lineWidth: 5.0,
+                          percent: (overallScore / overallScore),
+                          animation: true,
+                          center: Text("$overallScore", textAlign: TextAlign.center),
+                          progressColor: Colors.green,
+                          footer: const Text(
+                            "Overall Score",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                          ),
+                          circularStrokeCap: CircularStrokeCap.round,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Lessons",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      letterSpacing: 1.9,
+                      fontWeight: FontWeight.w700),
+                  )
+                ),
+                Container(
+                  height: 210,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: chapterLists.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      print('printing list index');
+                      print(chapterLists[index]);
+                      return CourseCard(chapterLists[index]);
                     },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
-                    child: Container(
-                      height: 140.0,
-                      width: MediaQuery.of(context).size.width / 2.3,
-                      decoration: BoxDecoration(
+                ),
+
+                const SizedBox(
+                  height: 30,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Leaderboards",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      letterSpacing: 1.9,
+                      fontWeight: FontWeight.w700),
+                  )
+                ),
+
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: const <BoxShadow>[
                             BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 15.0,
-                                offset: Offset(0.75, 0.95))
+                              color: Colors.grey,
+                              blurRadius: 15.0,
+                              offset: Offset(0.75, 0.95))
                           ],
                           color: Colors.white
-                      ),
-                      child: CircularPercentIndicator(
-                        radius: 50.0,
-                        lineWidth: 5.0,
-                        percent: 1,
-                        animation: true,
-                        center: Text("$overallScore", textAlign: TextAlign.center),
-                        progressColor: Colors.green,
-                        footer: const Text(
-                          "Overall Score",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
                         ),
-                        circularStrokeCap: CircularStrokeCap.round,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: leaderBoardItems.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            print('printing list index');
+                            print(leaderBoardItems[index]);
+                            return LeaderBoard(index.toInt(), leaderBoardItems[index]);
+                          },
+                        ),
 
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  "Lessons",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    letterSpacing: 1.9,
-                    fontWeight: FontWeight.w700),
-                )
-              ),
-              Container(
-                height: 210,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: chapterLists.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    print('printing list index');
-                    print(chapterLists[index]);
-                    return CourseCard(chapterLists[index]);
-                  },
+                      ),
+                    ]
+                  )
                 ),
-              ),
-
-              const SizedBox(
-                height: 30,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  "Leaderboards",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    letterSpacing: 1.9,
-                    fontWeight: FontWeight.w700),
-                )
-              ),
-
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 15.0,
-                            offset: Offset(0.75, 0.95))
-                        ],
-                        color: Colors.white
-                      ),
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        itemCount: leaderBoardItems.length,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          print('printing list index');
-                          print(leaderBoardItems[index]);
-                          return LeaderBoard(index.toInt(), leaderBoardItems[index]);
-                        },
-                      ),
-
-                    ),
-                  ]
-                )
-              ),
-            ],
-          )
+              ],
+            )
+          ),
         )
       )
   );

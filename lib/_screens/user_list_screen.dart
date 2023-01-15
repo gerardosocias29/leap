@@ -16,10 +16,14 @@ class UserListScreen extends StatefulWidget {
 class _UserListScreenState extends State<UserListScreen> {
   late final userDetails;
   late final userLists;
+  late var filteredUserLists = [];
   late var _isloading = false;
   final userStorage = StorageProvider().userStorage();
   final commonDataStorage = StorageProvider().commonDataStorage();
 
+  Icon customIcon = const Icon(Icons.search);
+  late Widget customSearchBar = Text('Users List', style: TextStyle(color: Theme.of(context).primaryColor));
+  bool isSearch = true;
 
   Future _initRetrieval() async {
     setState(() {
@@ -29,7 +33,7 @@ class _UserListScreenState extends State<UserListScreen> {
 
   getUserLists() async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/users/all");
+    final uri = Uri.parse("$backendUrl/api/scored_users_list/all");
     final headers = {'content-type': 'application/json'};
     Response response = await get(
         uri,
@@ -37,9 +41,8 @@ class _UserListScreenState extends State<UserListScreen> {
     );
 
     setState(() {
-      StorageProvider().storageRemoveItem(commonDataStorage, 'user_lists');
-      StorageProvider().storageAddItem(commonDataStorage, 'user_lists', response.body);
-      userLists = jsonDecode(StorageProvider().storageGetItem(commonDataStorage, 'user_lists'));
+      userLists = jsonDecode(response.body);
+      filteredUserLists = userLists;
       _isloading = false;
     });
   }
@@ -52,7 +55,6 @@ class _UserListScreenState extends State<UserListScreen> {
     });
     getUserLists();
     _initRetrieval();
-
   }
 
   @override
@@ -60,16 +62,63 @@ class _UserListScreenState extends State<UserListScreen> {
     backgroundColor: Colors.white,
     appBar: AppBar(
       centerTitle: true,
-      title: Text(
-        'Users List',
-        style: TextStyle(color: Theme.of(context).primaryColor),
-      ),
+      title: customSearchBar,
       elevation: 0,
       backgroundColor: Colors.white,
       shadowColor: Colors.white,
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
       ),
+      automaticallyImplyLeading: isSearch,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                // Perform set of instructions.
+                isSearch = false;
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar = ListTile(
+                  leading: Icon(
+                    Icons.search,
+                    color: Theme.of(context).primaryColor,
+                    size: 28,
+                  ),
+                  title: TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Search User',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onChanged: (text) {
+                      print('First text field: $text');
+                      setState(() {
+                        filteredUserLists = userLists.where((item) {
+                          return (item['first_name'].toString().toLowerCase().contains(text.toLowerCase()) || item['last_name'].toString().toLowerCase().contains(text.toLowerCase()));
+                        }).toList();
+                      });
+
+                    },
+                  ),
+                );
+              } else {
+                isSearch = true;
+                customIcon = const Icon(Icons.search);
+                customSearchBar = Text('Users List', style: TextStyle(color: Theme.of(context).primaryColor));
+              }
+            });
+          },
+          icon: customIcon,
+        )
+      ],
+
     ),
     body: _isloading ?
       const Center(
@@ -79,28 +128,19 @@ class _UserListScreenState extends State<UserListScreen> {
       Center(
         child: ListView.builder(
           // Let the ListView know how many items it needs to build.
-          itemCount: userLists.length,
+          itemCount: filteredUserLists.length,
           // Provide a builder function. This is where the magic happens.
           // Convert each item into a widget based on the type of item it is.
           itemBuilder: (BuildContext context, index) {
             // final items = userLists);
-            final item = userLists[index];
+            final item = filteredUserLists[index];
             print(item);
             return ListTile(
               title: Text("${item['first_name']} ${item['last_name']}"),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete_outlined,
-                      size: 20.0,
-                      color: Colors.red,
-                    ),
-                    onPressed: () {
-                      //   _onDeleteItemPressed(index);
-                    },
-                  ),
+                  Text(item['score'])
                 ],
               ),
               onTap: () {
