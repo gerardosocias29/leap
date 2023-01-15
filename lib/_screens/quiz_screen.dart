@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/topic_view_screen.dart';
 
+import '../api.dart';
 import '../providers/storage.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -25,98 +26,43 @@ class _QuizScreenState extends State<QuizScreen> {
   int _score = 0;
   late var _isloading = false;
   late final List<Map<String, Object>> questions = [];
-  final List<Map<String, Object>> _questions = [
-    {
-      'question': 'Which word is a noun in this sentence? I decided to catch the bus because I was late.',
-      'answers': [
-        {'text': 'catch', 'score': 0},
-        {'text': 'bus', 'score': 1},
-        {'text': 'late', 'score': 0},
-      ],
-    },
-    {
-      'question': 'Which word is a noun in this sentence? The queue was very long so I didn\'t wait.',
-      'answers': [
-        {'text': 'queue', 'score': 1},
-        {'text': 'long', 'score': 0},
-        {'text': 'wait', 'score': 0},
-      ],
-    },
-    {
-      'question': 'Which word is a noun in this sentence? There are no interesting programmes on tonight.',
-      'answers': [
-        {'text': 'interesting', 'score': 0},
-        {'text': 'programmes', 'score': 1},
-        {'text': 'tonight', 'score': 0},
-      ],
-    },
-    {
-      'question': 'Which word is a noun in this sentence? I need to find something that my brother will like.',
-      'answers': [
-        {'text': 'need', 'score': 0},
-        {'text': 'find', 'score': 0},
-        {'text': 'brother', 'score': 1},
-      ],
-    },
-    {
-      'question': 'Which word is a noun in this sentence? Don\'t be late for the concert.',
-      'answers': [
-        {'text': 'late', 'score': 0},
-        {'text': 'for', 'score': 0},
-        {'text': 'concert', 'score': 1},
-      ],
-    },
-  ];
+
   late var filteredList;
   late int timer_start = 0;
   late final userDetails;
   late final utqId;
   final userStorage = StorageProvider().userStorage();
+  late var quiz_type = "";
+
   Future _initRetrieval() async {
     setState(() {
+      _isloading = true;
       userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
     });
   }
 
-  getQuizList() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/quizzes/all");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
-
-    var res = jsonDecode(response.body);
+  setQuizList(data) async {
     filteredList = [];
-    var topic_id = widget.topic_id;
-    for(var itm in res){
-      if (itm['topic_id'] != null && itm['topic_id'] == topic_id) {
-        var time = itm['timer'];
-        timer_start = timer_start + time as int;
-        var ans = itm['quiz_choices'].split(",");
-        var answers = [];
-        for(var an in ans){
-          var score = 0;
-          if(an == itm['quiz_answer']){
-            score = 1;
-          }
-          answers.add({
-            "text": an, 'score': score
-          });
+    for(var itm in data){
+      var time = itm['timer'];
+      timer_start = timer_start + time as int;
+      var ans = itm['quiz_choices'].split(",");
+      var answers = [];
+      for(var an in ans){
+        var score = 0;
+        if(an == itm['quiz_answer']){
+          score = 1;
         }
-        questions.add({
-          'question': itm['quiz_question'],
-          'answers': answers
+        answers.add({
+          "text": an, 'score': score
         });
       }
+      questions.add({
+        'question': itm['quiz_question'],
+        'answers': answers
+      });
     }
-
-    setState(() {
-      print("timer:: $timer_start");
-      _isloading = false;
-    });
-    _controller.start();
+    // _controller.start();
   }
 
   void _answerQuestion(int score) {
@@ -135,6 +81,7 @@ class _QuizScreenState extends State<QuizScreen> {
         'quiz_id': questions.length,
         'score': _score,
         'status': 'taken',
+        'quiz_type': quiz_type,
       }, 'user_topic_quiz/update/$utqId');
     } else {
       makePostRequest({
@@ -143,30 +90,10 @@ class _QuizScreenState extends State<QuizScreen> {
         'quiz_id': questions.length,
         'score': _score,
         'status': 'taken',
+        'quiz_type': quiz_type,
       }, 'user_topic_quiz/create');
     }
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
-  }
-
-  getUserTopicsQuiz() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/user_topic_quiz/all");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
-    var res = jsonDecode(response.body);
-    var utq = 0;
-    for(var itm in res){
-      if (itm['user_id'] == userDetails['id'] && itm['user_topic_id'] == widget.user_topic_id) {
-        utq = itm['id'];
-      }
-    }
-    setState(() {
-      utqId = utq;
-      print('utqId:: $utqId');
-    });
   }
 
   makePostRequest(requestBody, url) async {
@@ -190,168 +117,230 @@ class _QuizScreenState extends State<QuizScreen> {
     print(requestBody);
   }
 
+  getData(quiz_type) async {
+    var urls = [
+      'user_topics_quiz/${userDetails['id']}/${widget.user_topic_id}/$quiz_type', // 0
+      'topic_quiz_list/${widget.topic_id}/$quiz_type', // 1
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+
+    setState(() {
+      print('datas[0][status]:: ${datas[0]['status']}');
+      if(datas[0]['status'] == false){
+        utqId = 0;
+      } else {
+        utqId = datas[0]['id'];
+      }
+
+      setQuizList(datas[1]);
+      _isloading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isloading = true;
-    });
-    getUserTopicsQuiz();
     _initRetrieval();
-    getQuizList();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_questionIndex < questions.length) {
-      String quest = '${questions[_questionIndex]['question']}';
-
-      return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(
-            "Quiz",
-            style: TextStyle(color: Theme.of(context).primaryColor),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.white,
-          shadowColor: Colors.white,
-          iconTheme: IconThemeData(
-            color: Theme.of(context).primaryColor,
-          ),
-          actions: <Widget>[
-            Text('$timer_start'),
-          ]
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text(
+          "Quiz",
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.white,
+        iconTheme: IconThemeData(
+          color: Theme.of(context).primaryColor,
+        )
+      ),
+      body: (quiz_type == '') ?
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              MaterialButton(
+                color: Theme.of(context).primaryColor,
+                minWidth: double.infinity,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.only(top: 15, bottom: 15),
+                child: const Text(
+                  'Easy',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () => {
+                  setState(() {
+                    quiz_type = 'easy';
+                    getData(quiz_type);
+                  })
+                },
+              ),
+              MaterialButton(
+                color: Theme.of(context).primaryColor,
+                minWidth: double.infinity,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.only(top: 15, bottom: 15),
+                child: const Text(
+                  'Medium',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () => {
+                  setState(() {
+                    quiz_type = 'medium';
+                    getData(quiz_type);
+                  })
+                },
+              ),
+              MaterialButton(
+                color: Theme.of(context).primaryColor,
+                minWidth: double.infinity,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.only(top: 15, bottom: 15),
+                child: const Text(
+                  'Hard',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () => {
+                  setState(() {
+                    quiz_type = 'hard';
+                    getData(quiz_type);
+                  })
+                },
+              ),
+            ],
+          ),
+        )
+      : (_isloading ?
+        const Center(
+          child: CircularProgressIndicator(),
+        )
+      : ((_questionIndex < questions.length) ? SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularCountDownTimer(
+                duration: timer_start,
+                initialDuration: 0,
+                controller: _controller,
+                width: MediaQuery.of(context).size.width / 4,
+                height: MediaQuery.of(context).size.height / 4,
+                ringColor: Colors.grey[300]!,
+                ringGradient: null,
+                fillColor: Colors.purpleAccent[100]!,
+                fillGradient: null,
+                backgroundColor: Colors.purple[500],
+                backgroundGradient: null,
+                strokeWidth: 10.0,
+                strokeCap: StrokeCap.round,
+                textStyle: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                isReverse: true,
+                isReverseAnimation: true,
+                isTimerTextShown: true,
+                autoStart: true,
+                onStart: () {
+                  debugPrint('Countdown Started');
+                },
+                onComplete: () {
+                  debugPrint('Countdown Ended');
+                  setState(() {
+                    _questionIndex = questions.length;
+                  });
+                },
+                onChange: (String timeStamp) {
+                  debugPrint('Countdown Changed $timeStamp');
+                },
+                timeFormatterFunction: (defaultFormatterFunction, duration) {
+                  if (duration.inSeconds == 0) {
+                    // only format for '0'
+                    return "0";
+                  } else {
+                    // other durations by it's default format
+                    return Function.apply(defaultFormatterFunction, [duration]);
+                  }
+                },
+              ),
+              Text(
+                '${_questionIndex + 1}. ${questions[_questionIndex]['question']}',
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ...(questions[_questionIndex]['answers'] as List)
+                  .map((answer) {
+                String ans = '${answer['text']}';
+                return MaterialButton(
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () => _answerQuestion(answer["score"] as int),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  minWidth: double.infinity,
+                  padding: const EdgeInsets.only(top: 15, bottom: 15),
+                  child: Text(
+                    ans,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        )
+      ) : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CircularCountDownTimer(
-                  duration: timer_start,
-                  initialDuration: 0,
-                  controller: _controller,
-                  width: MediaQuery.of(context).size.width / 4,
-                  height: MediaQuery.of(context).size.height / 4,
-                  ringColor: Colors.grey[300]!,
-                  ringGradient: null,
-                  fillColor: Colors.purpleAccent[100]!,
-                  fillGradient: null,
-                  backgroundColor: Colors.purple[500],
-                  backgroundGradient: null,
-                  strokeWidth: 10.0,
-                  strokeCap: StrokeCap.round,
-                  textStyle: const TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  isReverse: true,
-                  isReverseAnimation: true,
-                  isTimerTextShown: true,
-                  autoStart: true,
-                  onStart: () {
-                    debugPrint('Countdown Started');
-                  },
-                  onComplete: () {
-                    debugPrint('Countdown Ended');
-                    setState(() {
-                      _questionIndex = questions.length;
-                    });
-                  },
-                  onChange: (String timeStamp) {
-                    debugPrint('Countdown Changed $timeStamp');
-                  },
-                  timeFormatterFunction: (defaultFormatterFunction, duration) {
-                    if (duration.inSeconds == 0) {
-                      // only format for '0'
-                      return "0";
-                    } else {
-                      // other durations by it's default format
-                      return Function.apply(defaultFormatterFunction, [duration]);
-                    }
-                  },
-                ),
+
                 Text(
-                  '${_questionIndex + 1}. $quest',
+                  'You scored $_score out of ${questions.length}',
                   style: const TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                ...(questions[_questionIndex]['answers'] as List)
-                    .map((answer) {
-                  String ans = '${answer['text']}';
-                  return MaterialButton(
-                    color: Theme.of(context).primaryColor,
-                    onPressed: () => _answerQuestion(answer["score"] as int),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    minWidth: double.infinity,
-                    padding: const EdgeInsets.only(top: 15, bottom: 15),
-                    child: Text(
-                      ans,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                ElevatedButton(
+                  onPressed: _submitScore,
+                  child: const Text('Submit Score'),
+                ),
               ],
             ),
           )
-        ),
-
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(
-            "Quiz",
-            style: TextStyle(color: Theme.of(context).primaryColor),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.white,
-          shadowColor: Colors.white,
-          iconTheme: IconThemeData(
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        body:SingleChildScrollView(
-          child: Padding(
-          padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-
-                  Text(
-                    'You scored $_score out of ${questions.length}',
-                    style: const TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: _submitScore,
-                    child: const Text('Submit Score'),
-                  ),
-                ],
-              ),
-            )
-          )
         )
-      );
-    }
+      ) )) ,
+    );
   }
 }

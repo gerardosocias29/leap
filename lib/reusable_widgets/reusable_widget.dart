@@ -273,6 +273,10 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
   var choicesController = TextEditingController();
   var answerController = TextEditingController();
   var timeLimitController = TextEditingController();
+
+  final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
+  String quizTypeDropdownValue = quiz_type.first;
+
   return AlertDialog(
     title: Text(title),
     content: SizedBox(
@@ -281,7 +285,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
         shrinkWrap: shrinkWrap,
         children: [
           TextFormField(
-            decoration: reusableInputDecoration(context, 'Title', 'Quiz Question'),
+            decoration: reusableInputDecoration(context, 'Quiz Question', 'Quiz Question'),
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
             controller: questionController,
@@ -308,7 +312,25 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(
-              height: 30
+            height: 30,
+          ),
+          DropdownButtonFormField(
+            decoration: reusableInputDecoration(context, 'Quiz Type', 'Select Quiz Type'),
+            validator: (value) {
+              return null;
+            },
+            onSaved: (value) {
+              // _authData['password'] = value!;
+            },
+            items: quiz_type.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+            onChanged: (value) {
+              quizTypeDropdownValue = value!;
+            },
+          ),
+          const SizedBox(
+            height: 30
           ),
           TextFormField(
             controller: timeLimitController,
@@ -333,7 +355,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
           var timelimit = timeLimitController.text;
 
           var data = {
-            'quiz_type' : 'choices',
+            'quiz_type' : quizTypeDropdownValue.toLowerCase(),
             'quiz_question' : question,
             'quiz_answer' : answer,
             'quiz_choices' : choices,
