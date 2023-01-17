@@ -2,7 +2,7 @@
     package="com.example.leap">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="leap"
+        android:label="Lema"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

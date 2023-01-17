@@ -126,6 +126,9 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
             ),
           ),
         ),
+
+      // (role_id == 1) ? //true : //false
+
       floatingActionButton: userDetails['role_id'] == 0 ? Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

@@ -117,9 +117,21 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
   Future _readText() async {
     await flutterTts.setVolume(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.setPitch(0);
+    await flutterTts.setPitch(1);
 
-    var result = await flutterTts.speak(text);
+    var count = text.length;
+    var max = 4000;
+    var loopCount = count ~/max;
+    var result;
+    for( var i = 0 ; i <= loopCount; i++ ) {
+      if (i != loopCount) {
+        result = await flutterTts.speak(text.substring(i*max, (i+1)*max));
+      } else {
+        var end = (count - ((i*max))+(i*max));
+        result = await flutterTts.speak(text.substring(i*max, end));
+      }
+    }
+    // var result = await flutterTts.speak(text);
     if (result == 1) {
       setState(() {
         isPlaying = true;
@@ -166,27 +178,29 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              InkWell(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
-                      onPressed: () => {}
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 8.0),
-                      child: Text(isPlaying ? 'Pause' : 'Play',
-                        style: const TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w400,
+              Material(
+                child: InkWell(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
+                        onPressed: () => {}
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 8.0),
+                        child: Text(isPlaying ? 'Pause' : 'Play',
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                          )
                         )
                       )
-                    )
-                  ]
+                    ]
+                  ),
+                  onTap: () => isPlaying ? _stopRead() : _readText(),
                 ),
-                onTap: () => isPlaying ? _stopRead() : _readText(),
               ),
               const SizedBox(
                 height: 10,

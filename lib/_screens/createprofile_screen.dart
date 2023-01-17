@@ -29,7 +29,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController _year = TextEditingController();
 
   final List<String> gender_list = <String>['Male', 'Female'];
-  final List<String> course_list = <String>['BSIT', 'BSCS', 'Other'];
+  final List<String> course_list = <String>['BSIT', 'BEED', 'BSED', 'BSHM'];
+  String dropdownValue = "";
+  String coursedropdownValue = "";
 
   final _formKey = GlobalKey<FormState>();
 
@@ -52,6 +54,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   makePostRequest(requestBody, loadingContext) async {
+    print(requestBody);
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
     print("backendUrl::$backendUrl/api/users/create");
     final uri = Uri.parse("$backendUrl/api/users/create");
@@ -68,7 +71,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
 
     int statusCode = response.statusCode;
-    print("statusCode::$statusCode");
+    print(response);
 
     if(statusCode == 200){
       Navigator.pop(loadingContext);
@@ -82,9 +85,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String dropdownValue = gender_list.first;
-    String coursedropdownValue = course_list.first;
-
     return Scaffold(
       body: Container(
         child: Form(
@@ -174,9 +174,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     items: gender_list.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(value: value, child: Text(value));
                     }).toList(),
-                    onChanged: (String? value) {
+                    onChanged: (value) {
                       setState(() {
                         dropdownValue = value!;
+                        print("dropdownValue:: $dropdownValue");
                       });
                     },
                   ),
@@ -266,6 +267,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       var user = await AuthService().getCurrentUser();
                       print(user);
 
+                      // ignore: use_build_context_synchronously
                       makePostRequest({
                         'uid': user.uid,
                         'address': _address.text,
