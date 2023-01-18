@@ -36,10 +36,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late var userDetails = {};
   late var chapterLists = [];
   late var topicLists = [];
+  late var leaderboardsLists = [];
   late var topicWithScore = [];
   late var _isloading = false;
   late var overallScore = 0;
   late double grammar_percentage = 0.0;
+  late var total_users = 0;
+  late double lessons_overall_percentage = 0.0;
 
   List<Object> leaderBoardItems = [
     {'name': 'Me', 'score': 1000, 'icon': Icons.home},
@@ -52,15 +55,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     grammar_percentage = percentage;
   }
 
+  calculateLessonsUsage(data) {
+    double perc = 0.0;
+    double overall_perc = 0.0;
+    for(var user in data){
+      perc += user['topics_done'] / topicLists.length;
+    }
+    overall_perc = perc / total_users;
+    setState(() {
+      lessons_overall_percentage = overall_perc;
+    });
+  }
+
   getData() async {
     setState(() {
       grammar_percentage = 0;
       overallScore = 0;
+      total_users = 0;
     });
     var urls = [
       'chapters/all', // 0
       'topics/all', // 1
-      'user_topics_detailed/${userDetails['id']}' //2
+      'user_topics_detailed/${userDetails['id']}', // 2
+      'users_count', // 3
+      'users_with_topics_done', // 4
+      'leaderboards_lists/3' // 5
     ];
     var datas = await Api().multipleGetRequest(urls);
 
@@ -70,6 +89,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       setTopicWithScore(datas[2]);
       calcPercentage();
 
+      total_users = datas[3]['users_count'];
+      calculateLessonsUsage(datas[4]);
+      leaderboardsLists = datas[5];
       _isloading = false;
     });
   }
@@ -179,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       fontWeight: FontWeight.w700),
                   )
                 ),
-                Row(
+                ( userDetails['role_id'] != 0) ? Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -203,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           lineWidth: 5.0,
                           percent: grammar_percentage,
                           animation: true,
-                          center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}% \n Completed", textAlign: TextAlign.center),
+                          center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}%\nCompleted", textAlign: TextAlign.center),
                           progressColor: Colors.green,
                           footer: const Text(
                             "Grammar",
@@ -244,7 +266,72 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                     ),
                   ],
-                ),
+                ) : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
+                      child: Container(
+                        height: 140.0,
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 15.0,
+                                  offset: Offset(0.75, 0.95))
+                            ],
+                            color: Colors.white
+                        ),
+                        child: CircularPercentIndicator(
+                          radius:50.0,
+                          lineWidth: 5.0,
+                          percent: total_users/total_users,
+                          animation: true,
+                          center: Text("$total_users", textAlign: TextAlign.center),
+                          progressColor: Colors.green,
+                          footer: const Text(
+                            "Total Users",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                          ),
+                          circularStrokeCap: CircularStrokeCap.round,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
+                      child: Container(
+                        height: 140.0,
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 15.0,
+                                  offset: Offset(0.75, 0.95))
+                            ],
+                            color: Colors.white
+                        ),
+                        child: CircularPercentIndicator(
+                          radius: 50.0,
+                          lineWidth: 5.0,
+                          percent: (lessons_overall_percentage / lessons_overall_percentage),
+                          animation: true,
+                          center: Text("${(lessons_overall_percentage * 100).toStringAsFixed(0)}%", textAlign: TextAlign.center),
+                          progressColor: Colors.green,
+                          footer: const Text(
+                            "Lessons Usage",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                          ),
+                          circularStrokeCap: CircularStrokeCap.round,
+                        ),
+                      ),
+                    ),
+                  ],
+                ) ,
                 const SizedBox(
                   height: 30,
                 ),
@@ -310,12 +397,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemCount: leaderBoardItems.length,
+                          itemCount: leaderboardsLists.length,
                           shrinkWrap: true,
                           itemBuilder: (BuildContext context, int index) {
-                            print('printing list index');
-                            print(leaderBoardItems[index]);
-                            return LeaderBoard(index.toInt(), leaderBoardItems[index]);
+                            return LeaderBoard(index.toInt(), leaderboardsLists[index]);
                           },
                         ),
 
@@ -419,8 +504,8 @@ class LeaderBoard extends StatelessWidget {
                       Align(
                         child: CircleAvatar(
                           backgroundColor: Colors.red.shade800,
-                          child: Text('GI'),
                           radius: 30,
+                          child: Text('${leaderboard['first_name'].substring(0,1)}${leaderboard['last_name'].substring(0,1)}'.toUpperCase()),
                         ),
                       ),
 
@@ -431,7 +516,7 @@ class LeaderBoard extends StatelessWidget {
                             children: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0, top: 5),
-                                child: Text(leaderboard['name'], style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
+                                child: Text(leaderboard['first_name'], style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
                               ),
                             ],
                           )

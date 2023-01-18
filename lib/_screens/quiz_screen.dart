@@ -93,7 +93,8 @@ class _QuizScreenState extends State<QuizScreen> {
         'quiz_type': quiz_type,
       }, 'user_topic_quiz/create');
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
+    Navigator.of(context).pop(true);
+    // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
   }
 
   makePostRequest(requestBody, url) async {
@@ -166,6 +167,9 @@ class _QuizScreenState extends State<QuizScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(
+                height: 30,
+              ),
               MaterialButton(
                 color: Theme.of(context).primaryColor,
                 minWidth: double.infinity,
@@ -186,6 +190,9 @@ class _QuizScreenState extends State<QuizScreen> {
                   })
                 },
               ),
+              const SizedBox(
+                height: 10,
+              ),
               MaterialButton(
                 color: Theme.of(context).primaryColor,
                 minWidth: double.infinity,
@@ -205,6 +212,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     getData(quiz_type);
                   })
                 },
+              ),
+              const SizedBox(
+                height: 10,
               ),
               MaterialButton(
                 color: Theme.of(context).primaryColor,
