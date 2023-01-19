@@ -127,6 +127,7 @@ class _UserListScreenState extends State<UserListScreen> {
       :
       Center(
         child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
           // Let the ListView know how many items it needs to build.
           itemCount: filteredUserLists.length,
           // Provide a builder function. This is where the magic happens.

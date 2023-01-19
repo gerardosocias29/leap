@@ -445,7 +445,7 @@ class LeaderBoard extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
-                Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.grey[300],)),
+                Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.grey,)),
                 const Padding(
                   padding: EdgeInsets.only(left: 8.0, top: 6),
                   child: Center(child: Text('2', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),

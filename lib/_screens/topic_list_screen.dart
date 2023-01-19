@@ -23,34 +23,6 @@ class _TopicListScreenState extends State<TopicListScreen> {
   late final topicLists;
   final userStorage = StorageProvider().userStorage();
 
-  List<ListItem> items = [
-    MessageItem('Introduction', 'A noun is a word for a person, place, ...'),
-    MessageItem('Types of Noun: Common noun', 'Common nouns are words used to name gen...'),
-    MessageItem('Proper Noun', 'A noun is a word for a person...'),
-    MessageItem('Concrete nouns', 'A noun is a word for a person...'),
-    MessageItem('Abstract nouns', 'A noun is a word for a person...'),
-    MessageItem('Countable Nouns', 'A noun is a word for a person...'),
-    MessageItem('Uncountable Nouns', 'A noun is a word for a person...'),
-    MessageItem('Collective Noun', 'A noun is a word for a person...'),
-    MessageItem('Compound Nouns', 'A noun is a word for a person...'),
-    MessageItem('Singular Noun', 'A noun is a word for a person...'),
-    MessageItem('Plural Noun', 'A noun is a word for a person...')
-  ];
-
-  final detailed_items = [
-    {'title': 'Introduction', 'content' : "A noun is a word for a person, place, thing, or idea. Noun are often used with an article (the, a, an), but  not always start with a capital letter; common nouns do not. Nouns can be singular or plural, concrete or abstract. Nouns show possession by adding's. Nouns can b function in different roles within a sentence; for example, a noun can be a subject, direct object, indirect object, subject complement, or object of a preposition. \n\nNouns are among the most important words in the English language - without them, we'd have a difficult time speaking and writing about anything. There are several different types of English nouns. It is often useful to recognize what type a noun is because different types sometimes have different rules. This helps you to use them correctly."},
-    {'title': 'Types of Noun: Common noun', 'content' : 'Content Types of Noun: Common noun'},
-    {'title': 'Proper Noun', 'content' : ''},
-    {'title': 'Concrete nouns', 'content' : ''},
-    {'title': 'Abstract nouns', 'content' : ''},
-    {'title': 'Countable Nouns', 'content' : ''},
-    {'title': 'Uncountable Nouns', 'content' : ''},
-    {'title': 'Collective Noun', 'content' : ''},
-    {'title': 'Compound Nouns', 'content' : ''},
-    {'title': 'Singular Noun', 'content' : ''},
-    {'title': 'Plural Noun', 'content' : ''},
-  ];
-
   late var filteredList;
   getTopicLists() async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -115,6 +87,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
         child: RefreshIndicator(
           onRefresh: () async { getTopicLists(); },
           child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
             // Let the ListView know how many items it needs to build.
             itemCount: filteredList.length,
             // Provide a builder function. This is where the magic happens.

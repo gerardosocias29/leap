@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leap/_screens/leaderboard_screen.dart';
 import 'package:leap/_screens/user_list_screen.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
@@ -58,7 +59,7 @@ class _NavBarState extends State<NavBar> {
           ListTile(
             leading: const Icon(Icons.leaderboard_outlined),
             title: const Text('Leaderboards'),
-            onTap: () => null,
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const LeaderboardScreen()), (route) => true ),
           ),
           if(widget.userDetails['role_id'] == 0) ListTile(
             leading: const Icon(Icons.groups_outlined),

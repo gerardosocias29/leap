@@ -174,6 +174,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
         ),
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

@@ -90,6 +90,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.1, 20, 0),
               child: Column(

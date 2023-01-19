@@ -82,6 +82,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
           child: RefreshIndicator(
             onRefresh: () async { getLessonLists(); },
             child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
               // Let the ListView know how many items it needs to build.
               itemCount: lessonLists.length,
               // Provide a builder function. This is where the magic happens.
