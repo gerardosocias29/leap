@@ -44,12 +44,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late var total_users = 0;
   late double lessons_overall_percentage = 0.0;
 
-  List<Object> leaderBoardItems = [
-    {'name': 'Me', 'score': 1000, 'icon': Icons.home},
-    {'name': 'Myself', 'score': 900, 'icon': Icons.home},
-    {'name': 'I', 'score': 700, 'icon': Icons.home},
-  ];
-
   calcPercentage() {
     var percentage = (topicWithScore.length / topicLists.length);
     grammar_percentage = percentage;
@@ -444,9 +438,9 @@ class LeaderBoard extends StatelessWidget {
             padding: const EdgeInsets.only(right: 0.0),
             child: Stack(
               alignment: Alignment.center,
-              children: <Widget>[
+              children: const <Widget>[
                 Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.grey,)),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(left: 8.0, top: 6),
                   child: Center(child: Text('2', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
                 )
@@ -590,11 +584,7 @@ class CourseCard extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if(list['chapter_name'] == "Grammar"){
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter_id: list['id'])), (route) => true );
-        } else {
-          // Pronunciation Screen
-        }
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter: list)), (route) => true );
       },
     );
   }

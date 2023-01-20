@@ -5,13 +5,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/topic_list_screen.dart';
 
+import '../api.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class GrammarListScreen extends StatefulWidget {
-  final chapter_id;
-  const GrammarListScreen({Key? key, required this.chapter_id}) : super(key: key);
+  final chapter;
+  const GrammarListScreen({Key? key, required this.chapter}) : super(key: key);
 
   @override
   State<GrammarListScreen> createState() => _GrammarListScreenState();
@@ -23,29 +24,17 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
   late var lessonLists;
   final userStorage = StorageProvider().userStorage();
 
-  List items = [
-    'Noun'
-  ];
-
   Future _initRetrieval() async {
+    userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
     setState(() {
       _isloading = true;
-      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
     });
-  }
-
-  getLessonLists() async {
-    var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
-    final uri = Uri.parse("$backendUrl/api/lessons/all");
-    final headers = {'content-type': 'application/json'};
-    Response response = await get(
-        uri,
-        headers: headers
-    );
-
+    var urls = [
+      'lessons_list/${widget.chapter['id']}', // 0
+    ];
+    var datas = await Api().multipleGetRequest(urls);
     setState(() {
-      lessonLists = jsonDecode(response.body);
-      print(lessonLists);
+      lessonLists = datas[0];
       _isloading = false;
     });
   }
@@ -54,7 +43,6 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
   void initState() {
     super.initState();
     _initRetrieval();
-    getLessonLists();
   }
 
   @override
@@ -64,7 +52,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Grammar Lessons',
+          '${widget.chapter['chapter_name']} Lessons',
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
@@ -80,7 +68,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
         )
         : Center(
           child: RefreshIndicator(
-            onRefresh: () async { getLessonLists(); },
+            onRefresh: () async { _initRetrieval(); },
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
               // Let the ListView know how many items it needs to build.
