@@ -5,10 +5,12 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
-import 'package:leap/_screens/topic_view_screen.dart';
 
 import '../api.dart';
 import '../providers/storage.dart';
+
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class QuizScreen extends StatefulWidget {
   final topic_id;
@@ -21,6 +23,11 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
+  bool _isListening = false;
+
   final CountDownController _controller = CountDownController();
   int _questionIndex = 0;
   int _score = 0;
@@ -35,9 +42,39 @@ class _QuizScreenState extends State<QuizScreen> {
   late var quiz_type = "";
 
   Future _initRetrieval() async {
+    userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
     setState(() {
       _isloading = true;
-      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
+    });
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(
+      onResult: _onSpeechResult,
+      listenMode: ListenMode.confirmation,
+      partialResults: true,
+      listenFor: const Duration(seconds: 5),
+      pauseFor: const Duration(seconds: 3),
+    );
+    setState(() {
+      _isListening = true;
+      print(_isListening);
+    });
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {
+      _isListening = false;
+      print(_isListening);
+    });
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _isListening = true;
+      _lastWords = result.recognizedWords;
+      print("_startListening:: $_lastWords");
     });
   }
 
@@ -59,7 +96,8 @@ class _QuizScreenState extends State<QuizScreen> {
       }
       questions.add({
         'question': itm['quiz_question'],
-        'answers': answers
+        'answers': answers,
+        'answer_type': itm['answer_type']
       });
     }
     // _controller.start();
@@ -142,6 +180,18 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     _initRetrieval();
+    _initSpeech();
+  }
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  @override
+  void dispose(){
+    _speechToText.stop();
+    super.dispose();
   }
 
   @override
@@ -303,7 +353,7 @@ class _QuizScreenState extends State<QuizScreen> {
               const SizedBox(
                 height: 20,
               ),
-              ...(questions[_questionIndex]['answers'] as List)
+              if(questions[_questionIndex]['answer_type'] == 'choices') ...(questions[_questionIndex]['answers'] as List)
                   .map((answer) {
                 String ans = '${answer['text']}';
                 return MaterialButton(
@@ -321,7 +371,22 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                   ),
                 );
-              }).toList(),
+              }).toList()
+              else MaterialButton(
+                color: Theme.of(context).primaryColor,
+                onPressed: () => _speechToText.isNotListening ? _startListening() : _stopListening(),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                minWidth: double.infinity,
+                padding: const EdgeInsets.only(top: 15, bottom: 15),
+                child: Text(
+                  _speechToText.isNotListening ? 'Tap the microphone to start listening...' : 'Listening...' ,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ],
           ),
         )

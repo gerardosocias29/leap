@@ -20,7 +20,7 @@ class GrammarListScreen extends StatefulWidget {
 
 class _GrammarListScreenState extends State<GrammarListScreen> {
   late final userDetails;
-  late var _isloading = false;
+  late bool _isloading = false;
   late var lessonLists;
   final userStorage = StorageProvider().userStorage();
 
@@ -34,8 +34,8 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
     ];
     var datas = await Api().multipleGetRequest(urls);
     setState(() {
-      lessonLists = datas[0];
       _isloading = false;
+      lessonLists = datas[0];
     });
   }
 
@@ -126,7 +126,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               //...
               showDialog(
                 context: context,
-                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', 1, false, 'Lesson'),
+                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', widget.chapter['id'], false, 'Lesson'),
               );
             },
             heroTag: null,

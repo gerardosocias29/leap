@@ -43,7 +43,6 @@ class _TopicListScreenState extends State<TopicListScreen> {
     }
 
     setState(() {
-      print(filteredList);
       _isloading = false;
     });
   }

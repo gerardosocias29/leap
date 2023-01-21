@@ -275,7 +275,9 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
   var timeLimitController = TextEditingController();
 
   final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
+  final List<String> answer_type = <String>['Choices', 'Speak'];
   String quizTypeDropdownValue = quiz_type.first;
+  String answerTypeDropdownValue = answer_type.first;
 
   return AlertDialog(
     title: Text(title),
@@ -330,6 +332,24 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
             },
           ),
           const SizedBox(
+            height: 30,
+          ),
+          DropdownButtonFormField(
+            decoration: reusableInputDecoration(context, 'Answer Mode', 'Select Answer Mode'),
+            validator: (value) {
+              return null;
+            },
+            onSaved: (value) {
+              // _authData['password'] = value!;
+            },
+            items: answer_type.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+            onChanged: (value) {
+              answerTypeDropdownValue = value!;
+            },
+          ),
+          const SizedBox(
             height: 30
           ),
           TextFormField(
@@ -356,6 +376,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
 
           var data = {
             'quiz_type' : quizTypeDropdownValue.toLowerCase(),
+            'answer_type': answerTypeDropdownValue.toLowerCase(),
             'quiz_question' : question,
             'quiz_answer' : answer,
             'quiz_choices' : choices,

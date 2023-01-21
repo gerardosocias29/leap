@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: CircularPercentIndicator(
                           radius: 50.0,
                           lineWidth: 5.0,
-                          percent: (lessons_overall_percentage / lessons_overall_percentage),
+                          percent: lessons_overall_percentage,
                           animation: true,
                           center: Text("${(lessons_overall_percentage * 100).toStringAsFixed(0)}%", textAlign: TextAlign.center),
                           progressColor: Colors.green,
