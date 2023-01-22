@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}%\nCompleted", textAlign: TextAlign.center),
                           progressColor: Colors.green,
                           footer: const Text(
-                            "Grammar",
+                            "All Topics",
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
                           ),
                           circularStrokeCap: CircularStrokeCap.round,

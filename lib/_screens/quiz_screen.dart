@@ -26,6 +26,7 @@ class _QuizScreenState extends State<QuizScreen> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
+  String _speakCorrectAnswer = '';
   bool _isListening = false;
 
   final CountDownController _controller = CountDownController();
@@ -40,6 +41,7 @@ class _QuizScreenState extends State<QuizScreen> {
   late final utqId;
   final userStorage = StorageProvider().userStorage();
   late var quiz_type = "";
+  late var answer_checker = "";
 
   Future _initRetrieval() async {
     userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
@@ -56,26 +58,24 @@ class _QuizScreenState extends State<QuizScreen> {
       listenFor: const Duration(seconds: 5),
       pauseFor: const Duration(seconds: 3),
     );
-    setState(() {
-      _isListening = true;
-      print(_isListening);
-    });
+    setState(() {});
   }
 
   void _stopListening() async {
     await _speechToText.stop();
-    setState(() {
-      _isListening = false;
-      print(_isListening);
-    });
+    setState(() {});
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      _isListening = true;
-      _lastWords = result.recognizedWords;
-      print("_startListening:: $_lastWords");
-    });
+    _lastWords = result.recognizedWords;
+    if(_speechToText.isNotListening){
+      setState(() {
+        print("_lastWords:: $_lastWords :: $_speakCorrectAnswer");
+        if(_speakCorrectAnswer.toLowerCase() == _lastWords){
+          _answerQuestion(1);
+        }
+      });
+    }
   }
 
   setQuizList(data) async {
@@ -97,15 +97,21 @@ class _QuizScreenState extends State<QuizScreen> {
       questions.add({
         'question': itm['quiz_question'],
         'answers': answers,
-        'answer_type': itm['answer_type']
+        'answer_type': itm['answer_type'],
+        'quiz_answer' : itm['quiz_answer']
       });
     }
     // _controller.start();
   }
 
-  void _answerQuestion(int score) {
+  Future _answerQuestion(int score) async {
     _score += score;
     setState(() {
+      answer_checker = (score == 1) ? "Correct" : "Wrong";
+    });
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      answer_checker = "";
       _questionIndex++;
     });
   }
@@ -353,12 +359,22 @@ class _QuizScreenState extends State<QuizScreen> {
               const SizedBox(
                 height: 20,
               ),
+              if(questions[_questionIndex]['answer_type'] == 'speak') Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor)
+                ),
+                child: Text('${questions[_questionIndex]['quiz_answer']}'),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               if(questions[_questionIndex]['answer_type'] == 'choices') ...(questions[_questionIndex]['answers'] as List)
                   .map((answer) {
                 String ans = '${answer['text']}';
                 return MaterialButton(
                   color: Theme.of(context).primaryColor,
-                  onPressed: () => _answerQuestion(answer["score"] as int),
+                  onPressed: () => (answer_checker != "") ? null : _answerQuestion(answer["score"] as int),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -374,18 +390,35 @@ class _QuizScreenState extends State<QuizScreen> {
               }).toList()
               else MaterialButton(
                 color: Theme.of(context).primaryColor,
-                onPressed: () => _speechToText.isNotListening ? _startListening() : _stopListening(),
+                onPressed: () => {
+                  if(_speechToText.isNotListening){
+                    _startListening(),
+                    setState(() {
+                      _speakCorrectAnswer = "${questions[_questionIndex]['quiz_answer']}";
+                    })
+                  } else {
+                    _stopListening()
+                  }
+                },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 minWidth: double.infinity,
                 padding: const EdgeInsets.only(top: 15, bottom: 15),
                 child: Text(
-                  _speechToText.isNotListening ? 'Tap the microphone to start listening...' : 'Listening...' ,
+                  _speechToText.isNotListening ? 'Tap the button to start listening...' : 'Listening...' ,
                   style: const TextStyle(
                     color: Colors.white,
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              if(answer_checker != "") Text(
+                answer_checker,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: answer_checker.toLowerCase() == 'correct' ? Colors.green : Colors.red),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
