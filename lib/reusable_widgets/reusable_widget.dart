@@ -266,7 +266,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
     print(requestBody);
-    Navigator.pop(loadingContext);
+    Navigator.pop(context);
   }
 
   var questionController = TextEditingController();

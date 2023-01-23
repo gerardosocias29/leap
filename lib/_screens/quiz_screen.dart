@@ -5,6 +5,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+import 'package:leap/reusable_widgets/reusable_widget.dart';
 
 import '../api.dart';
 import '../providers/storage.dart';
@@ -42,6 +43,8 @@ class _QuizScreenState extends State<QuizScreen> {
   final userStorage = StorageProvider().userStorage();
   late var quiz_type = "";
   late var answer_checker = "";
+  late var count_wrong_pronounce = 0;
+  late var correct_word = 0;
 
   Future _initRetrieval() async {
     userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
@@ -66,15 +69,22 @@ class _QuizScreenState extends State<QuizScreen> {
     setState(() {});
   }
 
-  void _onSpeechResult(SpeechRecognitionResult result) {
+  Future<void> _onSpeechResult(SpeechRecognitionResult result) async {
     _lastWords = result.recognizedWords;
     if(_speechToText.isNotListening){
-      setState(() {
-        print("_lastWords:: $_lastWords :: $_speakCorrectAnswer");
-        if(_speakCorrectAnswer.toLowerCase() == _lastWords){
-          _answerQuestion(1);
-        }
-      });
+      print("_lastWords:: $_lastWords :: $_speakCorrectAnswer");
+      if(_speakCorrectAnswer.toLowerCase() == _lastWords){
+        _answerQuestion(1);
+      } else {
+        count_wrong_pronounce++;
+        setState(() {
+          answer_checker = "Mispronounced Word";
+        });
+        await Future.delayed(const Duration(seconds: 1));
+        setState(() {
+          answer_checker = "";
+        });
+      }
     }
   }
 
@@ -112,6 +122,7 @@ class _QuizScreenState extends State<QuizScreen> {
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
       answer_checker = "";
+      count_wrong_pronounce = 0;
       _questionIndex++;
     });
   }
@@ -411,6 +422,22 @@ class _QuizScreenState extends State<QuizScreen> {
                     color: Colors.white,
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              if(count_wrong_pronounce > 0) TextFormField(
+                // controller: choicesController,
+                decoration: reusableInputDecoration(context, 'Please type the word here', 'Type the word here'),
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.go,
+                onFieldSubmitted: (String value) => {
+                  if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
+                    _answerQuestion(1)
+                  } else {
+                    _answerQuestion(0)
+                  }
+                },
               ),
               const SizedBox(
                 height: 20,
