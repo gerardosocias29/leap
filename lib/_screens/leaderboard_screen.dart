@@ -67,17 +67,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           onRefresh: () async { _initRetrieval(); },
           child: ListView.builder(
             physics: const BouncingScrollPhysics(),
-            // Let the ListView know how many items it needs to build.
             itemCount: leaderboardLists.length,
-            // Provide a builder function. This is where the magic happens.
-            // Convert each item into a widget based on the type of item it is.
             itemBuilder: (context, index) {
               final item = leaderboardLists[index];
               return Card(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: (userDetails['id'] == item['id']) ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.outline,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                ),
+                elevation: (userDetails['id'] == item['id']) ? 5 : 1,
                 child: ListTile(
                   title: (userDetails['id'] == item['id']) ? const Text('You') : Text("${item['first_name']} ${item['last_name']}"),
                   trailing: Text("${item['score']}"),
-                  leading: (index < 3) ? Icon(FontAwesomeIcons.medal, color: (index == 0) ? Colors.yellow : ((index == 1) ? Colors.grey : Colors.orange[300]),) : const Icon(Icons.person_outlined),
+                  leading: (index < 3) ? Icon(FontAwesomeIcons.medal, color: (index == 0) ? Colors.yellow : ((index == 1) ? Colors.grey : Colors.orange[300]),) :
+                    SizedBox(child: Text((index + 1).toString(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.left,)),
                 ),
               );
             },

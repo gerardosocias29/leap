@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:leap/_screens/home_screen.dart';
 
@@ -13,13 +16,15 @@ import '../reusable_widgets/reusable_widget.dart';
 import 'package:http/http.dart';
 
 class CreateProfileScreen extends StatefulWidget {
-  const CreateProfileScreen({Key? key}) : super(key: key);
+  final userDetails;
+  const CreateProfileScreen({Key? key, this.userDetails}) : super(key: key);
 
   @override
   State<CreateProfileScreen> createState() => _CreateProfileScreenState();
 }
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
+  XFile? _image;
 
   final TextEditingController _username = TextEditingController();
   final TextEditingController _firstname = TextEditingController();
@@ -83,6 +88,34 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   }
 
+  _getImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+      print(image);
+    });
+  }
+
+  Future _initRetrieval() async {
+    if(widget.userDetails != null){
+      var ud = widget.userDetails;
+      _username.text = ud['username'];
+      _firstname.text = ud['first_name'];
+      _lastname.text = ud['last_name'];
+      _address.text = ud['address'];
+      _birthday.text = ud['birthday'];
+      _year.text = ud['year'];
+      dropdownValue = ud['gender'];
+      coursedropdownValue = ud['course'];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initRetrieval();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +129,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const Align(
+                  if(widget.userDetails == null) const Align(
                     alignment: Alignment.centerLeft,
                     child: Text( 'Create your profile',
                         style: TextStyle(
@@ -105,7 +138,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         )
                     ),
                   ),
-                  const Align(
+                  if(widget.userDetails == null) const Align(
                     alignment: Alignment.centerLeft,
                     child: Text( 'We need to know you well',
                         style: TextStyle(
@@ -114,8 +147,24 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         )
                     ),
                   ),
-                  const SizedBox(
+                  if(widget.userDetails == null) const SizedBox(
                       height: 50
+                  ),
+                  InkWell(
+                    onTap: _getImage,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                      child: (_image != null) ? ClipPath(
+                        clipper: CircleClipper(),
+                        child: Image.file(
+                          File(_image!.path),
+                        ),
+                      ) : const Icon(Icons.camera_alt_outlined),
+                    ),
+                  ),
+                  const SizedBox(
+                      height: 30
                   ),
                   TextFormField(
                     decoration: reusableInputDecoration(context, 'Username', 'Type your username'),
@@ -339,4 +388,16 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ),
     );
   }
+}
+
+class CircleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.addOval(Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: size.width / 2));
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

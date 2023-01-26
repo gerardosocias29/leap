@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       setTopicWithScore(datas[2]);
       calcPercentage();
 
-      total_users = datas[3]['users_count'];
+      total_users = datas[3]['users_count'] ?? 0;
       calculateLessonsUsage(datas[4]);
       leaderboardsLists = datas[5];
       _isloading = false;
@@ -556,7 +556,8 @@ class CourseCard extends StatelessWidget {
               width: 250.0,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('${list['photo_url']}'), fit: BoxFit.cover),
+                    image: AssetImage('${list['photo_url']}'), fit: BoxFit.cover
+                  ),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: const <BoxShadow>[
                     BoxShadow(

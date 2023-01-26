@@ -10,7 +10,7 @@ import firebase_auth
 import firebase_core
 import flutter_tts
 import path_provider_macos
-import shared_preferences_macos
+import shared_preferences_foundation
 import speech_to_text_macos
 import url_launcher_macos
 

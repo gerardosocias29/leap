@@ -19,29 +19,32 @@ class GrammarListScreen extends StatefulWidget {
 }
 
 class _GrammarListScreenState extends State<GrammarListScreen> {
-  late final userDetails;
+  late var userDetails = {};
   late bool _isloading = false;
   late var lessonLists;
   final userStorage = StorageProvider().userStorage();
 
   Future _initRetrieval() async {
-    userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
-    setState(() {
-      _isloading = true;
-    });
     var urls = [
       'lessons_list/${widget.chapter['id']}', // 0
     ];
     var datas = await Api().multipleGetRequest(urls);
     setState(() {
-      _isloading = false;
+      userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
       lessonLists = datas[0];
+    });
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {
+      _isloading = false;
     });
   }
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _isloading = true;
+    });
     _initRetrieval();
   }
 
@@ -71,46 +74,42 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
             onRefresh: () async { _initRetrieval(); },
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
-              // Let the ListView know how many items it needs to build.
               itemCount: lessonLists.length,
-              // Provide a builder function. This is where the magic happens.
-              // Convert each item into a widget based on the type of item it is.
               itemBuilder: (context, index) {
                 final item = lessonLists[index];
-                return
-                  Card(
-                    child: ListTile(
-                      title: Text("${item['lesson_name']}"),
-                        trailing: userDetails['role_id'] == 0 ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit_outlined,
-                                size: 20.0,
-                                // color: Colors.black,
-                              ),
-                              onPressed: () {
-                                //   _onDeleteItemPressed(index);
-                              },
+                return Card(
+                  child: ListTile(
+                    title: Text("${item['lesson_name']}"),
+                      trailing: userDetails['role_id'] == 0 ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 20.0,
+                              // color: Colors.black,
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_outlined,
-                                size: 20.0,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                //   _onDeleteItemPressed(index);
-                              },
+                            onPressed: () {
+                              //   _onDeleteItemPressed(index);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outlined,
+                              size: 20.0,
+                              color: Colors.red,
                             ),
-                          ],
-                        ) : null,
-                      onTap: () {
-                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'])), (route) => true );
-                      }
-                    ),
-                  );
+                            onPressed: () {
+                              //   _onDeleteItemPressed(index);
+                            },
+                          ),
+                        ],
+                      ) : null,
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'])), (route) => true );
+                    }
+                  ),
+                );
               },
             ),
           ),

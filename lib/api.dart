@@ -41,4 +41,19 @@ class Api {
     return response;
   }
 
+  putRequest(data, url) async {
+    var uri = Uri.parse("$backendUrl/$url");
+    Map<String, dynamic> body = data;
+    String jsonBody = json.encode(body);
+    var encoding = Encoding.getByName('utf-8');
+
+    Response response = await put(
+      uri,
+      headers: headers,
+      body: jsonBody,
+      encoding: encoding,
+    );
+    return response;
+  }
+
 }

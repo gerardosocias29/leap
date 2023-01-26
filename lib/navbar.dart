@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:leap/_screens/achievements_screen.dart';
 import 'package:leap/_screens/leaderboard_screen.dart';
 import 'package:leap/_screens/user_list_screen.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
+import '_screens/createprofile_screen.dart';
 import '_screens/grammar_list_screen.dart';
 import '_screens/signin_screen.dart';
 import 'auth_service.dart';
@@ -49,12 +51,12 @@ class _NavBarState extends State<NavBar> {
           ListTile(
             leading: const Icon(Icons.person_outlined),
             title: const Text('Profile'),
-            onTap: () => null,
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => CreateProfileScreen(userDetails: widget.userDetails,)), (route) => true ),
           ),
           ListTile(
             leading: const Icon(Icons.star_border_outlined),
             title: const Text('Achievements'),
-            onTap: () => null,
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const AchievementScreen()), (route) => true ),
           ),
           ListTile(
             leading: const Icon(Icons.leaderboard_outlined),

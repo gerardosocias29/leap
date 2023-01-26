@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:achievement_view/achievement_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
@@ -391,4 +392,29 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
       ),
     ],
   );
+}
+
+void showAchievementView(BuildContext context){
+  AchievementView(
+      context,
+      title: "Achievement Unlocked!",
+      subTitle: "Training completed successfully",
+      //onTab: _onTabAchievement,
+      icon: const Icon(Icons.star_border_outlined, color: Colors.white,),
+      //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
+      //borderRadius: 5.0,
+      color: Theme.of(context).primaryColor,
+      //textStyleTitle: TextStyle(),
+      //textStyleSubTitle: TextStyle(),
+      alignment: Alignment.topCenter,
+      //duration: Duration(seconds: 3),
+      isCircle: true,
+      listener: (status){
+        print(status);
+        //AchievementState.opening
+        //AchievementState.open
+        //AchievementState.closing
+        //AchievementState.closed
+      }
+  ).show();
 }

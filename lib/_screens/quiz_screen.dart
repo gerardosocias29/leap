@@ -58,7 +58,7 @@ class _QuizScreenState extends State<QuizScreen> {
       onResult: _onSpeechResult,
       listenMode: ListenMode.confirmation,
       partialResults: true,
-      listenFor: const Duration(seconds: 5),
+      listenFor: const Duration(seconds: 3),
       pauseFor: const Duration(seconds: 3),
     );
     setState(() {});
@@ -127,10 +127,10 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
-  void _submitScore() {
+  Future<void> _submitScore() async {
     print('utqId:: $utqId');
     if( utqId != 0 && utqId != null ){
-      makePostRequest({
+      var response = await Api().putRequest({
         'user_id': userDetails['id'],
         'user_topic_id': widget.user_topic_id,
         'quiz_id': questions.length,
@@ -138,6 +138,7 @@ class _QuizScreenState extends State<QuizScreen> {
         'status': 'taken',
         'quiz_type': quiz_type,
       }, 'user_topic_quiz/update/$utqId');
+      print(response);
     } else {
       makePostRequest({
         'user_id': userDetails['id'],
@@ -426,16 +427,21 @@ class _QuizScreenState extends State<QuizScreen> {
               const SizedBox(
                 height: 20,
               ),
-              if(count_wrong_pronounce > 0) TextFormField(
+              if(count_wrong_pronounce > 2) TextFormField(
                 // controller: choicesController,
-                decoration: reusableInputDecoration(context, 'Please type the word here', 'Type the word here'),
+                decoration: reusableInputDecoration(context, 'Please type the word to proceed', 'Type the word to proceed'),
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.go,
                 onFieldSubmitted: (String value) => {
                   if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
                     _answerQuestion(1)
                   } else {
-                    _answerQuestion(0)
+                    // _answerQuestion(0)
+                    setState(() {
+                      answer_checker = "";
+                      count_wrong_pronounce = 0;
+                      _questionIndex++;
+                    })
                   }
                 },
               ),
