@@ -53,9 +53,6 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           'topic_id' : widget.topic['id'],
           'status' : 'done'
         }, 'user_topic/create');
-        setState(() {
-          isTopicDone = true;
-        });
       }
     });
 
@@ -112,6 +109,8 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
     print(requestBody);
+
+    getUserTopics();
   }
 
   Future _readText() async {
