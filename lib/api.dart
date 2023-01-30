@@ -56,4 +56,19 @@ class Api {
     return response;
   }
 
+  triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type) {
+    var url = "achievement/calculate_finished_lessons";
+    if(type == "finished_lessons"){
+      url = "achievement/calculate_finished_lessons";
+    } else {
+      url = "achievement/calculate_all_quizzes";
+    }
+    postRequest({
+      'achievement_id': achievement_id,
+      'achievement_achievement_score': achievement_score,
+      'achievement_chapter_ids': chapter_ids,
+      'user_id': user_id
+    }, url);
+  }
+
 }

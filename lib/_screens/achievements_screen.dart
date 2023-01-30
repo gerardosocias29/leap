@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
+import '../api.dart';
+import '../providers/storage.dart';
 
 class AchievementScreen extends StatefulWidget {
   const AchievementScreen({Key? key}) : super(key: key);
@@ -11,14 +16,23 @@ class _AchievementScreenState extends State<AchievementScreen> {
 
   late var lessonLists;
   late bool _isloading = false;
-  late var achievements = [
-    { 'image': 'assets/leaderboards_image/bonafide_lemaster.png', 'title': 'Bonafide Lemaster', 'progress': 0.1, 'details': 'You need to finish LEMA', 'isunlocked' : false },
-    { 'image': 'assets/leaderboards_image/champion.png', 'title': 'Champion', 'progress': 0.3, 'details': '100% on all quizzes', 'isunlocked' : false },
-    { 'image': 'assets/leaderboards_image/dedicated_youngster.png', 'title': 'Dedicated Youngster', 'progress': 0.7, 'details': 'Perfect 50% of all quizzes', 'isunlocked' : false }
-  ];
-
+  late var achievements = [];
+  late var userDetails;
+  final userStorage = StorageProvider().userStorage();
   Future _initRetrieval() async {
     setState(() {
+      _isloading = false;
+    });
+    var userdetail = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
+
+    print("userdetail:: $userdetail");
+    var urls = [
+      'achievements/list/${userdetail["id"]}'
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    setState(() {
+      achievements = datas[0];
+      userDetails = userdetail;
       _isloading = false;
     });
   }
@@ -102,29 +116,3 @@ class _AchievementScreenState extends State<AchievementScreen> {
     );
   }
 }
-
-
-/* ListView.builder(
-            itemCount: achievements.length,
-            itemBuilder: (context, index) {
-              var achievement = achievements[index];
-              return ListTile(
-                leading: SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Image.asset('${achievement['image']}')
-                ),
-                title: Text('${achievement['title']}'),
-                subtitle: Column(
-                  children: [
-                    LinearProgressIndicator(
-                      value: achievement['progress'] as double,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-                    ),
-                    Text("${(achievement['progress'] as double) * 100}% completed"),
-                  ],
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-              );
-            },
-          ),*/
