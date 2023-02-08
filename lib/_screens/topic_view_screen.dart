@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/quiz_screen.dart';
 
+import '../api.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -111,6 +112,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     print(requestBody);
 
     getUserTopics();
+    Api().getAchievements(userDetails['id'], 'finished_lessons');
   }
 
   Future _readText() async {

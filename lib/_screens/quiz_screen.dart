@@ -150,6 +150,7 @@ class _QuizScreenState extends State<QuizScreen> {
       }, 'user_topic_quiz/create');
     }
     Navigator.of(context).pop(true);
+    Api().getAchievements(userDetails['id'], 'all_quizzes');
     // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
   }
 

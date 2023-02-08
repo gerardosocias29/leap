@@ -27,7 +27,7 @@ class Api {
   }
 
   postRequest(data, url) async {
-    var uri = Uri.parse("$backendUrl/$url");
+    var uri = Uri.parse("$backendUrl/api/$url");
     Map<String, dynamic> body = data;
     String jsonBody = json.encode(body);
     var encoding = Encoding.getByName('utf-8');
@@ -42,33 +42,67 @@ class Api {
   }
 
   putRequest(data, url) async {
-    var uri = Uri.parse("$backendUrl/$url");
+    var uri = Uri.parse("$backendUrl/api/$url");
     Map<String, dynamic> body = data;
     String jsonBody = json.encode(body);
-    var encoding = Encoding.getByName('utf-8');
 
     Response response = await put(
       uri,
-      headers: headers,
-      body: jsonBody,
-      encoding: encoding,
+      headers: {"Accept": "application/json",'content-type': 'application/json'},
+      body: jsonBody
     );
     return response;
   }
 
-  triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type) {
-    var url = "achievement/calculate_finished_lessons";
+  triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type) async {
+    var url = "";
     if(type == "finished_lessons"){
       url = "achievement/calculate_finished_lessons";
-    } else {
+    } else if ( type == "all_quizzes" ){
       url = "achievement/calculate_all_quizzes";
     }
-    postRequest({
+    print("trigger achievement calculation :::: $url");
+    print({
       'achievement_id': achievement_id,
       'achievement_achievement_score': achievement_score,
       'achievement_chapter_ids': chapter_ids,
       'user_id': user_id
-    }, url);
+    });
+    if(url != ""){
+      await postRequest({
+        'achievement_id': achievement_id,
+        'achievement_achievement_score': achievement_score,
+        'achievement_chapter_ids': chapter_ids,
+        'user_id': user_id
+      }, url);
+
+      // need to call achievements check progress if there is 100 percent
+      // var urls = [
+      //   'achievements/full_progress/$user_id'
+      // ];
+      // var datas = await Api().multipleGetRequest(urls);
+      // if(datas.length > 0){
+      //   print("HAS DATA!!!");
+      // }
+    }
+  }
+
+  /* Params
+  * user_id
+  * type = "finished_lessons" or "all_quizzes" or "all_topics" or "all lectures"
+  */
+  getAchievements(userId, type) async {
+    print("getting achievements:::");
+    var urls = [
+      'achievements/list/all'
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    var achievements = datas[0];
+    for(var achievement in achievements){
+      if(achievement['type'] == type){
+        await triggerAchievementCalculation(achievement['id'], achievement['score_to_achieve'], achievement['chapter_ids'], userId, type);
+      }
+    }
   }
 
 }

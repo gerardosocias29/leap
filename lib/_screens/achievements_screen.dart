@@ -91,17 +91,17 @@ class _AchievementScreenState extends State<AchievementScreen> {
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
-                        image: AssetImage('${achievement['image']}')
+                        image: AssetImage('${achievement['image_url']}')
                       )
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: (achievement['isunlocked'] == false) ? Column(
+                      child: (achievement['isunlocked'] == null || achievement['isunlocked'] == false ) ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('${achievement['title']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 30),),
-                          Text('${achievement['details']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 15),),
+                          Text('${achievement['achievement_name']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 30),),
+                          Text('${achievement['achievement_details']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 15),),
                           const Icon(Icons.lock_outlined, size: 50,)
                         ],
                       ) : null,
