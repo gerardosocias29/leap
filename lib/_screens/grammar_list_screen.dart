@@ -106,7 +106,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                         ],
                       ) : null,
                     onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'])), (route) => true );
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'], chapter_name: widget.chapter['chapter_name'])), (route) => true );
                     }
                   ),
                 );

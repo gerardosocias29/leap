@@ -11,7 +11,8 @@ import '../reusable_widgets/reusable_widget.dart';
 
 class TopicListScreen extends StatefulWidget {
   final lesson_id;
-  const TopicListScreen({Key? key, required this.lesson_id}) : super(key: key);
+  final chapter_name;
+  const TopicListScreen({Key? key, required this.lesson_id, required this.chapter_name}) : super(key: key);
 
   @override
   State<TopicListScreen> createState() => _TopicListScreenState();
@@ -122,7 +123,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
                     ],
                   ) : null,
                   onTap: () {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item,)), (route) => true );
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item, chapter_name: widget.chapter_name)), (route) => true );
                   }
                 ),
               );

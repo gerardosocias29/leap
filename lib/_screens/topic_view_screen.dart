@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,15 +7,18 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/quiz_screen.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../api.dart';
+import '../main.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class TopicViewScreen extends StatefulWidget {
   final topic;
-  const TopicViewScreen({Key? key, required this.topic}) : super(key: key);
+  final chapter_name;
+  const TopicViewScreen({Key? key, required this.topic, required this.chapter_name}) : super(key: key);
 
   @override
   State<TopicViewScreen> createState() => _TopicViewScreenState();
@@ -64,6 +68,17 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     });
 
     getUserTopics();
+
+    /*var uniqueId = DateTime.now().second.toString();
+    await Workmanager().registerOneOffTask(
+        uniqueId,
+        'notif',
+        inputData: {
+          'test': 'test'
+        },
+        initialDelay: Duration(seconds: 10),
+        constraints: Constraints(networkType: NetworkType.connected)
+    );*/
   }
 
   bool isTopicDone = false;
@@ -112,7 +127,10 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     print(requestBody);
 
     getUserTopics();
-    Api().getAchievements(userDetails['id'], 'finished_lessons');
+    setState(() {
+      Api().getAchievements(userDetails['id'], 'finished_lessons');
+    });
+
   }
 
   Future _readText() async {
@@ -244,7 +262,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           ),
           if (showBtn || userDetails['role_id'] == 0 || isTopicDone) FloatingActionButton.extended(
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId)), (route) => true );
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId, chapter_name: widget.chapter_name)), (route) => true );
             },
             heroTag: null,
             label: const Text('Take Quiz'),

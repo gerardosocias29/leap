@@ -77,13 +77,13 @@ class Api {
       }, url);
 
       // need to call achievements check progress if there is 100 percent
-      // var urls = [
-      //   'achievements/full_progress/$user_id'
-      // ];
-      // var datas = await Api().multipleGetRequest(urls);
-      // if(datas.length > 0){
-      //   print("HAS DATA!!!");
-      // }
+      /*var urls = [
+        'achievements/full_progress/$user_id'
+      ];
+      var datas = await Api().multipleGetRequest(urls);
+      if(datas.length > 0){
+        print("HAS DATA!!!");
+      }*/
     }
   }
 

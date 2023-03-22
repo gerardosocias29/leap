@@ -1,3 +1,6 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,9 +11,25 @@ import 'package:leap/providers/storage.dart';
 import 'package:leap/utils/color_utils.dart';
 
 import 'package:leap/reusable_widgets/reusable_widget.dart';
+import 'package:workmanager/workmanager.dart';
+
+void callbackDispatcher() {
+  Workmanager().executeTask((taskName, inputData) async {
+    // your code that you want to run in background
+    print('#' * 200);
+    print('Executing task');
+    print('Task executed: ' + taskName);
+    print('inputData::');
+    print(inputData);
+
+    return Future.value(true);
+  });
+}
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher);
   await Firebase.initializeApp().then((value) => { print(StorageProvider().storageGetItem(StorageProvider().userStorage(), 'user_id')), print("value") });
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());

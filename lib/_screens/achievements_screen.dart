@@ -32,6 +32,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
     var datas = await Api().multipleGetRequest(urls);
     setState(() {
       achievements = datas[0];
+      print(achievements);
       userDetails = userdetail;
       _isloading = false;
     });

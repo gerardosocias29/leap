@@ -23,6 +23,24 @@ showErrorDialogBox(context, String message) async {
   );
 }
 
+showNotificationDialog(context, String message) async {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Instructions'),
+      content: Text(message),
+      actions: <Widget>[
+        MaterialButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+          },
+          child: const Text('Proceed'),
+        ),
+      ],
+    ),
+  );
+}
+
 progressDialogue(BuildContext context) {
   //set up the AlertDialog
   AlertDialog alert = const AlertDialog(
@@ -394,7 +412,9 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
   );
 }
 
-void showAchievementView(BuildContext context){
+showAchievementView(context){
+  print('#' * 200);
+  print('Achievement View');
   AchievementView(
       context,
       title: "Achievement Unlocked!",
