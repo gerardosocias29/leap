@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
@@ -26,6 +27,7 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   final SpeechToText _speechToText = SpeechToText();
+  final FlutterTts flutterTts = FlutterTts();
   bool _speechEnabled = false;
   String _lastWords = '';
   String _speakCorrectAnswer = '';
@@ -221,8 +223,6 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero,() {
-      // some action on complete
-      print('some');
       var grammar = '(The grammar quiz is about multiple choices to answer. Follow the following steps for you to be able to answer the given word in each item.)\n1. Select the Quiz Type to take.\n2. Select the answer from the given total time of all items.\n3. If time goes to zero, you will not be allowed to proceed to the next item and it will cut off all the items left.\n4. Choose the desired answer from the given question and choices.\n5. Select the answer to proceed to the next question.\n6.  After taking the quiz, please click the "submit" button to record the score.';
       var speech = '(The pronunciation quiz is about to speak the given word. Follow the following steps for you to be able to answer the given word in each item.)\n1. Select the Quiz Type to take.\n2. Pronounce the word from the given total time of all items.\n3. If time goes to zero, you will not be allowed to proceed to the next item and will cut off all the items left.\n4. Click the "speaker icon" to know and listen to how to pronounce the given word.\n5. Tap the "Listening button to start pronouncing the word".\n6. If you are not able to pronounce the word, input the word given in the box to proceed to the next word to pronounce.\n7. After taking the quiz, please click the "submit" button to record the score.';
       if(times == 0){
@@ -396,7 +396,24 @@ class _QuizScreenState extends State<QuizScreen> {
                 decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor)
                 ),
-                child: Text('${questions[_questionIndex]['quiz_answer']}'),
+                width: 200,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text('${questions[_questionIndex]['quiz_answer']}', textAlign: TextAlign.center,),
+                        ),
+                        InkWell(
+                          child: Icon(Icons.volume_up),
+                          onTap: () async {
+                            await flutterTts.speak('${questions[_questionIndex]['quiz_answer']}');
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 20,
