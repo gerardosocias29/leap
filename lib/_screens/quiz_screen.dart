@@ -250,274 +250,343 @@ class _QuizScreenState extends State<QuizScreen> {
         )
       ),
       body: (quiz_type == '') ?
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(
-                height: 30,
-              ),
-              MaterialButton(
-                color: Theme.of(context).primaryColor,
-                minWidth: double.infinity,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: const Text(
-                  'Easy',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () => {
-                  setState(() {
-                    quiz_type = 'easy';
-                    getData(quiz_type);
-                  })
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              MaterialButton(
-                color: Theme.of(context).primaryColor,
-                minWidth: double.infinity,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: const Text(
-                  'Medium',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () => {
-                  setState(() {
-                    quiz_type = 'medium';
-                    getData(quiz_type);
-                  })
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              MaterialButton(
-                color: Theme.of(context).primaryColor,
-                minWidth: double.infinity,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: const Text(
-                  'Hard',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () => {
-                  setState(() {
-                    quiz_type = 'hard';
-                    getData(quiz_type);
-                  })
-                },
-              ),
-            ],
+        Container(
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.2, 0.5, 0.7, 1],
+              colors: [
+                Color(0xffffffff),
+                Color(0xfffafdff),
+                Color(0xffE7FFFF),
+                Color(0xffE7FFFF),
+              ],
+            ),
           ),
-        )
-      : (_isloading ?
-        const Center(
-          child: CircularProgressIndicator(),
-        )
-      : ((_questionIndex < questions.length) ? SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CircularCountDownTimer(
-                duration: timer_start,
-                initialDuration: 0,
-                controller: _controller,
-                width: MediaQuery.of(context).size.width / 4,
-                height: MediaQuery.of(context).size.height / 4,
-                ringColor: Colors.grey[300]!,
-                ringGradient: null,
-                fillColor: Colors.purpleAccent[100]!,
-                fillGradient: null,
-                backgroundColor: Colors.purple[500],
-                backgroundGradient: null,
-                strokeWidth: 10.0,
-                strokeCap: StrokeCap.round,
-                textStyle: const TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(
+                  height: 30,
                 ),
-                isReverse: true,
-                isReverseAnimation: true,
-                isTimerTextShown: true,
-                autoStart: true,
-                onStart: () {
-                  debugPrint('Countdown Started');
-                },
-                onComplete: () {
-                  debugPrint('Countdown Ended');
-                  setState(() {
-                    _questionIndex = questions.length;
-                  });
-                },
-                onChange: (String timeStamp) {
-                  debugPrint('Countdown Changed $timeStamp');
-                },
-                timeFormatterFunction: (defaultFormatterFunction, duration) {
-                  if (duration.inSeconds == 0) {
-                    // only format for '0'
-                    return "0";
-                  } else {
-                    // other durations by it's default format
-                    return Function.apply(defaultFormatterFunction, [duration]);
-                  }
-                },
-              ),
-              Text(
-                '${_questionIndex + 1}. ${questions[_questionIndex]['question']}',
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              if(questions[_questionIndex]['answer_type'] == 'speak') Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor)
-                ),
-                width: 200,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text('${questions[_questionIndex]['quiz_answer']}', textAlign: TextAlign.center,),
-                        ),
-                        InkWell(
-                          child: Icon(Icons.volume_up),
-                          onTap: () async {
-                            await flutterTts.speak('${questions[_questionIndex]['quiz_answer']}');
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              if(questions[_questionIndex]['answer_type'] == 'choices') ...(questions[_questionIndex]['answers'] as List)
-                  .map((answer) {
-                String ans = '${answer['text']}';
-                return MaterialButton(
+                MaterialButton(
                   color: Theme.of(context).primaryColor,
-                  onPressed: () => (answer_checker != "") ? null : _answerQuestion(answer["score"] as int),
+                  minWidth: double.infinity,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  minWidth: double.infinity,
                   padding: const EdgeInsets.only(top: 15, bottom: 15),
-                  child: Text(
-                    ans,
-                    style: const TextStyle(
+                  child: const Text(
+                    'Easy',
+                    style: TextStyle(
                       color: Colors.white,
                     ),
                   ),
-                );
-              }).toList()
-              else MaterialButton(
-                color: Theme.of(context).primaryColor,
-                onPressed: () => {
-                  if(_speechToText.isNotListening){
-                    _startListening(),
+                  onPressed: () => {
                     setState(() {
-                      _speakCorrectAnswer = "${questions[_questionIndex]['quiz_answer']}";
+                      quiz_type = 'easy';
+                      getData(quiz_type);
                     })
-                  } else {
-                    _stopListening()
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  },
                 ),
-                minWidth: double.infinity,
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: Text(
-                  _speechToText.isNotListening ? 'Tap the button to start listening...' : 'Listening...' ,
-                  style: const TextStyle(
-                    color: Colors.white,
+                const SizedBox(
+                  height: 10,
+                ),
+                MaterialButton(
+                  color: Theme.of(context).primaryColor,
+                  minWidth: double.infinity,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              if(count_wrong_pronounce > 2) TextFormField(
-                // controller: choicesController,
-                decoration: reusableInputDecoration(context, 'Please type the word to proceed', 'Type the word to proceed'),
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.go,
-                onFieldSubmitted: (String value) => {
-                  if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
-                    _answerQuestion(1)
-                  } else {
-                    // _answerQuestion(0)
+                  padding: const EdgeInsets.only(top: 15, bottom: 15),
+                  child: const Text(
+                    'Medium',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: () => {
                     setState(() {
-                      answer_checker = "";
-                      count_wrong_pronounce = 0;
-                      _questionIndex++;
+                      quiz_type = 'medium';
+                      getData(quiz_type);
                     })
-                  }
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              if(answer_checker != "") Text(
-                answer_checker,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: answer_checker.toLowerCase() == 'correct' ? Colors.green : Colors.red),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                MaterialButton(
+                  color: Theme.of(context).primaryColor,
+                  minWidth: double.infinity,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.only(top: 15, bottom: 15),
+                  child: const Text(
+                    'Hard',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: () => {
+                    setState(() {
+                      quiz_type = 'hard';
+                      getData(quiz_type);
+                    })
+                  },
+                ),
+              ],
+            ),
           ),
         )
-      ) : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
+      : (_isloading ?
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.2, 0.5, 0.7, 1],
+              colors: [
+                Color(0xffffffff),
+                Color(0xfffafdff),
+                Color(0xffE7FFFF),
+                Color(0xffE7FFFF),
+              ],
+            ),
+          ),
+          child:
+          const Center(
+            child: CircularProgressIndicator(),
+          )
+        )
+      : ((_questionIndex < questions.length) ? Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.5, 0.7, 1],
+            colors: [
+              Color(0xffffffff),
+              Color(0xfffafdff),
+              Color(0xffE7FFFF),
+              Color(0xffE7FFFF),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-
+                CircularCountDownTimer(
+                  duration: timer_start,
+                  initialDuration: 0,
+                  controller: _controller,
+                  width: MediaQuery.of(context).size.width / 4,
+                  height: MediaQuery.of(context).size.height / 4,
+                  ringColor: Colors.grey[300]!,
+                  ringGradient: null,
+                  fillColor: Colors.purpleAccent[100]!,
+                  fillGradient: null,
+                  backgroundColor: Colors.purple[500],
+                  backgroundGradient: null,
+                  strokeWidth: 10.0,
+                  strokeCap: StrokeCap.round,
+                  textStyle: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  isReverse: true,
+                  isReverseAnimation: true,
+                  isTimerTextShown: true,
+                  autoStart: true,
+                  onStart: () {
+                    debugPrint('Countdown Started');
+                  },
+                  onComplete: () {
+                    debugPrint('Countdown Ended');
+                    setState(() {
+                      _questionIndex = questions.length;
+                    });
+                  },
+                  onChange: (String timeStamp) {
+                    debugPrint('Countdown Changed $timeStamp');
+                  },
+                  timeFormatterFunction: (defaultFormatterFunction, duration) {
+                    if (duration.inSeconds == 0) {
+                      // only format for '0'
+                      return "0";
+                    } else {
+                      // other durations by it's default format
+                      return Function.apply(defaultFormatterFunction, [duration]);
+                    }
+                  },
+                ),
                 Text(
-                  'You scored $_score out of ${questions.length}',
+                  '${_questionIndex + 1}. ${questions[_questionIndex]['question']}',
                   style: const TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  onPressed: _submitScore,
-                  child: const Text('Submit Score'),
+                if(questions[_questionIndex]['answer_type'] == 'speak') Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).primaryColor)
+                  ),
+                  width: 200,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text('${questions[_questionIndex]['quiz_answer']}', textAlign: TextAlign.center,),
+                          ),
+                          InkWell(
+                            child: Icon(Icons.volume_up),
+                            onTap: () async {
+                              // this will prevent in cheating.. if not added, can bypass the word by clicking Button to start listening then clicking the Volume Speaker icon will pronounce the word correctly
+                              if(_speechToText.isListening){
+                                _stopListening();
+                                await flutterTts.speak('${questions[_questionIndex]['quiz_answer']}');
+                              }
+
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if(questions[_questionIndex]['answer_type'] == 'choices') ...(questions[_questionIndex]['answers'] as List)
+                    .map((answer) {
+                  String ans = '${answer['text']}';
+                  return MaterialButton(
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () => (answer_checker != "") ? null : _answerQuestion(answer["score"] as int),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minWidth: double.infinity,
+                    padding: const EdgeInsets.only(top: 15, bottom: 15),
+                    child: Text(
+                      ans,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                }).toList()
+                else MaterialButton(
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () => {
+                    if(_speechToText.isNotListening){
+                      _startListening(),
+                      setState(() {
+                        _speakCorrectAnswer = "${questions[_questionIndex]['quiz_answer']}";
+                      })
+                    } else {
+                      _stopListening()
+                    }
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  minWidth: double.infinity,
+                  padding: const EdgeInsets.only(top: 15, bottom: 15),
+                  child: Text(
+                    _speechToText.isNotListening ? 'Tap the button to start listening...' : 'Listening...' ,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if(count_wrong_pronounce > 2) TextFormField(
+                  // controller: choicesController,
+                  decoration: reusableInputDecoration(context, 'Please type the word to proceed', 'Type the word to proceed'),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.go,
+                  onFieldSubmitted: (String value) => {
+                    if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
+                      _answerQuestion(1)
+                    } else {
+                      // _answerQuestion(0)
+                      setState(() {
+                        answer_checker = "";
+                        count_wrong_pronounce = 0;
+                        _questionIndex++;
+                      })
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if(answer_checker != "") Text(
+                  answer_checker,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: answer_checker.toLowerCase() == 'correct' ? Colors.green : Colors.red),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           )
-        )
+        ),
+      ) : Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.5, 0.7, 1],
+            colors: [
+              Color(0xffffffff),
+              Color(0xfffafdff),
+              Color(0xffE7FFFF),
+              Color(0xffE7FFFF),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+
+                  Text(
+                    'You scored $_score out of ${questions.length}',
+                    style: const TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: _submitScore,
+                    child: const Text('Submit Score'),
+                  ),
+                ],
+              ),
+            )
+          )
+        ),
       ) )) ,
     );
   }

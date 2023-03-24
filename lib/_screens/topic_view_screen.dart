@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/quiz_screen.dart';
+import 'package:leap/_screens/quizlist_screen.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../api.dart';
@@ -192,51 +193,67 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           color: Theme.of(context).primaryColor,
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Material(
-                child: InkWell(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
-                        onPressed: () => {}
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 8.0),
-                        child: Text(isPlaying ? 'Pause' : 'Play',
-                          style: const TextStyle(
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w400,
+      body: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.5, 0.7, 1],
+            colors: [
+              Color(0xffffffff),
+              Color(0xfffafdff),
+              Color(0xffE7FFFF),
+              Color(0xffE7FFFF),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Material(
+                  child: InkWell(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
+                          onPressed: () => {}
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 8.0),
+                          child: Text(isPlaying ? 'Pause' : 'Play',
+                            style: const TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w400,
+                            )
                           )
                         )
-                      )
-                    ]
+                      ]
+                    ),
+                    onTap: () => isPlaying ? _stopRead() : _readText(),
                   ),
-                  onTap: () => isPlaying ? _stopRead() : _readText(),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '''${widget.topic['topic_details']}''',
-                style: const TextStyle(fontSize: 18.0, ),
-                textAlign: TextAlign.justify,
-              ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '''${widget.topic['topic_details']}''',
+                  style: const TextStyle(fontSize: 18.0, ),
+                  textAlign: TextAlign.justify,
+                ),
 
-              const SizedBox(
-                height: 30,
-              ),
+                const SizedBox(
+                  height: 30,
+                ),
 
-              if(isTopicDone) const Text("Completed!"),
-            ],
+                if(isTopicDone) const Text("Completed!"),
+              ],
+            ),
           ),
         ),
       ),
@@ -245,10 +262,23 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
         children: [
           if (userDetails['role_id'] == 0) FloatingActionButton.extended(
             onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizListScreen(topic_id: widget.topic['id'] )), (route) => true );
+            },
+            heroTag: null,
+            label: const Text('Quiz List'),
+            icon: const Icon(
+                Icons.list_alt_outlined
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          if (userDetails['role_id'] == 0) FloatingActionButton.extended(
+            onPressed: () {
               //...
               showDialog(
                 context: context,
-                builder: (BuildContext context) =>alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false),
+                builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false),
               );
             },
             heroTag: null,
@@ -269,10 +299,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
             icon: const Icon(
                 Icons.assignment
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
+          )
         ]
       )
     );
