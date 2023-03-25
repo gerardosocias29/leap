@@ -156,7 +156,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                 //...
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic_id, false),
+                  builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic_id, false, _initRetrieval),
                 );
               },
               heroTag: null,

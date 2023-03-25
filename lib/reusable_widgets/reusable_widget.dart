@@ -288,7 +288,7 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
   );
 }
 
-AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
+AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
   var url = 'quizzes/create';
 
   makePostRequest(requestBody, loadingContext, url) async {
@@ -310,6 +310,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
     print(requestBody);
+    callback();
     Navigator.pop(context);
   }
 
@@ -429,7 +430,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap) {
           };
 
           makePostRequest(data, context, url);
-          Navigator.pop(context);
+          // Navigator.pop(context);
         },
         child: const Text('Save'),
       ),
