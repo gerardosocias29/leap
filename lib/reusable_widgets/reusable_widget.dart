@@ -23,6 +23,31 @@ showErrorDialogBox(context, String message) async {
   );
 }
 
+showDeleteConfirmationDialog(context, callback) async {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Attention!'),
+      content: const Text('You are about to delete this item, do you wish to proceed?'),
+      actions: <Widget>[
+        MaterialButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        MaterialButton(
+          child: const Text("Yes"),
+          onPressed: () {
+            callback();
+            Navigator.of(ctx).pop();
+          },
+        ),
+      ],
+    ),
+  );
+}
+
 showNotificationDialog(context, String message) async {
   return showDialog(
     context: context,

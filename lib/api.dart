@@ -54,6 +54,15 @@ class Api {
     return response;
   }
 
+  deleteRequest(url) async {
+    var uri = Uri.parse("$backendUrl/api/$url");
+    Response response = await delete(
+      uri,
+      headers: {"Accept": "application/json"},
+    );
+    return jsonDecode(response.body);
+  }
+
   triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type) async {
     var url = "";
     if(type == "finished_lessons"){

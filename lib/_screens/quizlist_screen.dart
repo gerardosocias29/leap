@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -16,6 +18,9 @@ class _QuizListScreenState extends State<QuizListScreen> {
   late var quizlists;
   
   Future _initRetrieval() async {
+    setState(() {
+      _isloading = true;
+    });
     var urls = [
       'topic_quiz_list/${widget.topic_id}/all', // 0
     ];
@@ -29,12 +34,16 @@ class _QuizListScreenState extends State<QuizListScreen> {
     });
   }
 
+  Future _quizDeletion(id) async {
+    var response = await Api().deleteRequest('quizzes/delete/$id');
+    if(response['status']){
+      _initRetrieval();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isloading = true;
-    });
     _initRetrieval();
   }
 
@@ -105,6 +114,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         IconButton(
+                          padding: const EdgeInsets.all(0.0),
                           icon: const Icon(
                             Icons.edit_outlined,
                             size: 20.0,
@@ -115,12 +125,14 @@ class _QuizListScreenState extends State<QuizListScreen> {
                           },
                         ),
                         IconButton(
+                          padding: const EdgeInsets.all(0.0),
                           icon: const Icon(
                             Icons.delete_outlined,
                             size: 20.0,
                             color: Colors.red,
                           ),
                           onPressed: () {
+                            showDeleteConfirmationDialog(context, () => { _quizDeletion(item['id']) });
                             //   _onDeleteItemPressed(index);
                           },
                         ),
