@@ -273,23 +273,6 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
           const SizedBox(
             height: 10,
           ),
-          if (userDetails['role_id'] == 0) FloatingActionButton.extended(
-            onPressed: () {
-              //...
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false, null),
-              );
-            },
-            heroTag: null,
-            label: const Text('Add Quiz'),
-            icon: const Icon(
-                Icons.add
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
           if (showBtn || userDetails['role_id'] == 0 || isTopicDone) FloatingActionButton.extended(
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId, chapter_name: widget.chapter_name)), (route) => true );

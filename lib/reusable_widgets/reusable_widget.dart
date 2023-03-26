@@ -329,10 +329,10 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
     Navigator.pop(context);
   }
 
-  var questionController = TextEditingController(text: data['quiz_question'] ?? '');
-  var choicesController = TextEditingController(text: data['quiz_choices'] ?? '');
-  var answerController = TextEditingController(text: data['quiz_answer'] ?? '');
-  var timeLimitController = TextEditingController(text: data['timer'].toString() ?? '');
+  var questionController = TextEditingController(text: data!='' ? data['quiz_question'] : '');
+  var choicesController = TextEditingController(text: data!='' ? data['quiz_choices'] : '');
+  var answerController = TextEditingController(text: data!='' ? data['quiz_answer'] : '');
+  var timeLimitController = TextEditingController(text: data!='' ? data['timer'].toString() : '');
 
   final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
   final List<String> answer_type = <String>['Choices', 'Speak'];
@@ -391,7 +391,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
             onChanged: (value) {
               quizTypeDropdownValue = (value! ?? '') as String;
             },
-            value: data['quiz_type'][0].toUpperCase() + data['quiz_type'].substring(1), // need to capitalize first letter
+            value: data!='' ? data['quiz_type'][0].toUpperCase() + data['quiz_type'].substring(1) : quizTypeDropdownValue, // need to capitalize first letter
           ),
           const SizedBox(
             height: 30,
@@ -410,7 +410,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
             onChanged: (value) {
               answerTypeDropdownValue = (value! ?? '') as String;
             },
-            value: data['answer_type'][0].toUpperCase() + data['answer_type'].substring(1),
+            value: data!='' ? data['answer_type'][0].toUpperCase() + data['answer_type'].substring(1) : answerTypeDropdownValue,
           ),
           const SizedBox(
             height: 30
