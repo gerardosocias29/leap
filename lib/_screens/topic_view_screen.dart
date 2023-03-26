@@ -278,7 +278,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
               //...
               showDialog(
                 context: context,
-                builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false),
+                builder: (BuildContext context) => alertDialogQuiz(context, 'Add Quiz', widget.topic['id'], false, null),
               );
             },
             heroTag: null,

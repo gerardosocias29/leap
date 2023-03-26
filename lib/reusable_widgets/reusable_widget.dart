@@ -310,7 +310,9 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
     print(requestBody);
-    callback();
+    if(callback != null){
+      callback();
+    }
     Navigator.pop(context);
   }
 
