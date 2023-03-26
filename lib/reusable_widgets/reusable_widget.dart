@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
+import '../api.dart';
+
 showErrorDialogBox(context, String message) async {
   return showDialog(
     context: context,
@@ -288,8 +290,10 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
   );
 }
 
-AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
+AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, data = '']) {
   var url = 'quizzes/create';
+  var url_update = 'quizzes/update/$topic_id';
+  print(data);
 
   makePostRequest(requestBody, loadingContext, url) async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -316,10 +320,19 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
     Navigator.pop(context);
   }
 
-  var questionController = TextEditingController();
-  var choicesController = TextEditingController();
-  var answerController = TextEditingController();
-  var timeLimitController = TextEditingController();
+  makePutRequest(data, loadingContext, url) async {
+    var response = await Api().putRequest(data, url);
+    print(response);
+    if(callback != null){
+      callback();
+    }
+    Navigator.pop(context);
+  }
+
+  var questionController = TextEditingController(text: data['quiz_question'] ?? '');
+  var choicesController = TextEditingController(text: data['quiz_choices'] ?? '');
+  var answerController = TextEditingController(text: data['quiz_answer'] ?? '');
+  var timeLimitController = TextEditingController(text: data['timer'].toString() ?? '');
 
   final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
   final List<String> answer_type = <String>['Choices', 'Speak'];
@@ -364,6 +377,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
             height: 30,
           ),
           DropdownButtonFormField(
+
             decoration: reusableInputDecoration(context, 'Quiz Type', 'Select Quiz Type'),
             validator: (value) {
               return null;
@@ -375,8 +389,9 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
               return DropdownMenuItem<String>(value: value, child: Text(value));
             }).toList(),
             onChanged: (value) {
-              quizTypeDropdownValue = value!;
+              quizTypeDropdownValue = (value! ?? '') as String;
             },
+            value: data['quiz_type'][0].toUpperCase() + data['quiz_type'].substring(1), // need to capitalize first letter
           ),
           const SizedBox(
             height: 30,
@@ -393,8 +408,9 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
               return DropdownMenuItem<String>(value: value, child: Text(value));
             }).toList(),
             onChanged: (value) {
-              answerTypeDropdownValue = value!;
+              answerTypeDropdownValue = (value! ?? '') as String;
             },
+            value: data['answer_type'][0].toUpperCase() + data['answer_type'].substring(1),
           ),
           const SizedBox(
             height: 30
@@ -413,7 +429,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
         onPressed: () => Navigator.pop(context),
         child: const Text('Cancel'),
       ),
-      TextButton(
+      if(data == '') TextButton(
         onPressed: () {
           // Send them to your email maybe?
           var question = questionController.text;
@@ -427,7 +443,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
             'quiz_question' : question,
             'quiz_answer' : answer,
             'quiz_choices' : choices,
-            'timer' : timelimit,
+            'timer' : timelimit as int,
             'topic_id' : topic_id,
           };
 
@@ -435,6 +451,28 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback]) {
           // Navigator.pop(context);
         },
         child: const Text('Save'),
+      )
+      else TextButton(
+        onPressed: () {
+          // Send them to your email maybe?
+          var question = questionController.text;
+          var choices = choicesController.text;
+          var answer = answerController.text;
+          var timelimit = timeLimitController.text;
+
+          var data = {
+            'quiz_type' : quizTypeDropdownValue.toLowerCase(),
+            'answer_type': answerTypeDropdownValue.toLowerCase(),
+            'quiz_question' : question,
+            'quiz_answer' : answer,
+            'quiz_choices' : choices,
+            'timer' : timelimit
+          };
+
+          makePutRequest(data, context, url_update);
+          // Navigator.pop(context);
+        },
+        child: const Text('Update'),
       ),
     ],
   );

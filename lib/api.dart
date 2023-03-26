@@ -38,7 +38,7 @@ class Api {
       body: jsonBody,
       encoding: encoding,
     );
-    return response;
+    return jsonDecode(response.body);
   }
 
   putRequest(data, url) async {
@@ -51,7 +51,7 @@ class Api {
       headers: {"Accept": "application/json",'content-type': 'application/json'},
       body: jsonBody
     );
-    return response;
+    return jsonDecode(response.body);
   }
 
   deleteRequest(url) async {

@@ -122,6 +122,10 @@ class _QuizListScreenState extends State<QuizListScreen> {
                           ),
                           onPressed: () {
                             //   _onDeleteItemPressed(index);
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', widget.topic_id, false, _initRetrieval, item),
+                            );
                           },
                         ),
                         IconButton(
