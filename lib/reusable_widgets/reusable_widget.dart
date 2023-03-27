@@ -199,8 +199,20 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
     ]);
 }
 
-AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
+AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type, [callback, item = '']) {
   var url = (type == "Lesson") ? "lessons/create" : (type == "Topic") ? "topics/create" : "";
+  var text_title = '';
+  var text_content = '';
+  if(type == 'update_lesson'){
+    url = "lessons/update/${item['id']}";
+    text_title = item['lesson_name'];
+    text_content = item['lesson_details'];
+  }
+  if(type == 'update_topic'){
+    url = "topics/update/${item['id']}";
+    text_title = item['topic_title'];
+    text_content = item['topic_details'];
+  }
 
   makePostRequest(requestBody, loadingContext, url) async {
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -221,11 +233,24 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
     int statusCode = response.statusCode;
     print("statusCode::$statusCode");
     print(requestBody);
+    if(callback != null){
+      callback();
+    }
     Navigator.pop(loadingContext);
   }
 
-  var titleController = TextEditingController();
-  var contentController = TextEditingController();
+  makePutRequest(data, loadingContext, url) async {
+    print(data);
+    var response = await Api().putRequest(data, url);
+    print(response);
+    if(callback != null){
+      callback();
+    }
+    Navigator.pop(context);
+  }
+
+  var titleController = TextEditingController(text: text_title);
+  var contentController = TextEditingController(text: text_content);
   return AlertDialog(
     title: Text(title),
     content: SizedBox(
@@ -260,7 +285,7 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
         onPressed: () => Navigator.pop(context),
         child: const Text('Cancel'),
       ),
-      TextButton(
+      if(type != "update_lesson" && type != "update_topic") TextButton(
         onPressed: () {
           // Send them to your email maybe?
           var title = titleController.text;
@@ -279,12 +304,33 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type) {
               "lesson_id" : reference_id
             };
           }
-
           makePostRequest(data, context, url);
-
           // Navigator.pop(context);
         },
-        child: const Text('Send'),
+        child: const Text('Save'),
+      ) else TextButton(
+        onPressed: () {
+        // Send them to your email maybe?
+        var title = titleController.text;
+        var content = contentController.text;
+        var data;
+        if(type == "update_lesson"){
+          data = {
+            "lesson_name": title,
+            "lesson_details": content,
+            "chapter_id" : reference_id
+          };
+        } else {
+          data = {
+            "topic_title": title,
+            "topic_details": content,
+            "lesson_id" : reference_id
+          };
+        }
+        makePutRequest(data, context, url);
+        // Navigator.pop(context);
+        },
+        child: const Text('Update')
       ),
     ],
   );

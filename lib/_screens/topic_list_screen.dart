@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/topic_view_screen.dart';
 
+import '../api.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -26,6 +27,9 @@ class _TopicListScreenState extends State<TopicListScreen> {
 
   late var filteredList;
   getTopicLists() async {
+    setState(() {
+      _isloading = true;
+    });
     var backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
     final uri = Uri.parse("$backendUrl/api/topics/all");
     final headers = {'content-type': 'application/json'};
@@ -50,16 +54,22 @@ class _TopicListScreenState extends State<TopicListScreen> {
 
   Future _initRetrieval() async {
     setState(() {
-      _isloading = true;
       userDetails = jsonDecode(StorageProvider().storageGetItem(userStorage, 'user_details'));
+      getTopicLists();
     });
+  }
+
+  Future _topicDeletion(id) async {
+    var response = await Api().deleteRequest('topics/delete/$id');
+    if(response['status']){
+      getTopicLists();
+    }
   }
 
   @override
   void initState() {
     super.initState();
     _initRetrieval();
-    getTopicLists();
   }
 
   @override
@@ -136,7 +146,10 @@ class _TopicListScreenState extends State<TopicListScreen> {
                           // color: Colors.black,
                         ),
                         onPressed: () {
-                          //   _onDeleteItemPressed(index);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => alertDialog(context, 'Update Topic', widget.lesson_id, false, 'update_topic', getTopicLists, item),
+                          );
                         },
                       ),
                       IconButton(
@@ -147,6 +160,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
                         ),
                         onPressed: () {
                           //   _onDeleteItemPressed(index);
+                          showDeleteConfirmationDialog(context, () => { _topicDeletion(item['id']) });
                         },
                       ),
                     ],
@@ -167,7 +181,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) => alertDialog(context, 'Add Topic', widget.lesson_id, false, 'Topic'),
+                  builder: (BuildContext context) => alertDialog(context, 'Add Topic', widget.lesson_id, false, 'Topic', getTopicLists),
                 );
               },
               heroTag: null,
@@ -175,9 +189,6 @@ class _TopicListScreenState extends State<TopicListScreen> {
               icon: const Icon(
                   Icons.add
               )
-          ),
-          const SizedBox(
-            height: 20,
           ),
         ],
       ) : null,

@@ -25,6 +25,9 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
   final userStorage = StorageProvider().userStorage();
 
   Future _initRetrieval() async {
+    setState(() {
+      _isloading = true;
+    });
     var urls = [
       'lessons_list/${widget.chapter['id']}', // 0
     ];
@@ -39,12 +42,16 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
     });
   }
 
+  Future _lessonDeletion(id) async {
+    var response = await Api().deleteRequest('lessons/delete/$id');
+    if(response['status']){
+      _initRetrieval();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isloading = true;
-    });
     _initRetrieval();
   }
 
@@ -119,7 +126,11 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                               // color: Colors.black,
                             ),
                             onPressed: () {
-                              //   _onDeleteItemPressed(index);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => alertDialog(context, 'Update Lesson', widget.chapter['id'], false, 'update_lesson', _initRetrieval, item),
+                                // alertDialog(context, 'Add Lesson', widget.chapter['id'], false, 'Lesson')
+                              );
                             },
                           ),
                           IconButton(
@@ -130,6 +141,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                             ),
                             onPressed: () {
                               //   _onDeleteItemPressed(index);
+                              showDeleteConfirmationDialog(context, () => { _lessonDeletion(item['id']) });
                             },
                           ),
                         ],
@@ -154,7 +166,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               //...
               showDialog(
                 context: context,
-                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', widget.chapter['id'], false, 'Lesson'),
+                builder: (BuildContext context) => alertDialog(context, 'Add Lesson', widget.chapter['id'], false, 'Lesson', _initRetrieval),
               );
             },
             heroTag: null,
@@ -162,9 +174,6 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
             icon: const Icon(
               Icons.add
             )
-          ),
-          const SizedBox(
-            height: 20,
           ),
         ],
       ) : null,
