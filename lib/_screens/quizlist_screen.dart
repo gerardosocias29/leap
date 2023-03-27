@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:leap/_screens/viewquiz_screen.dart';
 
 import '../api.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -124,7 +125,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                             //   _onDeleteItemPressed(index);
                             showDialog(
                               context: context,
-                              builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', widget.topic_id, false, _initRetrieval, item),
+                              builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', item['id'], false, _initRetrieval, item),
                             );
                           },
                         ),
@@ -143,7 +144,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                       ],
                     ),
                     onTap: () {
-                      // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'], chapter_name: widget.chapter['chapter_name'])), (route) => true );
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => ViewQuizScreen(quiz_data: item)), (route) => true );
                     }
                 ),
               );
