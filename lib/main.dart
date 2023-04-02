@@ -55,7 +55,8 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
-        primaryColor: hexStringToColor('#09c1ca')
+        primaryColor: hexStringToColor('#09c1ca'),
+        primaryColorLight: hexStringToColor('#b5e9f9')
       ),
       home: const SplashScreen(),
     );

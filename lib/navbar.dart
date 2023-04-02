@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:leap/_screens/achievements_screen.dart';
 import 'package:leap/_screens/leaderboard_screen.dart';
+import 'package:leap/_screens/settings_screen.dart';
 import 'package:leap/_screens/user_list_screen.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
@@ -67,13 +68,12 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.groups_outlined),
             title: const Text('Users'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const UserListScreen()), (route) => true ),
-          ),
-          // const Divider(),
-          ListTile(
+          ), ListTile(
             leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
-            onTap: () => null,
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SettingsScreen()), (route) => true ),
           ),
+          // const Divider(),
           // const Divider(),
           ListTile(
             title: const Text('Logout'),

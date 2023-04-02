@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:leap/_screens/home_screen.dart';
 
+import '../api.dart';
 import '../auth_service.dart';
 import '../providers/navigator.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -34,11 +35,16 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController _year = TextEditingController();
 
   final List<String> gender_list = <String>['Male', 'Female'];
-  final List<String> course_list = <String>['BSIT', 'BEED', 'BSED', 'BSHM'];
-  String dropdownValue = "";
-  String coursedropdownValue = "";
+  late List<String> course_list = <String>[];
+  final List<String> year_list = <String>['1', '2', '3', '4'];
 
+  String dropdownValue = '';
+  String coursedropdownValue = '';
+  String yearDropdownValue = "1";
+  int role_id = 1;
   final _formKey = GlobalKey<FormState>();
+  late bool _isUpdate = false;
+  late var _isloading = false;
 
   void _showErrorDialogBox(String message) async {
     return showDialog(
@@ -88,6 +94,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   }
 
+  makePutRequest(data, loadingContext, url) async {
+    var response = await Api().putRequest(data, url);
+    print(response);
+    if(response['status']){
+      Navigator.pop(loadingContext);
+      // ignore: use_build_context_synchronously
+      NavigatorController().pushAndRemoveUntil(context, const HomeScreen(), false);
+    } else {
+      Navigator.pop(loadingContext);
+      _showErrorDialogBox('Unexpected Error occured!');
+    }
+  }
+
   _getImage() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
@@ -97,17 +116,37 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Future _initRetrieval() async {
-    if(widget.userDetails != null){
-      var ud = widget.userDetails;
-      _username.text = ud['username'];
-      _firstname.text = ud['first_name'];
-      _lastname.text = ud['last_name'];
-      _address.text = ud['address'];
-      _birthday.text = ud['birthday'];
-      _year.text = ud['year'];
-      dropdownValue = ud['gender'];
-      coursedropdownValue = ud['course'];
-    }
+    setState(() {
+      _isloading = true;
+    });
+    var urls = [
+      'courses/get'
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    setState(() {
+      // course_list.clear();
+      for(var x=0; x<datas[0].length; x++) {
+        course_list.insert(x, datas[0][x]['course_name']);
+      }
+
+      if(widget.userDetails != null){
+        var ud = widget.userDetails;
+        _username.text = ud['username'];
+        _firstname.text = ud['first_name'];
+        _lastname.text = ud['last_name'];
+        _address.text = ud['address'];
+        _birthday.text = ud['birthday'];
+        yearDropdownValue = (ud['year'] == null ) ? year_list.first : ud['year'];
+        dropdownValue = (ud['gender'] == null ) ? gender_list.first : ud['gender'];
+        coursedropdownValue = (ud['course'] == null ) ? course_list.first : ud['course'];
+        role_id = ud['role_id'];
+        setState(() {
+          _isUpdate = true;
+          _isloading = false;
+
+        });
+      }
+    });
   }
 
   @override
@@ -119,7 +158,39 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: _isloading ?
+      Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.5, 0.7, 1],
+            colors: [
+              Color(0xffffffff),
+              Color(0xfffafdff),
+              Color(0xffE7FFFF),
+              Color(0xffE7FFFF),
+            ],
+          ),
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ) : Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.5, 0.7, 1],
+            colors: [
+              Color(0xffffffff),
+              Color(0xfffafdff),
+              Color(0xffE7FFFF),
+              Color(0xffE7FFFF),
+            ],
+          ),
+        ),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -230,6 +301,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         print("dropdownValue:: $dropdownValue");
                       });
                     },
+                    value: dropdownValue,
                   ),
                   const SizedBox(
                       height: 30
@@ -288,11 +360,30 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         coursedropdownValue = value!;
                       });
                     },
+                    value: coursedropdownValue,
                   ),
                   const SizedBox(
                     height: 30
                   ),
-                  TextFormField(
+                  DropdownButtonFormField(
+                    decoration: reusableInputDecoration(context, 'Year', 'Select Year'),
+                    validator: (value) {
+                      return null;
+                    },
+                    onSaved: (value) {
+                      // _authData['password'] = value!;
+                    },
+                    items: year_list.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(value: value, child: Text(value));
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        yearDropdownValue = value!;
+                      });
+                    },
+                    value: yearDropdownValue,
+                  ),
+                  /*TextFormField(
                     decoration: reusableInputDecoration(context, 'Course Year', 'Type your course year'),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
@@ -300,7 +391,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     onSaved: (value) {
                       // _authData['email'] = value!;
                     },
-                  ),
+                  ),*/
                   const SizedBox(
                     height: 30
                   ),
@@ -316,9 +407,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       CollectionReference users = FirebaseFirestore.instance.collection('users');
                       var user = await AuthService().getCurrentUser();
                       print(user);
-
-                      // ignore: use_build_context_synchronously
-                      makePostRequest({
+                      var data = {
                         'uid': user.uid,
                         'address': _address.text,
                         'birthday': _birthday.text,
@@ -329,50 +418,28 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         'gender': dropdownValue,
                         'last_name': _lastname.text,
                         'phone': "",
-                        'role_id': 1,
+                        'role_id': role_id,
                         'school_id': 1,
                         'username': _username.text,
-                        'year': _year.text,
+                        'year': yearDropdownValue,
                         'photoURL': "",
-                      }, loadingContext);
-
-                      /*Future<void> addUser() {
-                        return users.doc(user.uid).set({
-                          'id': user.uid,
-                          'address': _address.text,
-                          'birthday': _birthday.text,
-                          'course': coursedropdownValue,
-                          'deleted_at': 0,
-                          'email': user.email,
-                          'first_name': _firstname.text,
-                          'gender': dropdownValue,
-                          'last_name': _lastname.text,
-                          'phone': "",
-                          'role_id': 1,
-                          'school_id': 1,
-                          'username': _username.text,
-                          'year': _year.text,
-                          'photoURL': "",
-                        })
-                        .then((value) => {
-                          Navigator.pop(loadingContext),
-                          NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false),
-                        })
-                        .catchError((error) => {
-                          Navigator.pop(loadingContext),
-                          print("Failed to add user: $error")
-                        });
+                      };
+                      if(_isUpdate){
+                        // ignore: use_build_context_synchronously
+                        makePutRequest(data, loadingContext, 'users/update/${widget.userDetails['id']}');
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        makePostRequest(data, loadingContext);
                       }
-                      addUser();*/
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     minWidth: double.infinity,
                     padding: const EdgeInsets.only(top: 15, bottom: 15),
-                    child: const Text(
-                      'PROCEED',
-                      style: TextStyle(
+                    child: Text(
+                      _isUpdate ? 'UPDATE' : 'PROCEED',
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),

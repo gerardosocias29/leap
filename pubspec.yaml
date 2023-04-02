@@ -64,6 +64,7 @@ dependencies:
   path_provider: ^2.0.11
   achievement_view: ^1.0.0
   workmanager: ^0.5.1
+  textfield_tags: ^2.0.2
 
 dev_dependencies:
   flutter_test:

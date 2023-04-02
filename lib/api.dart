@@ -38,7 +38,7 @@ class Api {
       body: jsonBody,
       encoding: encoding,
     );
-    return jsonDecode(response.body);
+    return response.body;
   }
 
   putRequest(data, url) async {

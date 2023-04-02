@@ -206,12 +206,12 @@ AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type, [callbac
   if(type == 'update_lesson'){
     url = "lessons/update/${item['id']}";
     text_title = item['lesson_name'];
-    text_content = item['lesson_details'];
+    text_content = (item['lesson_details'] == null || item['lesson_details'] == '') ? '' : item['lesson_details'];
   }
   if(type == 'update_topic'){
     url = "topics/update/${item['id']}";
     text_title = item['topic_title'];
-    text_content = item['topic_details'];
+    text_content = (item['topic_details'] == null || item['topic_details'] == '') ? '' : item['topic_details'];
   }
 
   makePostRequest(requestBody, loadingContext, url) async {
