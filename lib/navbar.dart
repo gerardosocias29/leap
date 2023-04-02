@@ -68,7 +68,8 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.groups_outlined),
             title: const Text('Users'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const UserListScreen()), (route) => true ),
-          ), ListTile(
+          ),
+          if(widget.userDetails['role_id'] == 0) ListTile(
             leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SettingsScreen()), (route) => true ),
