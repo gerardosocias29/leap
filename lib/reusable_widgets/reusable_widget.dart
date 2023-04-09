@@ -489,7 +489,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
             'quiz_question' : question,
             'quiz_answer' : answer,
             'quiz_choices' : choices,
-            'timer' : timelimit as int,
+            'timer' : timelimit*1,
             'topic_id' : topic_id,
           };
 
