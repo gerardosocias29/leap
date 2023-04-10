@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:leap/_screens/achievements_screen.dart';
 import 'package:leap/_screens/leaderboard_screen.dart';
@@ -24,6 +27,9 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     var loadingContext = context;
+    Uint8List bytes = base64Decode('${widget.userDetails['photoURL']}');
+    var hasPhoto = (widget.userDetails['photoURL'] != null);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -32,14 +38,15 @@ class _NavBarState extends State<NavBar> {
             accountName: Text("${widget.userDetails['first_name']} ${widget.userDetails['last_name']}", style: const TextStyle(color: Colors.white),),
             accountEmail: Text("${widget.userDetails['email']}", style: const TextStyle(color: Colors.white)),
             currentAccountPicture: CircleAvatar(
-              child: ClipOval(
+              backgroundImage: widget.userDetails['photoURL'] != null ? MemoryImage(bytes) : null,
+              child: hasPhoto == false ? ClipOval(
                 child: Image.network(
                   'https://www.gravatar.com/avatar/0?s=200&d=mp',
                   fit: BoxFit.cover,
                   width: 90,
                   height: 90,
                 ),
-              ),
+              ) : null,
             ),
             decoration: const BoxDecoration(
               color: Colors.blue,
@@ -81,10 +88,10 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.exit_to_app),
             onTap: () => {
               progressDialogue(loadingContext),
-              AuthService().signOut().then((value) {
+              AuthService().signOut().then((value) async {
                 Navigator.pop(loadingContext);
-                StorageProvider().storageRemoveItem(userStorage, 'user_id');
-                StorageProvider().storageRemoveItem(userStorage, 'user_details');
+                await StorageProvider().storageRemoveItem(userStorage, 'user_id');
+                await StorageProvider().storageRemoveItem(userStorage, 'user_details');
                 print('Sign out');
                 Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => false );
               })

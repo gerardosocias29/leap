@@ -71,6 +71,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late var userDetails;
+  Future _initRetrieval() async {
+    return await StorageProvider().storageGetItem( await StorageProvider().userStorage(), 'user_id');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      userDetails = _initRetrieval();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
       // ignore: unnecessary_null_comparison
-      nextScreen: (StorageProvider().storageGetItem(StorageProvider().userStorage(), 'user_id') == null) ? const SignInScreen() : const HomeScreen(),
+      nextScreen: ( userDetails == null) ? const SignInScreen() : const HomeScreen(),
       splashIconSize: 200,
       splashTransition: SplashTransition.fadeTransition
     );
