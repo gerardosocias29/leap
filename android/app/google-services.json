@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "278686566343",
+    "project_id": "lema-99ee9",
+    "storage_bucket": "lema-99ee9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278686566343:android:3d7a75d6070d53d6197be2",
+        "android_client_info": {
+          "package_name": "com.example.lema"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278686566343-cfp1dr02s361hqo1h0vfm3m3pvgsaqrd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lema",
+            "certificate_hash": "675ca30155be002ad08b360a15be7fd2acb05ce6"
+          }
+        },
+        {
+          "client_id": "278686566343-edk2nj6f5tfj90v98cad88l2u4u8fq4h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgEFiRtjfzdtAJxMoOqsGLgVAhifdImow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278686566343-edk2nj6f5tfj90v98cad88l2u4u8fq4h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
