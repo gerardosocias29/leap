@@ -61,7 +61,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
         backgroundColor: Colors.white,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
-        color: Theme.of(context).primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
       ),
       body: _isloading ?
@@ -98,51 +98,52 @@ class _AchievementScreenState extends State<AchievementScreen> {
               ],
             ),
           ),
-        child: RefreshIndicator(
-          onRefresh: () async { _initRetrieval(); },
-          child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            itemCount: achievements.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              var achievement = achievements[index];
-              return SizedBox(
-                width: MediaQuery.of(context).size.width * 2,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  margin: const EdgeInsets.all(16.0),
-                  child: Container(
-                    height: 300,
-                    width: MediaQuery.of(context).size.width * 2,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.0),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
-                        image: AssetImage('${achievement['image_url']}')
+          child: RefreshIndicator(
+            onRefresh: () async { _initRetrieval(); },
+            child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemCount: achievements.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  var achievement = achievements[index];
+                  return SizedBox(
+                      width: MediaQuery.of(context).size.width * 2,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        margin: const EdgeInsets.all(16.0),
+                        child: Container(
+                          height: 300,
+                          width: MediaQuery.of(context).size.width * 2,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode( achievement['status'] != 'notify_done' ? Colors.black.withOpacity(0.1) : Colors.white, BlendMode.dstATop),
+                                  image: AssetImage('${achievement['image_url']}')
+                              )
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: (achievement['status'] != 'notify_done' ) ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('${achievement['achievement_name']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 30),),
+                                Text('${achievement['achievement_details']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 15),),
+                                const Icon(Icons.lock_outlined, size: 50,),
+                                Text('${achievement['progress']}%', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 15),)
+                              ],
+                            ) : null,
+                          ),
+                        ),
                       )
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: (achievement['isunlocked'] == null || achievement['isunlocked'] == false ) ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('${achievement['achievement_name']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 30),),
-                          Text('${achievement['achievement_details']}', style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 15),),
-                          const Icon(Icons.lock_outlined, size: 50,)
-                        ],
-                      ) : null,
-                    ),
-                  ),
-                )
-              );
-            }
-          ),
-        )
+                  );
+                }
+            ),
+          )
       ),
     );
   }

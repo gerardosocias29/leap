@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:achievement_view/achievement_view.dart';
+import 'package:achievement_view/achievement_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
@@ -524,13 +525,13 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
   );
 }
 
-showAchievementView(context){
+showAchievementView(context, achievement){
   print('#' * 200);
   print('Achievement View');
   AchievementView(
       context,
-      title: "Achievement Unlocked!",
-      subTitle: "Training completed successfully",
+      title: achievement['achievement_name'],
+      subTitle: achievement['achievement_details'],
       //onTab: _onTabAchievement,
       icon: const Icon(Icons.star_border_outlined, color: Colors.white,),
       //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
@@ -539,14 +540,19 @@ showAchievementView(context){
       //textStyleTitle: TextStyle(),
       //textStyleSubTitle: TextStyle(),
       alignment: Alignment.topCenter,
-      //duration: Duration(seconds: 3),
+      duration: Duration(seconds: 3),
       isCircle: true,
-      listener: (status){
-        print(status);
+      listener: (status) async {
         //AchievementState.opening
         //AchievementState.open
         //AchievementState.closing
         //AchievementState.closed
+        var stat = (status == AchievementState.closed);
+        if(stat){
+          print("status:: $status");
+          var res = await Api().putRequest({'data':'data'}, 'user_achievement/update/${achievement['user_achievement_id']}');
+          print(res);
+        }
       }
   ).show();
 }

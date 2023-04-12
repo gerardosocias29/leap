@@ -127,9 +127,9 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     print("statusCode::$statusCode");
     print(requestBody);
 
-    getUserTopics();
     setState(() {
-      Api().getAchievements(userDetails['id'], 'finished_lessons');
+      Api().getAchievements(userDetails['id'], 'finished_lessons', context);
+      getUserTopics();
     });
 
   }
