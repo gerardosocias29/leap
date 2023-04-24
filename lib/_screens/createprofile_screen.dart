@@ -283,7 +283,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         child: Image.file(
                           File(_image!.path),
                         ),
-                      ) : const Icon(Icons.camera_alt_outlined),
+                      ) : const Icon(Icons.image),
                     ),
                   ),
                   const SizedBox(

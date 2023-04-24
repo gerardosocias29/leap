@@ -13,6 +13,8 @@ import 'package:leap/utils/color_utils.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 import 'package:workmanager/workmanager.dart';
 
+import 'introduction_animation/introduction_animation_screen.dart';
+
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     // your code that you want to run in background
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
         primaryColor: hexStringToColor('#09c1ca'),
         primaryColorLight: hexStringToColor('#b5e9f9')
       ),
-      home: const SplashScreen(),
+      home: const IntroductionAnimationScreen(),
     );
   }
 }

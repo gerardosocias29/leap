@@ -51,18 +51,18 @@ showDeleteConfirmationDialog(context, callback) async {
   );
 }
 
-showNotificationDialog(context, String message) async {
+showNotificationDialog(context, String message, [String? title]) async {
   return showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Instructions'),
+      title: Text( title ?? 'Instructions'),
       content: Text(message),
       actions: <Widget>[
         MaterialButton(
           onPressed: () {
             Navigator.of(ctx).pop();
           },
-          child: const Text('Proceed'),
+          child: Text( title != null ? 'Close' : 'Proceed'),
         ),
       ],
     ),
