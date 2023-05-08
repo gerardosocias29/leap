@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../_screens/signin_screen.dart';
 import 'components/center_next_button.dart';
 import 'components/exclusive.dart';
 import 'components/proficient.dart';
@@ -111,6 +112,8 @@ class _IntroductionAnimationScreenState extends State<IntroductionAnimationScree
   }
 
   void _signUpClick() {
-    Navigator.pop(context);
+    // Navigator.pop(context);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => false );
   }
+
 }

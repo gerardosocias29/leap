@@ -94,16 +94,16 @@ class CenterNextButton extends StatelessWidget {
                     },
                     child: _signUpMoveAnimation.value > 0.7
                         ? InkWell(
-                            key: ValueKey('Sign Up button'),
+                            key: const ValueKey('Sign Up button'),
                             onTap: onNextClick,
                             child: Padding(
                               padding: EdgeInsets.only(left: 16.0, right: 16.0),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [
+                                children: const [
                                   Text(
-                                    'Sign Up',
+                                    'Sign In',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -136,9 +136,9 @@ class CenterNextButton extends StatelessWidget {
               position: _loginTextMoveAnimation,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const  [
                   Text(
-                    'Already have an account? ',
+                    'Don\'t have an account? ',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -146,7 +146,7 @@ class CenterNextButton extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Login',
+                    'Sign Up',
                     style: TextStyle(
                       color: Color(0xff132137),
                       fontSize: 16,

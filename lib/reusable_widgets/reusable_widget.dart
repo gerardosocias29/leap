@@ -200,6 +200,67 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
     ]);
 }
 
+AlertDialog idNumberDialog(context, [callback]){
+  var idNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  var isLoading = false;
+
+  void checkUserIdNUmber(idNumber) async {
+    print("idNumber:: $idNumber");
+    isLoading = true;
+    var urls = [
+      'check-student-id/${idNumber}', // 0
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    if(datas.length > 0){
+      isLoading = false;
+      callback(datas[0]);
+      Navigator.pop(context);
+    }
+  }
+
+  return AlertDialog(
+    title: const Text('Student ID Number'),
+    content: SizedBox(
+      width: double.maxFinite,
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+
+            TextFormField(
+              decoration: reusableInputDecoration(context, 'ID Number', 'Your ID NUMBER'),
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.next,
+              controller: idNumberController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter a valid ID Number';
+                }
+                return null;
+              },
+              onSaved: (value) { },
+            ),
+          ],
+        ),
+      )
+    ),
+    actions: [
+      TextButton(
+        onPressed: () async {
+          if (!_formKey.currentState!.validate()) {
+            return ;
+          }
+          checkUserIdNUmber(idNumberController.text);
+        },
+        child: const Text('Check'),
+      ),
+    ]
+  );
+
+}
+
 AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type, [callback, item = '']) {
   var url = (type == "Lesson") ? "lessons/create" : (type == "Topic") ? "topics/create" : "";
   var text_title = '';

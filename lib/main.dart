@@ -1,8 +1,9 @@
-import 'dart:isolate';
-import 'dart:ui';
+import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:leap/_screens/home_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
@@ -10,58 +11,57 @@ import 'package:flutter/material.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/utils/color_utils.dart';
 
-import 'package:leap/reusable_widgets/reusable_widget.dart';
-import 'package:workmanager/workmanager.dart';
-
+import 'app_theme.dart';
 import 'introduction_animation/introduction_animation_screen.dart';
 
-void callbackDispatcher() {
-  Workmanager().executeTask((taskName, inputData) async {
-    // your code that you want to run in background
-    print('#' * 200);
-    print('Executing task');
-    print('Task executed: ' + taskName);
-    print('inputData::');
-    print(inputData);
-
-    return Future.value(true);
-  });
-}
-
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(callbackDispatcher);
   await Firebase.initializeApp().then((value) => { print(StorageProvider().storageGetItem(StorageProvider().userStorage(), 'user_id')), print("value") });
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]).then((_) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness:
+      !kIsWeb && Platform.isAndroid ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Lema',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
-        primaryColor: hexStringToColor('#09c1ca'),
-        primaryColorLight: hexStringToColor('#b5e9f9')
+        primaryColor: const Color(0xff132137),
+        primaryColorLight: hexStringToColor('#b5e9f9'),
+        textTheme: AppTheme.textTheme,
+        platform: TargetPlatform.iOS,
       ),
       home: const IntroductionAnimationScreen(),
     );
+  }
+}
+
+class HexColor extends Color {
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF$hexColor';
+    }
+    return int.parse(hexColor, radix: 16);
   }
 }
 
