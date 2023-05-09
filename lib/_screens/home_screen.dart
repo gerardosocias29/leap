@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text(
-                    "Insights",
+                    "Learning Performance",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18,

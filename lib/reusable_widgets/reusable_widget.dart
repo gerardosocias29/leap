@@ -51,18 +51,18 @@ showDeleteConfirmationDialog(context, callback) async {
   );
 }
 
-showNotificationDialog(context, String message) async {
+showNotificationDialog(context, String message, [String? title]) async {
   return showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Instructions'),
+      title: Text( title ?? 'Instructions'),
       content: Text(message),
       actions: <Widget>[
         MaterialButton(
           onPressed: () {
             Navigator.of(ctx).pop();
           },
-          child: const Text('Proceed'),
+          child: Text( title != null ? 'Close' : 'Proceed'),
         ),
       ],
     ),
@@ -198,6 +198,67 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
             fontWeight: FontWeight.w400,
             color: color)))
     ]);
+}
+
+AlertDialog idNumberDialog(context, [callback]){
+  var idNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  var isLoading = false;
+
+  void checkUserIdNUmber(idNumber) async {
+    print("idNumber:: $idNumber");
+    isLoading = true;
+    var urls = [
+      'check-student-id/${idNumber}', // 0
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    if(datas.length > 0){
+      isLoading = false;
+      callback(datas[0]);
+      Navigator.pop(context);
+    }
+  }
+
+  return AlertDialog(
+    title: const Text('Student ID Number'),
+    content: SizedBox(
+      width: double.maxFinite,
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+
+            TextFormField(
+              decoration: reusableInputDecoration(context, 'ID Number', 'Your ID NUMBER'),
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.next,
+              controller: idNumberController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter a valid ID Number';
+                }
+                return null;
+              },
+              onSaved: (value) { },
+            ),
+          ],
+        ),
+      )
+    ),
+    actions: [
+      TextButton(
+        onPressed: () async {
+          if (!_formKey.currentState!.validate()) {
+            return ;
+          }
+          checkUserIdNUmber(idNumberController.text);
+        },
+        child: const Text('Check'),
+      ),
+    ]
+  );
+
 }
 
 AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type, [callback, item = '']) {

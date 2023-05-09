@@ -278,6 +278,20 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 10,
                   ),
                   signUpOption(),
+
+                  const SizedBox(
+                    height: 60,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      showNotificationDialog(context, 'This should be privacy policy', 'Privacy Policy');
+
+
+                    },
+                    child: const Text(
+                      'Privacy Policy'
+                    ),
+                  ),
                 ],
               )
             ),

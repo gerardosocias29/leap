@@ -24,7 +24,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     });
     var userdetail = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
     var urls = [
-      'leaderboards_lists/all'
+      'leaderboards_lists/20'
     ];
     var datas = await Api().multipleGetRequest(urls);
 

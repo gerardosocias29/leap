@@ -270,8 +270,13 @@ class _QuizScreenState extends State<QuizScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
+                const Text(
+                  'Select Level',
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
                 MaterialButton(
                   color: Theme.of(context).primaryColor,
@@ -294,7 +299,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   },
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 MaterialButton(
                   color: Theme.of(context).primaryColor,
@@ -317,7 +322,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   },
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 MaterialButton(
                   color: Theme.of(context).primaryColor,
