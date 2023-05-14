@@ -526,7 +526,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   textInputAction: TextInputAction.go,
                   onFieldSubmitted: (String value) => {
                     if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
-                      _answerQuestion(1)
+                      _answerQuestion(0)
                     } else {
                       // _answerQuestion(0)
                       setState(() {
