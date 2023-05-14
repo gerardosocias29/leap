@@ -49,10 +49,41 @@ class _QuizScreenState extends State<QuizScreen> {
   late var count_wrong_pronounce = 0;
   late var correct_word = 0;
 
+  List<Widget> buttons = [];
+
   Future _initRetrieval() async {
     userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
     setState(() {
       _isloading = true;
+      for (int i = 1; i <= 10; i++) {
+        buttons.add(
+          MaterialButton(
+            minWidth: 0,
+            height: 100,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            color: Theme.of(context).primaryColor,
+            padding: const EdgeInsets.only(top: 15, bottom: 15),
+            child: Text(
+              'Level $i',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            onPressed: () => {
+              setState(() {
+                quiz_type = '$i';
+                getData(quiz_type);
+              })
+            },
+          ),
+        );
+        // if(i != 10){
+        //   buttons.add(const SizedBox(height: 10));
+        // }
+      }
+
     });
   }
 
@@ -265,86 +296,53 @@ class _QuizScreenState extends State<QuizScreen> {
               ],
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'Select Level',
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  minWidth: double.infinity,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Select Level',
+                    style: const TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
                   ),
-                  padding: const EdgeInsets.only(top: 15, bottom: 15),
-                  child: const Text(
-                    'Easy',
-                    style: TextStyle(
-                      color: Colors.white,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 16,
+                    children: List.generate(10, (index) =>
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3 - 20,
+                        child: MaterialButton(
+                          minWidth: 0,
+                          height: 100,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.only(top: 15, bottom: 15),
+                          child: Text(
+                            'Level ${index + 1}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () => {
+                            setState(() {
+                              quiz_type = '${index + 1}';
+                              getData(quiz_type);
+                            })
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                  onPressed: () => {
-                    setState(() {
-                      quiz_type = 'easy';
-                      getData(quiz_type);
-                    })
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  minWidth: double.infinity,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.only(top: 15, bottom: 15),
-                  child: const Text(
-                    'Medium',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: () => {
-                    setState(() {
-                      quiz_type = 'medium';
-                      getData(quiz_type);
-                    })
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  minWidth: double.infinity,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.only(top: 15, bottom: 15),
-                  child: const Text(
-                    'Hard',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: () => {
-                    setState(() {
-                      quiz_type = 'hard';
-                      getData(quiz_type);
-                    })
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         )

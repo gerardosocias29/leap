@@ -31,6 +31,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
+  bool _isChecked = false;
+  void _handlePrivacyPolicy(value) {
+    setState(() {
+      _isChecked = true;
+      showNotificationDialog(context, 'This should be privacy policy', 'Privacy Policy');
+    });
+  }
+
   void _showErrorDialogBox(String message) async {
     return showDialog(
       context: context,
@@ -146,11 +154,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                     const SizedBox(
+                      height: 10  ,
+                    ),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text("Privacy Policy"),
+                      activeColor: Theme.of(context).primaryColor,
+                      value: _isChecked,
+                      onChanged: _handlePrivacyPolicy,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    const SizedBox(
                       height: 30  ,
                     ),
                     MaterialButton(
                       color: Theme.of(context).primaryColor,
                       onPressed: () {
+                        if(!_isChecked){
+                          showNotificationDialog(context, 'You should agree with the Privacy Policy', 'Notice');
+                          return ;
+                        }
                         if (!_formKey.currentState!.validate()) {
                           return ;
                         }

@@ -54,6 +54,7 @@ showDeleteConfirmationDialog(context, callback) async {
 showNotificationDialog(context, String message, [String? title]) async {
   return showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (ctx) => AlertDialog(
       title: Text( title ?? 'Instructions'),
       content: Text(message),
@@ -62,7 +63,7 @@ showNotificationDialog(context, String message, [String? title]) async {
           onPressed: () {
             Navigator.of(ctx).pop();
           },
-          child: Text( title != null ? 'Close' : 'Proceed'),
+          child: Text( title != null ? 'Close' : 'Agree'),
         ),
       ],
     ),
@@ -442,7 +443,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
   var answerController = TextEditingController(text: data!='' ? data['quiz_answer'] : '');
   var timeLimitController = TextEditingController(text: data!='' ? data['timer'].toString() : '');
 
-  final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
+  final List<String> quiz_type = <String>['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
   final List<String> answer_type = <String>['Choices', 'Speak'];
   String quizTypeDropdownValue = quiz_type.first;
   String answerTypeDropdownValue = answer_type.first;

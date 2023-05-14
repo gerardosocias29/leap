@@ -137,22 +137,22 @@ class CenterNextButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const  [
-                  Text(
-                    'Don\'t have an account? ',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Color(0xff132137),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  // Text(
+                  //   'Don\'t have an account? ',
+                  //   style: TextStyle(
+                  //     color: Colors.grey,
+                  //     fontSize: 14,
+                  //     fontWeight: FontWeight.normal,
+                  //   ),
+                  // ),
+                  // Text(
+                  //   'Sign Up',
+                  //   style: TextStyle(
+                  //     color: Color(0xff132137),
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
