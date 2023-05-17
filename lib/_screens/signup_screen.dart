@@ -35,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _handlePrivacyPolicy(value) {
     setState(() {
       _isChecked = true;
-      showNotificationDialog(context, 'This should be privacy policy', 'Privacy Policy');
+      showNotificationDialog(context, privacyPolicyStatement(), 'Privacy Policy');
     });
   }
 

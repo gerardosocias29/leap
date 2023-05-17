@@ -81,6 +81,11 @@ class _NavBarState extends State<NavBar> {
             title: const Text('Settings'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SettingsScreen()), (route) => true ),
           ),
+          ListTile(
+            leading: const Icon(Icons.code_outlined),
+            title: const Text('Credits'),
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SettingsScreen()), (route) => true ),
+          ),
           // const Divider(),
           // const Divider(),
           ListTile(

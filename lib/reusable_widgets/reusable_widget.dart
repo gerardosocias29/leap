@@ -57,7 +57,10 @@ showNotificationDialog(context, String message, [String? title]) async {
     barrierDismissible: false,
     builder: (ctx) => AlertDialog(
       title: Text( title ?? 'Instructions'),
-      content: Text(message),
+      content: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Text(message)
+      ),
       actions: <Widget>[
         MaterialButton(
           onPressed: () {
@@ -617,4 +620,8 @@ showAchievementView(context, achievement){
         }
       }
   ).show();
+}
+
+privacyPolicyStatement() {
+  return 'DATA PRIVACY POLICY STATEMENT\n\nThis application is committed to protecting the privacy and accuracy of confidential information to the extent possible, subject to provisions of the law. Other than as required by laws that guarantee public access to certain types of information, or in response to subpoenas or other legal instruments that authorize access, personally identifiable information is not actively shared. Re-distributing or selling personal information collected on our web servers is strictly prohibited.\n\nINFORMATION COLLECTED\n\nThis application collects the following information: Student’s last name, first name, middle name, gender, address, birthdate, student id number, email address, course, and year.\n\nUSE OF COLLECTED DATA\n\nThe data, which was collected from the students’ users are fed into the systems database, which is used to store the data collected and gathered. The student’s data will help the admin to know whom are those students excel in using the English grammar and English pronunciation.\n\nDISTRIBUTION OF COLLECTED INFORMATION\n\nWe will not disclose, without your consent, personal information collected about you, except for certain explicit circumstances in which disclosure is required by law.\n\nWe will not distribute or sell personal information to third-party organizations.';
 }

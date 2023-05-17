@@ -284,7 +284,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      showNotificationDialog(context, 'This should be privacy policy', 'Privacy Policy');
+                      showNotificationDialog(context, privacyPolicyStatement(), 'Privacy Policy');
 
 
                     },
