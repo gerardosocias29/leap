@@ -10,6 +10,7 @@ import 'package:leap/_screens/signin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/utils/color_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_theme.dart';
 import 'introduction_animation/introduction_animation_screen.dart';
@@ -24,6 +25,16 @@ void main() async {
   ]).then((_) => runApp(const MyApp()));
 }
 
+Future<bool> isFirstAppLaunch() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isFirstLaunch = prefs.getBool('first_launch') ?? true;
+  if (isFirstLaunch) {
+    await prefs.setBool('first_launch', false);
+  }
+  return isFirstLaunch;
+}
+
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -37,6 +48,36 @@ class MyApp extends StatelessWidget {
       systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
+
+    return FutureBuilder<bool>(
+      future: isFirstAppLaunch(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        print("snapshot:: $snapshot");
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show loading indicator or splash screen
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          // Handle error
+          return Text('Error: ${snapshot.error}');
+        } else {
+          bool isFirstLaunch = snapshot.data!;
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Lema',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              primaryColor: const Color(0xff132137),
+              primaryColorLight: hexStringToColor('#b5e9f9'),
+              textTheme: AppTheme.textTheme,
+              platform: TargetPlatform.iOS,
+            ),
+            home: isFirstLaunch ? IntroductionAnimationScreen() : SplashScreen(),
+          );
+        }
+      },
+    );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

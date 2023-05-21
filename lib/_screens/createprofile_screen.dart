@@ -13,6 +13,7 @@ import 'package:leap/_screens/home_screen.dart';
 
 import '../api.dart';
 import '../auth_service.dart';
+import '../navigation_home_screen.dart';
 import '../providers/navigator.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
@@ -101,7 +102,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     if(statusCode == 200){
       Navigator.pop(loadingContext);
-      NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
+      NavigatorController().pushAndRemoveUntil(context, NavigationHomeScreen(), false);
     } else {
       Navigator.pop(loadingContext);
       _showErrorDialogBox('Unexpected Error occured!');
@@ -116,7 +117,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if(response['status']){
       Navigator.pop(loadingContext);
       // ignore: use_build_context_synchronously
-      NavigatorController().pushAndRemoveUntil(context, const HomeScreen(), false);
+      NavigatorController().pushAndRemoveUntil(context, NavigationHomeScreen(), false);
     } else {
       Navigator.pop(loadingContext);
       _showErrorDialogBox('Unexpected Error occured!');

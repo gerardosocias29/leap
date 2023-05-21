@@ -5,17 +5,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
+import 'package:leap/_screens/chapter_list_screen.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:leap/_screens/grammar_list_screen.dart';
+import 'package:leap/_screens/home_list_first_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
 import 'package:leap/api.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
-
-import '../data_services/user_services.dart';
+import '../app_theme.dart';
 import '../navbar.dart';
-import '../providers/navigator.dart';
 import '../providers/storage.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,10 +23,9 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   double marginHorizontal = 16.0;
 
-  UserServices user_services = UserServices();
   final userStorage = StorageProvider().userStorage();
   final commonDataStorage = StorageProvider().commonDataStorage();
   late final user_id;
@@ -43,10 +40,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late double grammar_percentage = 0.0;
   late var total_users = 0;
   late double lessons_overall_percentage = 0.0;
+  late var dashboardData = [];
+
+  List<Widget> listViews = <Widget>[];
+  final ScrollController scrollController = ScrollController();
+  AnimationController? animationController;
 
   calcPercentage() {
     var percentage = (topicWithScore.length / topicLists.length);
     grammar_percentage = percentage;
+    homeListsView();
   }
 
   calculateLessonsUsage(data) {
@@ -73,19 +76,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       'user_topics_detailed/${userDetails['id']}', // 2
       'users_count', // 3
       'users_with_topics_done', // 4
-      'leaderboards_lists/3' // 5
+      'leaderboards_lists/3', // 5
+      'get_user_dashboard_data/${userDetails['id']}'
     ];
     var datas = await Api().multipleGetRequest(urls);
 
     setState(() {
+      dashboardData = datas[6];
       setChapterList(datas[0]);
       setTopicList(datas[1]);
       setTopicWithScore(datas[2]);
-      calcPercentage();
-
       total_users = datas[3]['users_count'] ?? 0;
+      calcPercentage();
       calculateLessonsUsage(datas[4]);
       leaderboardsLists = datas[5];
+
+      print('datas[6] ${datas[6]}');
       _isloading = false;
     });
   }
@@ -136,8 +142,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    animationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+
     super.initState();
     _initRetrieval();
+  }
+
+  @override
+  void dispose() {
+    animationController?.dispose();
+    super.dispose();
+  }
+
+  void homeListsView() {
+    const int count = 2;
+
+    listViews.add(
+      HomeListFirstScreen(
+        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+        animationController: animationController!,
+        grammarPercentage: grammar_percentage,
+        dashboardData: dashboardData,
+        totalUsers: total_users
+      ),
+    );
+  }
+
+
+  Widget getMainListViewUI() {
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: listViews.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        animationController?.forward();
+        return listViews[index];
+      },
+    );
   }
 
   @override
@@ -150,264 +191,309 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       shadowColor: Colors.white,
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
       ),
     ),
-    drawer: _isloading ? null : NavBar(userDetails: userDetails),
-    body: _isloading ?
-      const Center(
-        child: CircularProgressIndicator(),
-      )
-      :
-      Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
-        child: RefreshIndicator(
-          onRefresh: () => getData(),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Learning Performance",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      letterSpacing: 1.9,
-                      fontWeight: FontWeight.w700),
-                  )
-                ),
-                ( userDetails['role_id'] != 0) ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
-                      child: Container(
-                        height: 140.0,
-                        width: MediaQuery.of(context).size.width / 2.3,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: const <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 15.0,
-                              offset: Offset(0.75, 0.95))
-                          ],
-                          color: Colors.white
-                        ),
-                        child: CircularPercentIndicator(
-                          radius:50.0,
-                          lineWidth: 5.0,
-                          percent: grammar_percentage,
-                          animation: true,
-                          center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}%\nCompleted", textAlign: TextAlign.center),
-                          progressColor: Colors.green,
-                          footer: const Text(
-                            "All Topics",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
-                      child: Container(
-                        height: 140.0,
-                        width: MediaQuery.of(context).size.width / 2.3,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 15.0,
-                                  offset: Offset(0.75, 0.95))
-                            ],
-                            color: Colors.white
-                        ),
-                        child: CircularPercentIndicator(
-                          radius: 50.0,
-                          lineWidth: 5.0,
-                          percent: (overallScore / overallScore),
-                          animation: true,
-                          center: Text("$overallScore", textAlign: TextAlign.center),
-                          progressColor: Colors.green,
-                          footer: const Text(
-                            "Overall Score",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ),
-                    ),
-                  ],
-                ) : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
-                      child: Container(
-                        height: 140.0,
-                        width: MediaQuery.of(context).size.width / 2.3,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 15.0,
-                                  offset: Offset(0.75, 0.95))
-                            ],
-                            color: Colors.white
-                        ),
-                        child: CircularPercentIndicator(
-                          radius:50.0,
-                          lineWidth: 5.0,
-                          percent: total_users/total_users,
-                          animation: true,
-                          center: Text("$total_users", textAlign: TextAlign.center),
-                          progressColor: Colors.green,
-                          footer: const Text(
-                            "Total Users",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
-                      child: Container(
-                        height: 140.0,
-                        width: MediaQuery.of(context).size.width / 2.3,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 15.0,
-                                  offset: Offset(0.75, 0.95))
-                            ],
-                            color: Colors.white
-                        ),
-                        child: CircularPercentIndicator(
-                          radius: 50.0,
-                          lineWidth: 5.0,
-                          percent: lessons_overall_percentage,
-                          animation: true,
-                          center: Text("${(lessons_overall_percentage * 100).toStringAsFixed(0)}%", textAlign: TextAlign.center),
-                          progressColor: Colors.green,
-                          footer: const Text(
-                            "Lessons Usage",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                      ),
-                    ),
-                  ],
-                ) ,
-                const SizedBox(
-                  height: 30,
-                ),
+    body: Stack(
+      children: <Widget>[
+        getMainListViewUI(),
+        getCategoryUI()
+        // Container(
+        //     child: RefreshIndicator(
+        //       onRefresh: () => getData(),
+        //       child: SingleChildScrollView(
+        //           physics: const BouncingScrollPhysics(),
+        //           child: Column(
+        //             mainAxisAlignment: MainAxisAlignment.start,
+        //             crossAxisAlignment: CrossAxisAlignment.stretch,
+        //             children: <Widget>[
+        //               const Padding(
+        //                   padding: EdgeInsets.all(16.0),
+        //                   child: Text(
+        //                     "Learning Performance",
+        //                     style: TextStyle(
+        //                         color: Colors.black,
+        //                         fontSize: 18,
+        //                         letterSpacing: 1.9,
+        //                         fontWeight: FontWeight.w700),
+        //                   )
+        //               ),
+        //               ( userDetails['role_id'] != 2) ? Row(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                 children: <Widget>[
+        //                   Padding(
+        //                     padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
+        //                     child: Container(
+        //                       height: 140.0,
+        //                       width: MediaQuery.of(context).size.width / 2.3,
+        //                       decoration: BoxDecoration(
+        //                           borderRadius: BorderRadius.circular(24),
+        //                           boxShadow: const <BoxShadow>[
+        //                             BoxShadow(
+        //                                 color: Colors.grey,
+        //                                 blurRadius: 15.0,
+        //                                 offset: Offset(0.75, 0.95))
+        //                           ],
+        //                           color: Colors.white
+        //                       ),
+        //                       child: CircularPercentIndicator(
+        //                         radius:50.0,
+        //                         lineWidth: 5.0,
+        //                         percent: grammar_percentage,
+        //                         animation: true,
+        //                         center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}%\nCompleted", textAlign: TextAlign.center),
+        //                         progressColor: Colors.green,
+        //                         footer: const Text(
+        //                           "All Topics",
+        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+        //                         ),
+        //                         circularStrokeCap: CircularStrokeCap.round,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                   Padding(
+        //                     padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
+        //                     child: Container(
+        //                       height: 140.0,
+        //                       width: MediaQuery.of(context).size.width / 2.3,
+        //                       decoration: BoxDecoration(
+        //                           borderRadius: BorderRadius.circular(24),
+        //                           boxShadow: const <BoxShadow>[
+        //                             BoxShadow(
+        //                                 color: Colors.grey,
+        //                                 blurRadius: 15.0,
+        //                                 offset: Offset(0.75, 0.95))
+        //                           ],
+        //                           color: Colors.white
+        //                       ),
+        //                       child: CircularPercentIndicator(
+        //                         radius: 50.0,
+        //                         lineWidth: 5.0,
+        //                         percent: (overallScore / overallScore),
+        //                         animation: true,
+        //                         center: Text("$overallScore", textAlign: TextAlign.center),
+        //                         progressColor: Colors.green,
+        //                         footer: const Text(
+        //                           "Overall Score",
+        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+        //                         ),
+        //                         circularStrokeCap: CircularStrokeCap.round,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ) : Row(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                 children: <Widget>[
+        //                   Padding(
+        //                     padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
+        //                     child: Container(
+        //                       height: 140.0,
+        //                       width: MediaQuery.of(context).size.width / 2.3,
+        //                       decoration: BoxDecoration(
+        //                           borderRadius: BorderRadius.circular(24),
+        //                           boxShadow: const <BoxShadow>[
+        //                             BoxShadow(
+        //                                 color: Colors.grey,
+        //                                 blurRadius: 15.0,
+        //                                 offset: Offset(0.75, 0.95))
+        //                           ],
+        //                           color: Colors.white
+        //                       ),
+        //                       child: CircularPercentIndicator(
+        //                         radius:50.0,
+        //                         lineWidth: 5.0,
+        //                         percent: total_users/total_users,
+        //                         animation: true,
+        //                         center: Text("$total_users", textAlign: TextAlign.center),
+        //                         progressColor: Colors.green,
+        //                         footer: const Text(
+        //                           "Total Users",
+        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+        //                         ),
+        //                         circularStrokeCap: CircularStrokeCap.round,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                   Padding(
+        //                     padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
+        //                     child: Container(
+        //                       height: 140.0,
+        //                       width: MediaQuery.of(context).size.width / 2.3,
+        //                       decoration: BoxDecoration(
+        //                           borderRadius: BorderRadius.circular(24),
+        //                           boxShadow: const <BoxShadow>[
+        //                             BoxShadow(
+        //                                 color: Colors.grey,
+        //                                 blurRadius: 15.0,
+        //                                 offset: Offset(0.75, 0.95))
+        //                           ],
+        //                           color: Colors.white
+        //                       ),
+        //                       child: CircularPercentIndicator(
+        //                         radius: 50.0,
+        //                         lineWidth: 5.0,
+        //                         percent: lessons_overall_percentage,
+        //                         animation: true,
+        //                         center: Text("${(lessons_overall_percentage * 100).toStringAsFixed(0)}%", textAlign: TextAlign.center),
+        //                         progressColor: Colors.green,
+        //                         footer: const Text(
+        //                           "Lessons Usage",
+        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+        //                         ),
+        //                         circularStrokeCap: CircularStrokeCap.round,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ) ,
+        //               const SizedBox(
+        //                 height: 30,
+        //               ),
+        //
+        //               const Padding(
+        //                   padding: EdgeInsets.all(16.0),
+        //                   child: Text(
+        //                     "Lessons",
+        //                     style: TextStyle(
+        //                         color: Colors.black,
+        //                         fontSize: 18,
+        //                         letterSpacing: 1.9,
+        //                         fontWeight: FontWeight.w700),
+        //                   )
+        //               ),
+        //               Container(
+        //                 height: 210,
+        //                 child: ListView.builder(
+        //                   physics: const BouncingScrollPhysics(),
+        //                   scrollDirection: Axis.horizontal,
+        //                   itemCount: chapterLists.length,
+        //                   shrinkWrap: true,
+        //                   itemBuilder: (BuildContext context, int index) {
+        //                     print('printing list index');
+        //                     print(chapterLists[index]);
+        //                     return CourseCard(chapterLists[index]);
+        //                   },
+        //                 ),
+        //               ),
+        //
+        //               const SizedBox(
+        //                 height: 30,
+        //               ),
+        //               const Padding(
+        //                   padding: EdgeInsets.all(16.0),
+        //                   child: Text(
+        //                     "Leaderboards",
+        //                     style: TextStyle(
+        //                         color: Colors.black,
+        //                         fontSize: 18,
+        //                         letterSpacing: 1.9,
+        //                         fontWeight: FontWeight.w700),
+        //                   )
+        //               ),
+        //
+        //               Padding(
+        //                   padding: EdgeInsets.all(16.0),
+        //                   child: Column(
+        //                       crossAxisAlignment: CrossAxisAlignment.start,
+        //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                       children: <Widget>[
+        //                         Container(
+        //                           decoration: BoxDecoration(
+        //                               borderRadius: BorderRadius.circular(24),
+        //                               boxShadow: const <BoxShadow>[
+        //                                 BoxShadow(
+        //                                     color: Colors.grey,
+        //                                     blurRadius: 15.0,
+        //                                     offset: Offset(0.75, 0.95))
+        //                               ],
+        //                               color: Colors.white
+        //                           ),
+        //                           child: ListView.builder(
+        //                             physics: const BouncingScrollPhysics(),
+        //                             scrollDirection: Axis.vertical,
+        //                             itemCount: leaderboardsLists.length,
+        //                             shrinkWrap: true,
+        //                             itemBuilder: (BuildContext context, int index) {
+        //                               return LeaderBoard(index.toInt(), leaderboardsLists[index]);
+        //                             },
+        //                           ),
+        //
+        //                         ),
+        //                       ]
+        //                   )
+        //               ),
+        //             ],
+        //           )
+        //       ),
+        //     )
+        // )
+      ],
+    ),
 
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Lessons",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      letterSpacing: 1.9,
-                      fontWeight: FontWeight.w700),
-                  )
-                ),
-                Container(
-                  height: 210,
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: chapterLists.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      print('printing list index');
-                      print(chapterLists[index]);
-                      return CourseCard(chapterLists[index]);
-                    },
+  );
+
+
+  Widget getCategoryUI() {
+    final Animation<double> animation =
+    Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: animationController!,
+            curve: const Interval((1 / 2) * 2, 1.0,
+                curve: Curves.fastOutSlowIn)));
+    animationController?.forward();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 30),
+        AnimatedBuilder(
+          animation: animationController!,
+          builder: (BuildContext context, Widget? child) {
+            return Padding(
+              padding: EdgeInsets.only(
+                top: 8.0,
+                left: 18.0,
+                right: 16.0,
+                bottom: animation!.value * 8.0, // Add animation to the bottom padding
+              ),
+              child: Opacity(
+                opacity: animation!.value, // Add animation to the opacity
+                child: const Text(
+                  'Chapters',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 22,
+                    letterSpacing: 0.27,
+                    color: AppTheme.darkerText,
                   ),
                 ),
+              ),
+            );
+          },
+        ),
+        ChapterListScreen(
+          callBack: (category) {
+            moveTo(category);
+          },
+          chapters: chapterLists
+        ),
 
-                const SizedBox(
-                  height: 30,
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Leaderboards",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      letterSpacing: 1.9,
-                      fontWeight: FontWeight.w700),
-                  )
-                ),
+      ]
+    );
+  }
 
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: const <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 15.0,
-                              offset: Offset(0.75, 0.95))
-                          ],
-                          color: Colors.white
-                        ),
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: leaderboardsLists.length,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            return LeaderBoard(index.toInt(), leaderboardsLists[index]);
-                          },
-                        ),
-
-                      ),
-                    ]
-                  )
-                ),
-              ],
-            )
-          ),
-        )
-      )
-  );
+  void moveTo(list) {
+    print(list);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter: list)), (route) => true );
+  }
 }
 
 class LeaderBoard extends StatelessWidget {

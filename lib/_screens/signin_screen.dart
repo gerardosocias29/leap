@@ -13,6 +13,7 @@ import 'package:leap/utils/color_utils.dart';
 
 import '../_screens/home_screen.dart';
 import '../_screens/signup_screen.dart';
+import '../navigation_home_screen.dart';
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -77,7 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
       NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
     } else {
       Navigator.pop(loadingContext);
-      NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
+      NavigatorController().pushAndRemoveUntil(context, NavigationHomeScreen(), false);
     }
   }
 
