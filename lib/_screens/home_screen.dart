@@ -15,6 +15,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../app_theme.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
+import 'grid_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -83,13 +84,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     setState(() {
       dashboardData = datas[6];
+      leaderboardsLists = datas[5];
       setChapterList(datas[0]);
       setTopicList(datas[1]);
       setTopicWithScore(datas[2]);
       total_users = datas[3]['users_count'] ?? 0;
       calcPercentage();
       calculateLessonsUsage(datas[4]);
-      leaderboardsLists = datas[5];
 
       print('datas[6] ${datas[6]}');
       _isloading = false;
@@ -155,8 +156,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void homeListsView() {
-    const int count = 2;
-
+    const int count = 9;
+    listViews.add(
+      const Padding(
+        padding: EdgeInsets.only(
+          left: 18.0,
+          right: 16.0,// Add animation to the bottom padding
+        ),
+        child: Opacity(
+          opacity: 1, // Add animation to the opacity
+          child: Text(
+            'Learning Performance',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 22,
+              letterSpacing: 0.27,
+              color: AppTheme.darkerText,
+            ),
+          ),
+        ),
+      )
+    );
     listViews.add(
       HomeListFirstScreen(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
@@ -166,6 +187,89 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         totalUsers: total_users
       ),
     );
+    listViews.add(
+      const Padding(
+        padding: EdgeInsets.only(
+          left: 18.0,
+          right: 16.0,// Add animation to the bottom padding
+        ),
+        child: Opacity(
+          opacity: 1, // Add animation to the opacity
+          child: Text(
+            'Chapters',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 22,
+              letterSpacing: 0.27,
+              color: AppTheme.darkerText,
+            ),
+          ),
+        ),
+      )
+    );
+
+    listViews.add(
+      getCategoryUI()
+    );
+
+    listViews.add(
+      const Padding(
+        padding: EdgeInsets.only(
+          left: 18.0,
+          right: 16.0,// Add animation to the bottom padding
+        ),
+        child: Opacity(
+          opacity: 1, // Add animation to the opacity
+          child: Text(
+            'Top 3 User Leaderboards',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 22,
+              letterSpacing: 0.27,
+              color: AppTheme.darkerText,
+            ),
+          ),
+        ),
+      )
+    );
+
+    listViews.add(
+        const SizedBox(height: 20)
+    );
+
+    var indexing = 1;
+    for (var item in leaderboardsLists) {
+      listViews.add(
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 18.0,
+            right: 16.0,// Add animation to the bottom padding
+          ),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: (userDetails['id'] == item['id']) ? AppTheme.teal : AppTheme.salmon,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+            ),
+            elevation: (userDetails['id'] == item['id']) ? 5 : 3,
+            child: ListTile(
+              title: (userDetails['id'] == item['id']) ? const Text('You') : Text("${item['first_name']} ${item['last_name']}"),
+              trailing: Text("${item['score']}"),
+              leading: SizedBox(
+                width: 30,
+                height: 30,
+                child: Image.asset('assets/leaderboards_image/$indexing.png'),
+              ),
+            ),
+          ),
+        ),
+      );
+      indexing++;
+    }
+    //leaderboardsLists
   }
 
 
@@ -200,239 +304,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     body: Stack(
       children: <Widget>[
         getMainListViewUI(),
-        getCategoryUI()
-        // Container(
-        //     child: RefreshIndicator(
-        //       onRefresh: () => getData(),
-        //       child: SingleChildScrollView(
-        //           physics: const BouncingScrollPhysics(),
-        //           child: Column(
-        //             mainAxisAlignment: MainAxisAlignment.start,
-        //             crossAxisAlignment: CrossAxisAlignment.stretch,
-        //             children: <Widget>[
-        //               const Padding(
-        //                   padding: EdgeInsets.all(16.0),
-        //                   child: Text(
-        //                     "Learning Performance",
-        //                     style: TextStyle(
-        //                         color: Colors.black,
-        //                         fontSize: 18,
-        //                         letterSpacing: 1.9,
-        //                         fontWeight: FontWeight.w700),
-        //                   )
-        //               ),
-        //               ( userDetails['role_id'] != 2) ? Row(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                 children: <Widget>[
-        //                   Padding(
-        //                     padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
-        //                     child: Container(
-        //                       height: 140.0,
-        //                       width: MediaQuery.of(context).size.width / 2.3,
-        //                       decoration: BoxDecoration(
-        //                           borderRadius: BorderRadius.circular(24),
-        //                           boxShadow: const <BoxShadow>[
-        //                             BoxShadow(
-        //                                 color: Colors.grey,
-        //                                 blurRadius: 15.0,
-        //                                 offset: Offset(0.75, 0.95))
-        //                           ],
-        //                           color: Colors.white
-        //                       ),
-        //                       child: CircularPercentIndicator(
-        //                         radius:50.0,
-        //                         lineWidth: 5.0,
-        //                         percent: grammar_percentage,
-        //                         animation: true,
-        //                         center: Text("${(grammar_percentage * 100).toStringAsFixed(0)}%\nCompleted", textAlign: TextAlign.center),
-        //                         progressColor: Colors.green,
-        //                         footer: const Text(
-        //                           "All Topics",
-        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-        //                         ),
-        //                         circularStrokeCap: CircularStrokeCap.round,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                   Padding(
-        //                     padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
-        //                     child: Container(
-        //                       height: 140.0,
-        //                       width: MediaQuery.of(context).size.width / 2.3,
-        //                       decoration: BoxDecoration(
-        //                           borderRadius: BorderRadius.circular(24),
-        //                           boxShadow: const <BoxShadow>[
-        //                             BoxShadow(
-        //                                 color: Colors.grey,
-        //                                 blurRadius: 15.0,
-        //                                 offset: Offset(0.75, 0.95))
-        //                           ],
-        //                           color: Colors.white
-        //                       ),
-        //                       child: CircularPercentIndicator(
-        //                         radius: 50.0,
-        //                         lineWidth: 5.0,
-        //                         percent: (overallScore / overallScore),
-        //                         animation: true,
-        //                         center: Text("$overallScore", textAlign: TextAlign.center),
-        //                         progressColor: Colors.green,
-        //                         footer: const Text(
-        //                           "Overall Score",
-        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-        //                         ),
-        //                         circularStrokeCap: CircularStrokeCap.round,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ],
-        //               ) : Row(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                 children: <Widget>[
-        //                   Padding(
-        //                     padding: const EdgeInsets.fromLTRB(16.0, 16.0, 4.0, 16.0),
-        //                     child: Container(
-        //                       height: 140.0,
-        //                       width: MediaQuery.of(context).size.width / 2.3,
-        //                       decoration: BoxDecoration(
-        //                           borderRadius: BorderRadius.circular(24),
-        //                           boxShadow: const <BoxShadow>[
-        //                             BoxShadow(
-        //                                 color: Colors.grey,
-        //                                 blurRadius: 15.0,
-        //                                 offset: Offset(0.75, 0.95))
-        //                           ],
-        //                           color: Colors.white
-        //                       ),
-        //                       child: CircularPercentIndicator(
-        //                         radius:50.0,
-        //                         lineWidth: 5.0,
-        //                         percent: total_users/total_users,
-        //                         animation: true,
-        //                         center: Text("$total_users", textAlign: TextAlign.center),
-        //                         progressColor: Colors.green,
-        //                         footer: const Text(
-        //                           "Total Users",
-        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-        //                         ),
-        //                         circularStrokeCap: CircularStrokeCap.round,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                   Padding(
-        //                     padding: const EdgeInsets.fromLTRB(4.0, 16.0, 16.0, 16.0),
-        //                     child: Container(
-        //                       height: 140.0,
-        //                       width: MediaQuery.of(context).size.width / 2.3,
-        //                       decoration: BoxDecoration(
-        //                           borderRadius: BorderRadius.circular(24),
-        //                           boxShadow: const <BoxShadow>[
-        //                             BoxShadow(
-        //                                 color: Colors.grey,
-        //                                 blurRadius: 15.0,
-        //                                 offset: Offset(0.75, 0.95))
-        //                           ],
-        //                           color: Colors.white
-        //                       ),
-        //                       child: CircularPercentIndicator(
-        //                         radius: 50.0,
-        //                         lineWidth: 5.0,
-        //                         percent: lessons_overall_percentage,
-        //                         animation: true,
-        //                         center: Text("${(lessons_overall_percentage * 100).toStringAsFixed(0)}%", textAlign: TextAlign.center),
-        //                         progressColor: Colors.green,
-        //                         footer: const Text(
-        //                           "Lessons Usage",
-        //                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
-        //                         ),
-        //                         circularStrokeCap: CircularStrokeCap.round,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ],
-        //               ) ,
-        //               const SizedBox(
-        //                 height: 30,
-        //               ),
-        //
-        //               const Padding(
-        //                   padding: EdgeInsets.all(16.0),
-        //                   child: Text(
-        //                     "Lessons",
-        //                     style: TextStyle(
-        //                         color: Colors.black,
-        //                         fontSize: 18,
-        //                         letterSpacing: 1.9,
-        //                         fontWeight: FontWeight.w700),
-        //                   )
-        //               ),
-        //               Container(
-        //                 height: 210,
-        //                 child: ListView.builder(
-        //                   physics: const BouncingScrollPhysics(),
-        //                   scrollDirection: Axis.horizontal,
-        //                   itemCount: chapterLists.length,
-        //                   shrinkWrap: true,
-        //                   itemBuilder: (BuildContext context, int index) {
-        //                     print('printing list index');
-        //                     print(chapterLists[index]);
-        //                     return CourseCard(chapterLists[index]);
-        //                   },
-        //                 ),
-        //               ),
-        //
-        //               const SizedBox(
-        //                 height: 30,
-        //               ),
-        //               const Padding(
-        //                   padding: EdgeInsets.all(16.0),
-        //                   child: Text(
-        //                     "Leaderboards",
-        //                     style: TextStyle(
-        //                         color: Colors.black,
-        //                         fontSize: 18,
-        //                         letterSpacing: 1.9,
-        //                         fontWeight: FontWeight.w700),
-        //                   )
-        //               ),
-        //
-        //               Padding(
-        //                   padding: EdgeInsets.all(16.0),
-        //                   child: Column(
-        //                       crossAxisAlignment: CrossAxisAlignment.start,
-        //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                       children: <Widget>[
-        //                         Container(
-        //                           decoration: BoxDecoration(
-        //                               borderRadius: BorderRadius.circular(24),
-        //                               boxShadow: const <BoxShadow>[
-        //                                 BoxShadow(
-        //                                     color: Colors.grey,
-        //                                     blurRadius: 15.0,
-        //                                     offset: Offset(0.75, 0.95))
-        //                               ],
-        //                               color: Colors.white
-        //                           ),
-        //                           child: ListView.builder(
-        //                             physics: const BouncingScrollPhysics(),
-        //                             scrollDirection: Axis.vertical,
-        //                             itemCount: leaderboardsLists.length,
-        //                             shrinkWrap: true,
-        //                             itemBuilder: (BuildContext context, int index) {
-        //                               return LeaderBoard(index.toInt(), leaderboardsLists[index]);
-        //                             },
-        //                           ),
-        //
-        //                         ),
-        //                       ]
-        //                   )
-        //               ),
-        //             ],
-        //           )
-        //       ),
-        //     )
-        // )
       ],
     ),
 
@@ -444,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: animationController!,
-            curve: const Interval((1 / 2) * 2, 1.0,
+            curve: const Interval(1.0, 1.0,
                 curve: Curves.fastOutSlowIn)));
     animationController?.forward();
 
@@ -452,227 +323,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(height: 30),
-        AnimatedBuilder(
-          animation: animationController!,
-          builder: (BuildContext context, Widget? child) {
-            return Padding(
-              padding: EdgeInsets.only(
-                top: 8.0,
-                left: 18.0,
-                right: 16.0,
-                bottom: animation!.value * 8.0, // Add animation to the bottom padding
-              ),
-              child: Opacity(
-                opacity: animation!.value, // Add animation to the opacity
-                child: const Text(
-                  'Chapters',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22,
-                    letterSpacing: 0.27,
-                    color: AppTheme.darkerText,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
         ChapterListScreen(
           callBack: (category) {
             moveTo(category);
           },
           chapters: chapterLists
         ),
-
       ]
+    );
+  }
+
+  Widget getTopicUi() {
+    final Animation<double> animation =
+    Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: animationController!,
+            curve: const Interval(1.0, 1.0,
+                curve: Curves.fastOutSlowIn)));
+    animationController?.forward();
+
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Flexible(
+            child: GridList(
+              callBack: (category) {
+                moveTo(category);
+              },
+            ),
+          )
+        ]
     );
   }
 
   void moveTo(list) {
     print(list);
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter: list)), (route) => true );
-  }
-}
-
-class LeaderBoard extends StatelessWidget {
-  final int index;
-  final leaderboard;
-
-  const LeaderBoard(
-    this.index, this.leaderboard, {super.key}
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    int ind = index + 1;
-    Widget crown;
-    crown = (ind == 1) ? Padding(
-        padding: const EdgeInsets.only(right: 0.0),
-        child: Stack(
-          alignment: Alignment.center,
-          children: const <Widget>[
-            Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.yellow,)),
-            Padding(
-              padding: EdgeInsets.only(left: 8.0, top: 6),
-              child: Center(child: Text('1', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
-            )
-          ],
-        )
-    ) : ((ind == 2) ? Padding(
-            padding: const EdgeInsets.only(right: 0.0),
-            child: Stack(
-              alignment: Alignment.center,
-              children: const <Widget>[
-                Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.grey,)),
-                Padding(
-                  padding: EdgeInsets.only(left: 8.0, top: 6),
-                  child: Center(child: Text('2', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
-                )
-              ],
-            )
-        ) : ((ind == 3) ? Padding(
-                padding: const EdgeInsets.only(right: 0.0),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Center(child: Icon(FontAwesomeIcons.crown, size: 36, color: Colors.orange[300],)),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8.0, top: 6),
-                      child: Center(child: Text('3', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),)),
-                    )
-                  ],
-                )
-            ) : CircleAvatar(
-              backgroundColor: Colors.grey,
-              radius: 13,
-              child: Text(
-                ind.toString(),
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-                ),)
-            )) );
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        height: 100,
-        decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(24.0)),
-            boxShadow: [BoxShadow(color: Colors.black26,blurRadius: 5.0)]
-        ),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 0.0),
-                  child: Row(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15.0, right: 25),
-                          child: crown,
-                        ),
-                      ),
-
-                      Align(
-                        child: CircleAvatar(
-                          backgroundColor: Colors.red.shade800,
-                          radius: 30,
-                          child: Text('${leaderboard['first_name'].substring(0,1)}${leaderboard['last_name'].substring(0,1)}'.toUpperCase()),
-                        ),
-                      ),
-
-                      Align(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, top: 5),
-                                child: Text(leaderboard['first_name'], style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
-                              ),
-                            ],
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('${leaderboard['score']}', style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CourseCard extends StatelessWidget {
-  final list;
-
-  const CourseCard(
-    this.list, {super.key}
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child:
-        Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(
-              height: 140.0,
-              width: 250.0,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('${list['photo_url']}'), fit: BoxFit.cover
-                  ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: const <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 15.0,
-                        offset: Offset(0.75, 0.95))
-                  ],
-                  color: Colors.white),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Text(
-                '${list['chapter_name']}',
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.9,
-                    fontSize: 16.0),
-              ),
-            ),
-          ],
-        ),
-      ),
-      onTap: () {
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GrammarListScreen(chapter: list)), (route) => true );
-      },
-    );
   }
 }

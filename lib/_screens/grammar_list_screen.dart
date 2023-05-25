@@ -74,38 +74,12 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
       ),
       body: _isloading ?
         Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
           child:
           const Center(
             child: CircularProgressIndicator(),
           )
         )
         : Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.2, 0.5, 0.7, 1],
-                colors: [
-                  Color(0xffffffff),
-                  Color(0xfffafdff),
-                  Color(0xffE7FFFF),
-                  Color(0xffE7FFFF),
-                ],
-              ),
-            ),
           child: RefreshIndicator(
             onRefresh: () async { _initRetrieval(); },
             child: ListView.builder(
@@ -114,6 +88,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               itemBuilder: (context, index) {
                 final item = lessonLists[index];
                 return Card(
+                  elevation: 2,
                   child: ListTile(
                     title: Text("${item['lesson_name']}"),
                       trailing: userDetails['role_id'] == 0 ? Row(

@@ -69,37 +69,11 @@ class _AchievementScreenState extends State<AchievementScreen> {
       body: _isloading ?
       Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
           height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: RefreshIndicator(
@@ -163,25 +137,27 @@ class _AchievementScreenState extends State<AchievementScreen> {
                                       ? [
                                     Text(
                                       '${achievement['achievement_name']}',
+                                      textAlign: TextAlign.center,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 30),
+                                          fontSize: 16),
                                     ),
                                     Text(
                                       '${achievement['achievement_details']}',
+                                      textAlign: TextAlign.center,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 15),
+                                          fontSize: 12),
                                     ),
                                     const Icon(
                                       Icons.lock_outlined,
-                                      size: 50,
+                                      size: 25,
                                     ),
                                     Text(
                                       '${achievement['progress']}%',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 15),
+                                          fontSize: 12),
                                     )
                                   ]
                                       : [],

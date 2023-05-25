@@ -62,37 +62,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       body: _isloading ?
       Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: RefreshIndicator(
           onRefresh: () async { _initRetrieval(); },
           child: ListView.builder(
@@ -111,8 +85,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 child: ListTile(
                   title: (userDetails['id'] == item['id']) ? const Text('You') : Text("${item['first_name']} ${item['last_name']}"),
                   trailing: Text("${item['score']}"),
-                  leading: (index < 3) ? Icon(FontAwesomeIcons.medal, color: (index == 0) ? Colors.yellow : ((index == 1) ? Colors.grey : Colors.orange[300]),) :
-                    SizedBox(child: Text((index + 1).toString(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.left,)),
+                  leading:
+                    SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: Image.asset('assets/leaderboards_image/${index + 1}.png')
+                    ),
                 ),
               );
             },

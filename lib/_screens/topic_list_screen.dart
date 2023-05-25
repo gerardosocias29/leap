@@ -91,38 +91,12 @@ class _TopicListScreenState extends State<TopicListScreen> {
       ),
       body: _isloading ?
         Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
           child:
           const Center(
             child: CircularProgressIndicator(),
           )
         )
       : Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
         child: RefreshIndicator(
           onRefresh: () async { getTopicLists(); },
           child: ListView.builder(
@@ -134,6 +108,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
             itemBuilder: (context, index) {
               final item = filteredList[index];
               return Card(
+                elevation: 2,
                 child: ListTile(
                   title: Text("${item['topic_title']}"),
                   trailing: userDetails['role_id'] == 0 ? Row(

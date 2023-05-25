@@ -82,37 +82,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: _isloading ?
       Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(

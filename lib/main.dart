@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:leap/_screens/home_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:leap/navigation_home_screen.dart';
 import 'package:leap/providers/storage.dart';
 import 'package:leap/utils/color_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,12 +69,12 @@ class MyApp extends StatelessWidget {
             title: 'Lema',
             theme: ThemeData(
               primarySwatch: Colors.blue,
-              primaryColor: const Color(0xff132137),
+              primaryColor: hexStringToColor('#315f72'),
               primaryColorLight: hexStringToColor('#b5e9f9'),
               textTheme: AppTheme.textTheme,
               platform: TargetPlatform.iOS,
             ),
-            home: isFirstLaunch ? IntroductionAnimationScreen() : SplashScreen(),
+            home: isFirstLaunch ? SignInScreen() : NavigationHomeScreen(),
           );
         }
       },

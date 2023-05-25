@@ -68,38 +68,12 @@ class _QuizListScreenState extends State<QuizListScreen> {
       body: _isloading ?
         Container(
           height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
           child: const Center(
             child: CircularProgressIndicator(),
           ),
         )
         : Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
         child: RefreshIndicator(
           onRefresh: () async { _initRetrieval(); },
           child: ListView.builder(
@@ -108,6 +82,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
             itemBuilder: (context, index) {
               final item = quizlists[index];
               return Card(
+                elevation: 2,
                 child: ListTile(
                     title: Text("${item['quiz_question']}"),
                     subtitle: Text(item['quiz_type'].toString().toUpperCase()),
