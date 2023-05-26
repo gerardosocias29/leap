@@ -28,7 +28,7 @@ class HomeDrawer extends StatefulWidget {
 class _HomeDrawerState extends State<HomeDrawer> {
   List<DrawerList>? drawerList;
   late Map userDetails = {};
-  late Uint8List bytes;
+  late final Uint8List bytes;
   final userStorage = StorageProvider().userStorage();
 
   @override
@@ -38,7 +38,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
     setState(() {
       userDetails = getGlobalUserDetails();
-      if(userDetails != null){
+      if(userDetails.isNotEmpty){
         bytes = base64Decode(userDetails['photoURL']);
       }
     });
