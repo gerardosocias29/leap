@@ -25,8 +25,8 @@ class SignInScreen extends StatefulWidget {
   _SignInScreenState createState() => _SignInScreenState();
 }
 class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController _passwordTextController = TextEditingController(text: 'password');
-  final TextEditingController _emailTextController = TextEditingController(text: 'test2@email.com');
+  final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _emailTextController = TextEditingController();
   final _passwordFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   final userStorage = StorageProvider().userStorage();

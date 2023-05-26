@@ -369,12 +369,12 @@ class HomeListFirstScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 const Text(
-                                  'Achievements',
+                                  'Achievement',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontFamily: AppTheme.fontName,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     letterSpacing: -0.2,
                                     color: AppTheme.darkText,
                                   ),
@@ -441,7 +441,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                       style: TextStyle(
                                         fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         letterSpacing: -0.2,
                                         color: AppTheme.darkText,
                                       ),
@@ -511,7 +511,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                       style: TextStyle(
                                         fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         letterSpacing: -0.2,
                                         color: AppTheme.darkText,
                                       ),
