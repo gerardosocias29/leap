@@ -146,8 +146,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
                                       '${achievement['achievement_details']}',
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12),
+                                          fontSize: 10),
                                     ),
                                     const Icon(
                                       Icons.lock_outlined,

@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:leap/_screens/topic_view_screen.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -107,42 +108,63 @@ class _TopicListScreenState extends State<TopicListScreen> {
             // Convert each item into a widget based on the type of item it is.
             itemBuilder: (context, index) {
               final item = filteredList[index];
-              return Card(
-                elevation: 2,
-                child: ListTile(
-                  title: Text("${item['topic_title']}"),
-                  trailing: userDetails['role_id'] == 0 ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit_outlined,
-                          size: 20.0,
-                          // color: Colors.black,
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: AppTheme.teal
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  elevation: 3,
+                  child: ListTile(
+                    title: Text("${item['topic_title']}"),
+                    trailing: userDetails['role_id'] == 0 ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 20.0,
+                            // color: Colors.black,
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => alertDialog(context, 'Update Topic', widget.lesson_id, false, 'update_topic', getTopicLists, item),
+                            );
+                          },
                         ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => alertDialog(context, 'Update Topic', widget.lesson_id, false, 'update_topic', getTopicLists, item),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outlined,
-                          size: 20.0,
-                          color: Colors.red,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outlined,
+                            size: 20.0,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            //   _onDeleteItemPressed(index);
+                            showDeleteConfirmationDialog(context, () => { _topicDeletion(item['id']) });
+                          },
                         ),
-                        onPressed: () {
-                          //   _onDeleteItemPressed(index);
-                          showDeleteConfirmationDialog(context, () => { _topicDeletion(item['id']) });
-                        },
-                      ),
-                    ],
-                  ) : null,
-                  onTap: () {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item, chapter_name: widget.chapter_name)), (route) => true );
-                  }
+                      ],
+                    ) : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chevron_right_outlined,
+                            size: 20,
+                            color: AppTheme.teal,
+                          ),
+                          onPressed: () {},
+                        )
+                      ]
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: item, chapter_name: widget.chapter_name)), (route) => true );
+                    }
+                  ),
                 ),
               );
             },

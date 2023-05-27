@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:leap/_screens/viewquiz_screen.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class QuizListScreen extends StatefulWidget {
@@ -81,46 +82,55 @@ class _QuizListScreenState extends State<QuizListScreen> {
             itemCount: quizlists.length,
             itemBuilder: (context, index) {
               final item = quizlists[index];
-              return Card(
-                elevation: 2,
-                child: ListTile(
-                    title: Text("${item['quiz_question']}"),
-                    subtitle: Text(item['quiz_type'].toString().toUpperCase()),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        IconButton(
-                          padding: const EdgeInsets.all(0.0),
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            size: 20.0,
-                            // color: Colors.black,
-                          ),
-                          onPressed: () {
-                            //   _onDeleteItemPressed(index);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', item['id'], false, _initRetrieval, item),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          padding: const EdgeInsets.all(0.0),
-                          icon: const Icon(
-                            Icons.delete_outlined,
-                            size: 20.0,
-                            color: Colors.red,
-                          ),
-                          onPressed: () {
-                            showDeleteConfirmationDialog(context, () => { _quizDeletion(item['id']) });
-                            //   _onDeleteItemPressed(index);
-                          },
-                        ),
-                      ],
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(
+                        color: AppTheme.teal
                     ),
-                    onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => ViewQuizScreen(quiz_data: item)), (route) => true );
-                    }
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  elevation: 3,
+                  child: ListTile(
+                      title: Text("${item['quiz_question']}"),
+                      subtitle: Text(item['quiz_type'].toString().toUpperCase()),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            padding: const EdgeInsets.all(0.0),
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 20.0,
+                              // color: Colors.black,
+                            ),
+                            onPressed: () {
+                              //   _onDeleteItemPressed(index);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', item['id'], false, _initRetrieval, item),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            padding: const EdgeInsets.all(0.0),
+                            icon: const Icon(
+                              Icons.delete_outlined,
+                              size: 20.0,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              showDeleteConfirmationDialog(context, () => { _quizDeletion(item['id']) });
+                              //   _onDeleteItemPressed(index);
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => ViewQuizScreen(quiz_data: item)), (route) => true );
+                      }
+                  ),
                 ),
               );
             },
