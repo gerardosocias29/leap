@@ -460,7 +460,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                         child: Row(
                                           children: <Widget>[
                                             Container(
-                                              width: quizScore['score_rank'] != 0 ? ( ((totalUsers - quizScore['score_rank'] + 1) / totalUsers * 70) *
+                                              width: quizScore['score_rank'] != 0 ? ( ((totalUsers - quizScore['score_rank'] + 1) / totalUsers * 60) *
                                                   animationController!.value) : (1 * animationController!.value),
                                               height: 4,
                                               decoration: BoxDecoration(
