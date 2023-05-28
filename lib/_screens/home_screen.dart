@@ -16,6 +16,7 @@ import '../app_theme.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import 'grid_list.dart';
+import 'home_list_admin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late var total_users = 0;
   late double lessons_overall_percentage = 0.0;
   late var dashboardData = [];
+  late var adminDashboardData = [];
 
   List<Widget> listViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
@@ -78,11 +80,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'users_count', // 3
       'users_with_topics_done', // 4
       'leaderboards_lists/3', // 5
-      'get_user_dashboard_data/${userDetails['id']}'
+      'get_user_dashboard_data/${userDetails['id']}',
+      '/get_admin_dashboard_data' // 7
     ];
     var datas = await Api().multipleGetRequest(urls);
 
     setState(() {
+      adminDashboardData = datas[7];
       dashboardData = datas[6];
       leaderboardsLists = datas[5];
       setChapterList(datas[0]);
@@ -158,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void homeListsView() {
     const int count = 9;
     listViews.add(
-      const Padding(
+        Padding(
         padding: EdgeInsets.only(
           left: 18.0,
           right: 16.0,// Add animation to the bottom padding
@@ -166,9 +170,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Opacity(
           opacity: 1, // Add animation to the opacity
           child: Text(
-            'Learning Performance',
+            userDetails['role_id'] == 0 ? 'Learning Usage' : 'Learning Performance',
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 22,
               letterSpacing: 0.27,
@@ -179,6 +183,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       )
     );
     listViews.add(
+      (userDetails['role_id'] == 0) ? HomeListAdminScreen(
+          animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+          animationController: animationController!,
+          grammarPercentage: grammar_percentage,
+          dashboardData: adminDashboardData,
+          totalUsers: total_users
+      ) :
       HomeListFirstScreen(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: animationController!,
