@@ -135,14 +135,11 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                           ],
                         ) : Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            IconButton(
-                              icon: const Icon(
-                                Icons.chevron_right_outlined,
-                                size: 20,
-                                color: AppTheme.teal,
-                              ),
-                              onPressed: () {},
+                          children: const<Widget>[
+                            Icon(
+                              Icons.chevron_right_outlined,
+                              size: 20,
+                              color: AppTheme.teal,
                             )
                           ]
                         ),

@@ -320,31 +320,35 @@ class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderSt
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  if (userDetails['role_id'] == 0) InkWell(
-                                    onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizListScreen(topic_id: widget.topic['id'] )), (route) => true ); },
-                                    child: Container(
-                                      width: 48,
-                                      height: 48,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.nearlyWhite,
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(16.0),
-                                          ),
-                                          border: Border.all(
-                                              color: AppTheme.grey
-                                                  .withOpacity(0.2)),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Quiz List',
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 18,
-                                              letterSpacing: 0.0,
-                                              color: AppTheme
-                                                  .nearlyWhite,
+                                  if (userDetails['role_id'] == 0) Expanded(
+                                    child: Center(
+                                      child: InkWell(
+                                        onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizListScreen(topic_id: widget.topic['id'] )), (route) => true ); },
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width / 2,
+                                          height: 48,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.nearlyWhite,
+                                              borderRadius: const BorderRadius.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                              border: Border.all(
+                                                  color: AppTheme.grey
+                                                      .withOpacity(0.2)),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Quiz List',
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0.0,
+                                                  color: AppTheme
+                                                      .teal,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -352,38 +356,41 @@ class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderSt
                                     ),
                                   ),
                                   SizedBox(
-                                    width: (userDetails['role_id'] == 0) ? 0 : 8,
+                                    width: (userDetails['role_id'] == 0) ? 8 : 0,
                                   ),
-                                  if (showBtn || userDetails['role_id'] == 0 || isTopicDone) Expanded(
-                                    child: Center(
-                                      child: InkWell(
-                                        onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId, chapter_name: widget.chapter_name)), (route) => true ); },
-                                        child: Container(
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.nearlyBlue,
-                                            borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0),
+                                  if (showBtn || userDetails['role_id'] == 0 || isTopicDone) Center(
+                                    child: Expanded(
+                                      child: Center(
+                                        child: InkWell(
+                                          onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId, chapter_name: widget.chapter_name)), (route) => true ); },
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width / 2,
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.nearlyBlue,
+                                              borderRadius: const BorderRadius.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                              boxShadow: <BoxShadow>[
+                                                BoxShadow(
+                                                    color: AppTheme
+                                                        .nearlyBlue
+                                                        .withOpacity(0.5),
+                                                    offset: const Offset(1.1, 1.1),
+                                                    blurRadius: 10.0),
+                                              ],
                                             ),
-                                            boxShadow: <BoxShadow>[
-                                              BoxShadow(
+                                            child: Center(
+                                              child: Text(
+                                                'Take Quiz',
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0.0,
                                                   color: AppTheme
-                                                      .nearlyBlue
-                                                      .withOpacity(0.5),
-                                                  offset: const Offset(1.1, 1.1),
-                                                  blurRadius: 10.0),
-                                            ],
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              'Take Quiz',
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
-                                                letterSpacing: 0.0,
-                                                color: AppTheme
-                                                    .nearlyWhite,
+                                                      .nearlyWhite,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -421,13 +428,13 @@ class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderSt
                         borderRadius: BorderRadius.circular(50.0)),
                     elevation: 10.0,
                     child: Container(
-                      width: 60,
-                      height: 60,
+                      width: 40,
+                      height: 40,
                       child: Center(
                         child: Icon(
                           isPlaying ? Icons.pause : Icons.play_arrow,
                           color: AppTheme.nearlyWhite,
-                          size: 30,
+                          size: 20,
                         ),
                       ),
                     ),

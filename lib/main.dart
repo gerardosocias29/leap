@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
               textTheme: AppTheme.textTheme,
               platform: TargetPlatform.iOS,
             ),
-            home: isFirstLaunch ? SignInScreen() : NavigationHomeScreen(),
+            home: isFirstLaunch ? IntroductionAnimationScreen() : SplashScreen(),
           );
         }
       },
