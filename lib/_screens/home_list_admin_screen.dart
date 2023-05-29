@@ -124,7 +124,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    '${( double.parse(chapterUsage[0]['usage_percentage']).toInt() * animation!.value).toInt()}',
+                                                    (double.parse(chapterUsage[0]['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:
@@ -221,7 +221,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    '${( double.parse(chapterUsage[1]['usage_percentage']).toInt() * animation!.value).toInt()}',
+                                                    ( double.parse(chapterUsage[1]['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:

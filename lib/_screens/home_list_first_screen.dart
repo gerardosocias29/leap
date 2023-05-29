@@ -125,7 +125,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    '${( double.parse(grammarAndSpeech['grammarAndSpeech'][0]['chapter_perc']).toInt() * animation!.value).toInt()}',
+                                                    ( double.parse(grammarAndSpeech['grammarAndSpeech'][0]['chapter_perc']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:
@@ -222,7 +222,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    '${( double.parse(grammarAndSpeech['grammarAndSpeech'][1]['chapter_perc']).toInt() * animation!.value).toInt()}',
+                                                    ( double.parse(grammarAndSpeech['grammarAndSpeech'][1]['chapter_perc']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:
