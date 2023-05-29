@@ -68,12 +68,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
         labelName: 'Leaderboard',
         icon: Icon(Icons.leaderboard_outlined),
       ),
-      DrawerList(
+      if(userDetails['role_id'] == 0) DrawerList(
         index: DrawerIndex.Userlists,
         labelName: 'Userlists',
         icon: Icon(Icons.groups_outlined),
       ),
-      DrawerList(
+      if(userDetails['role_id'] == 0) DrawerList(
         index: DrawerIndex.Settings,
         labelName: 'Settings',
         icon: Icon(Icons.settings_outlined),

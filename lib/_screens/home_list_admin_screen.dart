@@ -228,7 +228,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                                       AppTheme.fontName,
                                                       fontWeight:
                                                       FontWeight.w600,
-                                                      fontSize: 16,
+                                                      fontSize: 14,
                                                       color: AppTheme.darkerText,
                                                     ),
                                                   ),

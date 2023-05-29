@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'users_with_topics_done', // 4
       'leaderboards_lists/3', // 5
       'get_user_dashboard_data/${userDetails['id']}',
-      '/get_admin_dashboard_data' // 7
+      'get_admin_dashboard_data' // 7
     ];
     var datas = await Api().multipleGetRequest(urls);
 
