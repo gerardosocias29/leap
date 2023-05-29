@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
@@ -445,11 +446,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       _formKey.currentState?.save();
                       var loadingContext = context;
                       progressDialogue(loadingContext);
-                      CollectionReference users = FirebaseFirestore.instance.collection('users');
                       var user = await AuthService().getCurrentUser();
                       // print(user);
                       var data = {
-                        'uid': user.uid,
+                        'uid': (widget.userDetails.isNotEmpty) ? widget.userDetails['id'] : user.uid,
                         'address': _address.text,
                         'birthday': _birthday.text,
                         'course': coursedropdownValue,
@@ -464,9 +464,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         'username': _username.text,
                         'year': yearDropdownValue,
                         'photoURL': photoURL,
-                        'school_user_id': schoolUserDetails[0]['student_id']
+                        'school_user_id': (schoolUserDetails.isNotEmpty) ? schoolUserDetails[0]['student_id'] : widget.userDetails['school_user_id']
                       };
-
                       if(_isUpdate){
                         // ignore: use_build_context_synchronously
                         makePutRequest(data, loadingContext, 'users/update/${widget.userDetails['id']}');

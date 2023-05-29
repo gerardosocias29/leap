@@ -7,10 +7,8 @@ import 'dart:math' as math;
 class HomeListAdminScreen extends StatelessWidget {
   final AnimationController? animationController;
   final Animation<double>? animation;
-  final grammarPercentage;
   final dashboardData;
-  final totalUsers;
-  const HomeListAdminScreen({Key? key, this.animationController, this.animation, this.grammarPercentage, this.dashboardData, this.totalUsers}) : super(key: key);
+  const HomeListAdminScreen({Key? key, this.animationController, this.animation, this.dashboardData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,18 +16,6 @@ class HomeListAdminScreen extends StatelessWidget {
     var adminDashboardData = dashboardData[0];
     var chapterUsage = adminDashboardData['chapterUsage'];
     var registeredUsers = adminDashboardData['registeredUsers'];
-
-    String getRankSuffix(int rank) {
-      if (rank % 10 == 1 && rank % 100 != 11) {
-        return 'st';
-      } else if (rank % 10 == 2 && rank % 100 != 12) {
-        return 'nd';
-      } else if (rank % 10 == 3 && rank % 100 != 13) {
-        return 'rd';
-      } else {
-        return 'th';
-      }
-    }
 
     return AnimatedBuilder(
       animation: animationController!,
@@ -124,7 +110,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    (double.parse(chapterUsage[0]['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
+                                                    (double.parse(chapterUsage['grammar']['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:
@@ -221,7 +207,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                                   const EdgeInsets.only(
                                                       left: 4, bottom: 3),
                                                   child: Text(
-                                                    ( double.parse(chapterUsage[1]['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
+                                                    ( double.parse(chapterUsage['speech']['usage_percentage']).toDouble() * animation!.value).toStringAsFixed(1),
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                       fontFamily:
@@ -294,7 +280,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                         CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(
-                                            '${double.parse(registeredUsers[0]['percentage_registered_users']).toStringAsFixed(1)}%',
+                                            '${double.parse(registeredUsers['percentage_registered_users']).toStringAsFixed(1)}%',
                                             textAlign: TextAlign.center,
                                             style: const TextStyle(
                                               fontFamily:
@@ -307,7 +293,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            'Registered Users',
+                                            'Registered\nUsers',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontFamily:
@@ -332,7 +318,7 @@ class HomeListAdminScreen extends StatelessWidget {
                                             HexColor("#8A98E8"),
                                             HexColor("#8A98E8")
                                           ],
-                                          angle: ((grammarPercentage*100)*3.6) + (360 + ((grammarPercentage*100)*3.6) ) * (1.0 - animation!.value)),
+                                          angle: ((double.parse(registeredUsers['percentage_registered_users']))*3.6) + (360 + ((double.parse(registeredUsers['percentage_registered_users']))*3.6) ) * (1.0 - animation!.value)),
                                       child: const SizedBox(
                                         width: 108,
                                         height: 108,

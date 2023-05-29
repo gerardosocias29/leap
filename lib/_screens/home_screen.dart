@@ -9,6 +9,7 @@ import 'package:leap/_screens/chapter_list_screen.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:leap/_screens/grammar_list_screen.dart';
 import 'package:leap/_screens/home_list_first_screen.dart';
+import 'package:leap/_screens/home_list_admin_screen.dart';
 import 'package:leap/_screens/signin_screen.dart';
 import 'package:leap/api.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -16,7 +17,6 @@ import '../app_theme.dart';
 import '../navbar.dart';
 import '../providers/storage.dart';
 import 'grid_list.dart';
-import 'home_list_admin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void homeListsView() {
-    const int count = 9;
+    const int count = 7;
     listViews.add(
         Padding(
         padding: EdgeInsets.only(
@@ -182,22 +182,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       )
     );
-    listViews.add(
-      (userDetails['role_id'] == 0) ? HomeListAdminScreen(
+
+    if(userDetails['role_id'] == 0){
+      listViews.add(
+        HomeListAdminScreen(
+          animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+          animationController: animationController!,
+          dashboardData: adminDashboardData
+        )
+      );
+    } else {
+      listViews.add(
+        HomeListFirstScreen(
           animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
           animationController: animationController!,
           grammarPercentage: grammar_percentage,
-          dashboardData: adminDashboardData,
+          dashboardData: dashboardData,
           totalUsers: total_users
-      ) :
-      HomeListFirstScreen(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation( parent: animationController!, curve: const Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-        grammarPercentage: grammar_percentage,
-        dashboardData: dashboardData,
-        totalUsers: total_users
-      ),
-    );
+        )
+      );
+    }
     listViews.add(
       const Padding(
         padding: EdgeInsets.only(

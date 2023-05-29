@@ -34,12 +34,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   @override
   void initState() {
-    setDrawerListArray();
     bytes = base64Decode(photoURL);
-
     setState(() {
       userDetails = getGlobalUserDetails();
       bytes = base64Decode(userDetails['photoURL']);
+      setDrawerListArray();
     });
 
     super.initState();
