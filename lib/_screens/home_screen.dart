@@ -139,6 +139,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future _initRetrieval() async {
     listViews = <Widget>[];
+
+
     user_id = await StorageProvider().storageGetItem(userStorage, 'user_id');
     setState(() {
       _isloading = true;

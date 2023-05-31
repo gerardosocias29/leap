@@ -208,18 +208,24 @@ AlertDialog idNumberDialog(context, [callback]){
   var idNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var isLoading = false;
-
-  void checkUserIdNUmber(idNumber) async {
+  late var validId = "";
+  checkUserIdNUmber(idNumber) async {
     print("idNumber:: $idNumber");
     isLoading = true;
     var urls = [
       'check-student-id/${idNumber}', // 0
     ];
     var datas = await Api().multipleGetRequest(urls);
-    if(datas.length > 0){
+    if(datas[0].length > 0){
+      validId = idNumber;
       isLoading = false;
       callback(datas[0]);
       Navigator.pop(context);
+      return false;
+    } else {
+      validId = "";
+      _formKey.currentState!.validate();
+      return true;
     }
   }
 
@@ -242,6 +248,9 @@ AlertDialog idNumberDialog(context, [callback]){
                 if (value!.isEmpty) {
                   return 'Please enter a valid ID Number';
                 }
+                if(validId == ""){
+                  return 'Please enter a valid ID Number';
+                }
                 return null;
               },
               onSaved: (value) { },
@@ -253,9 +262,6 @@ AlertDialog idNumberDialog(context, [callback]){
     actions: [
       TextButton(
         onPressed: () async {
-          if (!_formKey.currentState!.validate()) {
-            return ;
-          }
           checkUserIdNUmber(idNumberController.text);
         },
         child: const Text('Check'),

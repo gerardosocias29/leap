@@ -56,10 +56,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   late var schoolUserDetails = [];
 
-  void callbackIdNumber(details) {
+  showIdNumberCallback(BuildContext context) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => idNumberDialog(context, callbackIdNumber),
+    );
+  }
+
+  callbackIdNumber(details) {
     setState(() {
       schoolUserDetails = details;
-      print("callback ID NUMBER: ${schoolUserDetails[0]}");
+      if(details == ""){
+        showIdNumberCallback(context);
+      }
+      print("callback ID NUMBER: ${details}");
     });
   }
 
@@ -202,11 +213,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         dropdownValue = gender_list.first;
         coursedropdownValue = course_list.first;
         yearDropdownValue = year_list.first;
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) => idNumberDialog(context, callbackIdNumber),
-        );
+        showIdNumberCallback(context);
       }
       setState(() {
         _isloading = false;
@@ -449,7 +456,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       var user = await AuthService().getCurrentUser();
                       // print(user);
                       var data = {
-                        'uid': (widget.userDetails.isNotEmpty) ? widget.userDetails['id'] : user.uid,
+                        'uid': (widget.userDetails != null) ? widget.userDetails['uid'] : user.uid,
                         'address': _address.text,
                         'birthday': _birthday.text,
                         'course': coursedropdownValue,
