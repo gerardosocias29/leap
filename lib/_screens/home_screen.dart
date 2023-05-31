@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   final userStorage = StorageProvider().userStorage();
   final commonDataStorage = StorageProvider().commonDataStorage();
-  late final user_id;
+  late var user_id;
 
   late var userDetails = {};
   late var chapterLists = [];
@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future _initRetrieval() async {
+    listViews = <Widget>[];
     user_id = await StorageProvider().storageGetItem(userStorage, 'user_id');
     setState(() {
       _isloading = true;
@@ -316,10 +317,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         color: Theme.of(context).primaryColor,
       ),
     ),
-    body: Stack(
-      children: <Widget>[
-        getMainListViewUI(),
-      ],
+    body: RefreshIndicator(
+      onRefresh: () async {
+        _initRetrieval();
+      },
+
+      child: Stack(
+        children: <Widget>[
+          getMainListViewUI(),
+        ],
+      ),
     ),
 
   );

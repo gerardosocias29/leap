@@ -16,7 +16,7 @@ class StorageProvider {
     storage.setItem(item, value);
   }
 
-  storageGetItem(LocalStorage storage, item){
+  dynamic storageGetItem(LocalStorage storage, item){
     return storage.getItem(item);
   }
 
