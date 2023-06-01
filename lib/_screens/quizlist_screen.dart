@@ -60,7 +60,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -68,12 +68,14 @@ class _QuizListScreenState extends State<QuizListScreen> {
       ),
       body: _isloading ?
         Container(
+          color: AppTheme.beige,
           height: double.infinity,
           child: const Center(
             child: CircularProgressIndicator(),
           ),
         )
         : Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: RefreshIndicator(
           onRefresh: () async { _initRetrieval(); },

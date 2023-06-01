@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
+import '../app_theme.dart';
 import '../providers/storage.dart';
 
 class UserListScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _UserListScreenState extends State<UserListScreen> {
       centerTitle: true,
       title: customSearchBar,
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.beige,
       shadowColor: Colors.white,
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
@@ -122,6 +123,7 @@ class _UserListScreenState extends State<UserListScreen> {
     ),
     body: _isloading ?
       Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: const Center(
           child: CircularProgressIndicator(),
@@ -129,6 +131,7 @@ class _UserListScreenState extends State<UserListScreen> {
       )
       :
       Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),

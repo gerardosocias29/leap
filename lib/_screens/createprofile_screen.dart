@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:leap/_screens/home_screen.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 import '../auth_service.dart';
 import '../navigation_home_screen.dart';
 import '../providers/navigator.dart';
@@ -233,10 +234,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       body: _isloading ?
       Container(
         height: double.infinity,
+        color: AppTheme.beige,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
+        color: AppTheme.beige,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

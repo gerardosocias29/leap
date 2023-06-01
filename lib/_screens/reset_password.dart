@@ -2,6 +2,7 @@ import 'package:leap/_screens/signin_screen.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../app_theme.dart';
 import '../auth_service.dart';
 import '../providers/navigator.dart';
 
@@ -39,6 +40,8 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: double.infinity,
+        color: AppTheme.beige,
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(

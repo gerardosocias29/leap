@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app_theme.dart';
+
 class CreditsScreen extends StatefulWidget {
   @override
   _CreditsScreenState createState() => _CreditsScreenState();
@@ -56,7 +58,7 @@ class _CreditsScreenState extends State<CreditsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.beige,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -64,7 +66,7 @@ class _CreditsScreenState extends State<CreditsScreen>
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,

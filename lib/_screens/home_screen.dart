@@ -165,6 +165,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void homeListsView() {
     const int count = 7;
     listViews.add(
+        const SizedBox(height: 20)
+    );
+    listViews.add(
         Padding(
         padding: EdgeInsets.only(
           left: 18.0,
@@ -313,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.beige,
       shadowColor: Colors.white,
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
@@ -324,10 +327,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _initRetrieval();
       },
 
-      child: Stack(
-        children: <Widget>[
-          getMainListViewUI(),
-        ],
+      child: Container(
+        color: AppTheme.beige,
+        child: Stack(
+          children: <Widget>[
+            getMainListViewUI(),
+          ],
+        ),
       ),
     ),
 

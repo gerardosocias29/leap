@@ -2,6 +2,8 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../app_theme.dart';
+
 class ViewQuizScreen extends StatefulWidget {
   final quiz_data;
   const ViewQuizScreen({Key? key, required this.quiz_data}) : super(key: key);
@@ -25,13 +27,14 @@ class _ViewQuizScreenState extends State<ViewQuizScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         )
       ),
       body: Container (
+        color: AppTheme.beige,
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(

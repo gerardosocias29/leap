@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:leap/api.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
+import '../app_theme.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -73,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -81,11 +82,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: _isloading ?
       Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

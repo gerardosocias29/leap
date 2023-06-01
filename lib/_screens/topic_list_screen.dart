@@ -84,7 +84,7 @@ class _TopicListScreenState extends State<TopicListScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -92,12 +92,14 @@ class _TopicListScreenState extends State<TopicListScreen> {
       ),
       body: _isloading ?
         Container(
+          color: AppTheme.beige,
           child:
           const Center(
             child: CircularProgressIndicator(),
           )
         )
       : Container(
+        color: AppTheme.beige,
         child: RefreshIndicator(
           onRefresh: () async { getTopicLists(); },
           child: ListView.builder(

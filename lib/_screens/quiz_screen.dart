@@ -9,6 +9,7 @@ import 'package:http/http.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 import '../providers/storage.dart';
 
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -274,7 +275,7 @@ class _QuizScreenState extends State<QuizScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -282,6 +283,7 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
       body: (quiz_type == '') ?
         Container(
+          color: AppTheme.beige,
           height: double.infinity,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -335,19 +337,7 @@ class _QuizScreenState extends State<QuizScreen> {
         )
       : (_isloading ?
         Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.2, 0.5, 0.7, 1],
-              colors: [
-                Color(0xffffffff),
-                Color(0xfffafdff),
-                Color(0xffE7FFFF),
-                Color(0xffE7FFFF),
-              ],
-            ),
-          ),
+          color: AppTheme.beige,
           child:
           const Center(
             child: CircularProgressIndicator(),
@@ -355,19 +345,7 @@ class _QuizScreenState extends State<QuizScreen> {
         )
       : ((_questionIndex < questions.length) ? Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
+        color: AppTheme.beige,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -538,19 +516,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
       ) : Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.5, 0.7, 1],
-            colors: [
-              Color(0xffffffff),
-              Color(0xfffafdff),
-              Color(0xffE7FFFF),
-              Color(0xffE7FFFF),
-            ],
-          ),
-        ),
+        color: AppTheme.beige,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -569,6 +535,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     height: 20,
                   ),
                   ElevatedButton(
+
                     onPressed: _submitScore,
                     child: const Text('Submit Score'),
                   ),

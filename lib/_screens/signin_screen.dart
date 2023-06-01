@@ -13,6 +13,7 @@ import 'package:leap/utils/color_utils.dart';
 
 import '../_screens/home_screen.dart';
 import '../_screens/signup_screen.dart';
+import '../app_theme.dart';
 import '../navigation_home_screen.dart';
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
@@ -87,12 +88,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            hexStringToColor("FFF"),
-            hexStringToColor("FFF"),
-            hexStringToColor("FFF")
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        color: AppTheme.beige,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

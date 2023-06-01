@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../app_theme.dart';
 import '../auth_service.dart';
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
@@ -62,6 +63,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Container(
+        height: double.infinity,
+        color: AppTheme.beige,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

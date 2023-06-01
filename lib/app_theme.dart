@@ -16,6 +16,7 @@ class AppTheme {
   static const Color peach = Color(0xFFEFB5A3);
   static const Color salmon = Color(0xFFF5E7E);
   static const Color teal = Color(0xFF315F72);
+  static const Color beige = Color(0xFFecd5bd);
 
   static const Color darkText = Color(0xFF253840);
   static const Color darkerText = Color(0xFF17262A);

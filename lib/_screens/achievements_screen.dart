@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:leap/_screens/achievement_users_screen.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 import '../providers/storage.dart';
 
 class AchievementScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -69,10 +70,12 @@ class _AchievementScreenState extends State<AchievementScreen> {
       body: _isloading ?
       Container(
         height: double.infinity,
+        color: AppTheme.beige,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
+          color: AppTheme.beige,
           height: double.infinity,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),

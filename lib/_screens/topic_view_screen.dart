@@ -230,7 +230,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderSt
               right: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.nearlyWhite,
+                  color: AppTheme.beige,
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(32.0),
                       topRight: Radius.circular(32.0)),
@@ -282,7 +282,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderSt
                                     fontWeight: FontWeight.w200,
                                     fontSize: 16,
                                     letterSpacing: 0.27,
-                                    color: AppTheme.nearlyBlue,
+                                    color: AppTheme.teal,
                                   ),
                                 ),
                               ],

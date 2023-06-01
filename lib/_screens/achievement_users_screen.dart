@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../app_theme.dart';
 
 class AchievementUsersScreen extends StatefulWidget {
   final achievement_id;
@@ -49,7 +50,7 @@ class _AchievementUsersScreenState extends State<AchievementUsersScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
          ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.beige,
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -57,6 +58,7 @@ class _AchievementUsersScreenState extends State<AchievementUsersScreen> {
       ),
       body: _isloading ?
       Container(
+        color: AppTheme.beige,
         height: double.infinity,
         child: const Center(
           child: CircularProgressIndicator(),
@@ -64,6 +66,7 @@ class _AchievementUsersScreenState extends State<AchievementUsersScreen> {
       )
       :
       (users.isNotEmpty) ? Container(
+        color: AppTheme.beige,
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),
           itemCount: users.length,
@@ -77,12 +80,15 @@ class _AchievementUsersScreenState extends State<AchievementUsersScreen> {
           }
         ),
       )
-      : const Center(
-        child: Text(
-          'No Data To Display',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+      : Container(
+        color: AppTheme.beige,
+        child: const Center(
+          child: Text(
+            'No Data To Display',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       )
