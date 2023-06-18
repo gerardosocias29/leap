@@ -10,7 +10,8 @@ class HomeListFirstScreen extends StatelessWidget {
   final grammarPercentage;
   final dashboardData;
   final totalUsers;
-  const HomeListFirstScreen({Key? key, this.animationController, this.animation, this.grammarPercentage, this.dashboardData, this.totalUsers}) : super(key: key);
+  final rank;
+  const HomeListFirstScreen({Key? key, this.animationController, this.animation, this.grammarPercentage, this.dashboardData, this.totalUsers, this.rank}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -481,7 +482,7 @@ class HomeListFirstScreen extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6),
                                       child: Text(
-                                        '${quizScore['score_rank']}${getRankSuffix(quizScore['score_rank'])}',
+                                        '${rank}${getRankSuffix(rank)}',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontFamily: AppTheme.fontName,

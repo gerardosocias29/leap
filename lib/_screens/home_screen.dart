@@ -45,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late var dashboardData = [];
   late var adminDashboardData = [];
 
+  var rankCount = 0;
+
   List<Widget> listViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
   AnimationController? animationController;
@@ -79,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'user_topics_detailed/${userDetails['id']}', // 2
       'users_count', // 3
       'users_with_topics_done', // 4
-      'leaderboards_lists/3', // 5
+      'leaderboards_lists/all', // 5
       'get_user_dashboard_data/${userDetails['id']}',
       'get_admin_dashboard_data' // 7
     ];
@@ -89,6 +91,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       adminDashboardData = datas[7];
       dashboardData = datas[6];
       leaderboardsLists = datas[5];
+
+      for(var x=0; x<leaderboardsLists.length; x++){
+        print('=====================');
+        print(leaderboardsLists[x]['id']);
+        print(userDetails['id']);
+        if(userDetails['id'] == leaderboardsLists[x]['id']){
+          rankCount = x+1;
+        }
+      }
+
       setChapterList(datas[0]);
       setTopicList(datas[1]);
       setTopicWithScore(datas[2]);
@@ -204,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           animationController: animationController!,
           grammarPercentage: grammar_percentage,
           dashboardData: dashboardData,
-          totalUsers: total_users
+          totalUsers: total_users,
+          rank: rankCount
         )
       );
     }
@@ -261,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     var indexing = 1;
+    int limit = 3;
     for (var item in leaderboardsLists) {
       listViews.add(
         Padding(
@@ -288,6 +302,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
       );
+      if (indexing >= limit) {
+        break; // Exit the loop once the limit is reached
+      }
       indexing++;
     }
     //leaderboardsLists
