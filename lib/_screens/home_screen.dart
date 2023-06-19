@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late var adminDashboardData = [];
 
   var rankCount = 0;
+  var rankScore = "";
 
   List<Widget> listViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
@@ -98,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         print(userDetails['id']);
         if(userDetails['id'] == leaderboardsLists[x]['id']){
           rankCount = x+1;
+          rankScore = leaderboardsLists[x]['score'];
         }
       }
 
@@ -217,7 +219,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           grammarPercentage: grammar_percentage,
           dashboardData: dashboardData,
           totalUsers: total_users,
-          rank: rankCount
+          rank: rankCount,
+          rankScore: rankScore
         )
       );
     }
