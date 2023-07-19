@@ -2,6 +2,11 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+
+>>>>>>> lemasian/main
 class ViewQuizScreen extends StatefulWidget {
   final quiz_data;
   const ViewQuizScreen({Key? key, required this.quiz_data}) : super(key: key);
@@ -25,13 +30,18 @@ class _ViewQuizScreenState extends State<ViewQuizScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
+<<<<<<< HEAD
         backgroundColor: Colors.white,
+=======
+        backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         )
       ),
       body: Container (
+<<<<<<< HEAD
         height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
@@ -47,6 +57,11 @@ class _ViewQuizScreenState extends State<ViewQuizScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+        width: double.infinity,
+>>>>>>> lemasian/main
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

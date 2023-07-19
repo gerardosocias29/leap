@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../providers/storage.dart';
 
 class UserListScreen extends StatefulWidget {
@@ -64,7 +68,11 @@ class _UserListScreenState extends State<UserListScreen> {
       centerTitle: true,
       title: customSearchBar,
       elevation: 0,
+<<<<<<< HEAD
       backgroundColor: Colors.white,
+=======
+      backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
       shadowColor: Colors.white,
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
@@ -122,6 +130,7 @@ class _UserListScreenState extends State<UserListScreen> {
     ),
     body: _isloading ?
       Container(
+<<<<<<< HEAD
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -136,12 +145,17 @@ class _UserListScreenState extends State<UserListScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+>>>>>>> lemasian/main
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       )
       :
       Container(
+<<<<<<< HEAD
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -156,6 +170,10 @@ class _UserListScreenState extends State<UserListScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+>>>>>>> lemasian/main
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),
           // Let the ListView know how many items it needs to build.

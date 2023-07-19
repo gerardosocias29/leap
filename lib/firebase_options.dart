@@ -23,9 +23,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -44,40 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDYFcYx25_R_NH6lZUr8vaANp7HiBoj1TI',
-    appId: '1:31700413083:web:02851832332ce323aa343e',
-    messagingSenderId: '31700413083',
-    projectId: 'leap-f50f3',
-    authDomain: 'leap-f50f3.firebaseapp.com',
-    storageBucket: 'leap-f50f3.appspot.com',
-    measurementId: 'G-B81WQ0QTFD',
+    apiKey: 'AIzaSyAo-sp-B3K1b8xLAHfxuUzo7qBnFb2s6cs',
+    appId: '1:278686566343:web:838f27ff95a08700197be2',
+    messagingSenderId: '278686566343',
+    projectId: 'lema-99ee9',
+    authDomain: 'lema-99ee9.firebaseapp.com',
+    storageBucket: 'lema-99ee9.appspot.com',
+    measurementId: 'G-KKL5EWNV3B',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDr0ennNwCjAiU2dNRMBcZ_spcEXJ1qu_U',
-    appId: '1:31700413083:android:5877c615dc208ba5aa343e',
-    messagingSenderId: '31700413083',
-    projectId: 'leap-f50f3',
-    storageBucket: 'leap-f50f3.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCt0fWYENz-TfXifceRsdd2e05a7Tq0kr0',
-    appId: '1:31700413083:ios:fb5f52126aa8f0e7aa343e',
-    messagingSenderId: '31700413083',
-    projectId: 'leap-f50f3',
-    storageBucket: 'leap-f50f3.appspot.com',
-    iosClientId: '31700413083-ove06ts8fkvrann8t8tiqnvjtk6br03g.apps.googleusercontent.com',
-    iosBundleId: 'com.example.leap',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCt0fWYENz-TfXifceRsdd2e05a7Tq0kr0',
-    appId: '1:31700413083:ios:fb5f52126aa8f0e7aa343e',
-    messagingSenderId: '31700413083',
-    projectId: 'leap-f50f3',
-    storageBucket: 'leap-f50f3.appspot.com',
-    iosClientId: '31700413083-ove06ts8fkvrann8t8tiqnvjtk6br03g.apps.googleusercontent.com',
-    iosBundleId: 'com.example.leap',
+    apiKey: 'AIzaSyDgEFiRtjfzdtAJxMoOqsGLgVAhifdImow',
+    appId: '1:278686566343:android:647e97399c899a34197be2',
+    messagingSenderId: '278686566343',
+    projectId: 'lema-99ee9',
+    storageBucket: 'lema-99ee9.appspot.com',
   );
 }

@@ -10,6 +10,7 @@ import 'package:leap/providers/storage.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
 import '_screens/createprofile_screen.dart';
+import '_screens/credits_screen.dart';
 import '_screens/grammar_list_screen.dart';
 import '_screens/signin_screen.dart';
 import 'auth_service.dart';
@@ -80,6 +81,11 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
             onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const SettingsScreen()), (route) => true ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.code_outlined),
+            title: const Text('Credits'),
+            onTap: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => CreditsScreen()), (route) => true ),
           ),
           // const Divider(),
           // const Divider(),

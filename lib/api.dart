@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+<<<<<<< HEAD
+=======
+import 'package:leap/reusable_widgets/reusable_widget.dart';
+>>>>>>> lemasian/main
 
 class Api {
   final backendUrl = dotenv.env['API_BACKEND_URL'] ?? 'http://192.168.0.186:8081';
@@ -63,7 +67,7 @@ class Api {
     return jsonDecode(response.body);
   }
 
-  triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type) async {
+  triggerAchievementCalculation(achievement_id, achievement_score, chapter_ids, user_id, type, context) async {
     var url = "";
     if(type == "finished_lessons"){
       url = "achievement/calculate_finished_lessons";
@@ -78,7 +82,8 @@ class Api {
       'user_id': user_id
     });
     if(url != ""){
-      await postRequest({
+      print("call achievements check progress if there is 100 percent :::: ");
+      postRequest({
         'achievement_id': achievement_id,
         'achievement_achievement_score': achievement_score,
         'achievement_chapter_ids': chapter_ids,
@@ -86,13 +91,22 @@ class Api {
       }, url);
 
       // need to call achievements check progress if there is 100 percent
-      /*var urls = [
+      var urls = [
         'achievements/full_progress/$user_id'
       ];
       var datas = await Api().multipleGetRequest(urls);
-      if(datas.length > 0){
+      if(datas[0].length > 0){
         print("HAS DATA!!!");
-      }*/
+        print(datas[0]);
+        var ids = [];
+        var achievements = datas[0];
+        achievements.forEach((achievement) {
+          showAchievementView(context, achievement);
+        });
+
+      }
+    } else {
+      print('no URL::::');
     }
   }
 
@@ -100,7 +114,7 @@ class Api {
   * user_id
   * type = "finished_lessons" or "all_quizzes" or "all_topics" or "all lectures"
   */
-  getAchievements(userId, type) async {
+  getAchievements(userId, type, context) async {
     print("getting achievements:::");
     var urls = [
       'achievements/list/all'
@@ -109,7 +123,17 @@ class Api {
     var achievements = datas[0];
     for(var achievement in achievements){
       if(achievement['type'] == type){
-        await triggerAchievementCalculation(achievement['id'], achievement['score_to_achieve'], achievement['chapter_ids'], userId, type);
+
+        Future<void> delayedPrint(achievement) async {
+          await triggerAchievementCalculation(achievement['id'], achievement['score_to_achieve'], achievement['chapter_ids'], userId, type, context);
+          await Future.delayed(Duration(seconds: 5));
+        }
+        Future<void> printAchievements(achievement) async {
+          delayedPrint(achievement);
+        }
+        printAchievements(achievement);
+
+
       }
     }
   }

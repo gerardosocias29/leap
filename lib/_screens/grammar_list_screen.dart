@@ -6,6 +6,10 @@ import 'package:http/http.dart';
 import 'package:leap/_screens/topic_list_screen.dart';
 
 import '../api.dart';
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../navbar.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -66,7 +70,11 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
+<<<<<<< HEAD
         backgroundColor: Colors.white,
+=======
+        backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -74,6 +82,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
       ),
       body: _isloading ?
         Container(
+<<<<<<< HEAD
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -87,12 +96,16 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               ],
             ),
           ),
+=======
+          color: AppTheme.beige,
+>>>>>>> lemasian/main
           child:
           const Center(
             child: CircularProgressIndicator(),
           )
         )
         : Container(
+<<<<<<< HEAD
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -106,6 +119,9 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                 ],
               ),
             ),
+=======
+          color: AppTheme.beige,
+>>>>>>> lemasian/main
           child: RefreshIndicator(
             onRefresh: () async { _initRetrieval(); },
             child: ListView.builder(
@@ -113,6 +129,7 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
               itemCount: lessonLists.length,
               itemBuilder: (context, index) {
                 final item = lessonLists[index];
+<<<<<<< HEAD
                 return Card(
                   child: ListTile(
                     title: Text("${item['lesson_name']}"),
@@ -149,6 +166,67 @@ class _GrammarListScreenState extends State<GrammarListScreen> {
                     onTap: () {
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'], chapter_name: widget.chapter['chapter_name'])), (route) => true );
                     }
+=======
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,// Add animation to the bottom padding
+                  ),
+                  child: Card(
+                    shape: const RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: AppTheme.teal
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    elevation: 3,
+                    child: ListTile(
+                      title: Text("${item['lesson_name']}"),
+
+                        trailing: userDetails['role_id'] == 0 ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit_outlined,
+                                size: 20.0,
+                                // color: Colors.black,
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => alertDialog(context, 'Update Lesson', widget.chapter['id'], false, 'update_lesson', _initRetrieval, item),
+                                  // alertDialog(context, 'Add Lesson', widget.chapter['id'], false, 'Lesson')
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outlined,
+                                size: 20.0,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                //   _onDeleteItemPressed(index);
+                                showDeleteConfirmationDialog(context, () => { _lessonDeletion(item['id']) });
+                              },
+                            ),
+                          ],
+                        ) : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const<Widget>[
+                            Icon(
+                              Icons.chevron_right_outlined,
+                              size: 20,
+                              color: AppTheme.teal,
+                            )
+                          ]
+                        ),
+                      onTap: () {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => TopicListScreen(lesson_id: item['id'], chapter_name: widget.chapter['chapter_name'])), (route) => true );
+                      }
+                    ),
+>>>>>>> lemasian/main
                   ),
                 );
               },

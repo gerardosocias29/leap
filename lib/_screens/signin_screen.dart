@@ -13,6 +13,11 @@ import 'package:leap/utils/color_utils.dart';
 
 import '../_screens/home_screen.dart';
 import '../_screens/signup_screen.dart';
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+import '../navigation_home_screen.dart';
+>>>>>>> lemasian/main
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
 import '../reusable_widgets/reusable_widget.dart';
@@ -77,7 +82,11 @@ class _SignInScreenState extends State<SignInScreen> {
       NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
     } else {
       Navigator.pop(loadingContext);
+<<<<<<< HEAD
       NavigatorController().pushAndRemoveUntil(context, HomeScreen(), false);
+=======
+      NavigatorController().pushAndRemoveUntil(context, NavigationHomeScreen(), false);
+>>>>>>> lemasian/main
     }
   }
 
@@ -86,12 +95,16 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+<<<<<<< HEAD
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
             hexStringToColor("FFF"),
             hexStringToColor("FFF"),
             hexStringToColor("FFF")
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+=======
+        color: AppTheme.beige,
+>>>>>>> lemasian/main
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -278,6 +291,23 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 10,
                   ),
                   signUpOption(),
+<<<<<<< HEAD
+=======
+
+                  const SizedBox(
+                    height: 60,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      showNotificationDialog(context, privacyPolicyStatement(), 'Privacy Policy');
+
+
+                    },
+                    child: const Text(
+                      'Privacy Policy'
+                    ),
+                  ),
+>>>>>>> lemasian/main
                 ],
               )
             ),

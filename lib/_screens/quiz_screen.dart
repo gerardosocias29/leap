@@ -9,6 +9,10 @@ import 'package:http/http.dart';
 import 'package:leap/reusable_widgets/reusable_widget.dart';
 
 import '../api.dart';
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../providers/storage.dart';
 
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -49,10 +53,47 @@ class _QuizScreenState extends State<QuizScreen> {
   late var count_wrong_pronounce = 0;
   late var correct_word = 0;
 
+<<<<<<< HEAD
+=======
+  List<Widget> buttons = [];
+
+>>>>>>> lemasian/main
   Future _initRetrieval() async {
     userDetails = jsonDecode(await StorageProvider().storageGetItem(userStorage, 'user_details'));
     setState(() {
       _isloading = true;
+<<<<<<< HEAD
+=======
+      for (int i = 1; i <= 10; i++) {
+        buttons.add(
+          MaterialButton(
+            minWidth: 0,
+            height: 100,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            color: Theme.of(context).primaryColor,
+            padding: const EdgeInsets.only(top: 15, bottom: 15),
+            child: Text(
+              'Level $i',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            onPressed: () => {
+              setState(() {
+                quiz_type = '$i';
+                getData(quiz_type);
+              })
+            },
+          ),
+        );
+        // if(i != 10){
+        //   buttons.add(const SizedBox(height: 10));
+        // }
+      }
+
+>>>>>>> lemasian/main
     });
   }
 
@@ -153,7 +194,11 @@ class _QuizScreenState extends State<QuizScreen> {
       }, 'user_topic_quiz/create');
     }
     setState(() {
+<<<<<<< HEAD
       Api().getAchievements(userDetails['id'], 'all_quizzes');
+=======
+      Api().getAchievements(userDetails['id'], 'all_quizzes', context);
+>>>>>>> lemasian/main
     });
     Navigator.of(context).pop(true);
     // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopicViewScreen(topic: widget.topic)) );
@@ -243,7 +288,11 @@ class _QuizScreenState extends State<QuizScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
+<<<<<<< HEAD
         backgroundColor: Colors.white,
+=======
+        backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -251,6 +300,7 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
       body: (quiz_type == '') ?
         Container(
+<<<<<<< HEAD
           height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -340,11 +390,63 @@ class _QuizScreenState extends State<QuizScreen> {
                   },
                 ),
               ],
+=======
+          color: AppTheme.beige,
+          height: double.infinity,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Select Level',
+                    style: const TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 16,
+                    children: List.generate(10, (index) =>
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3 - 20,
+                        child: MaterialButton(
+                          minWidth: 0,
+                          height: 100,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.only(top: 15, bottom: 15),
+                          child: Text(
+                            'Level ${index + 1}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () => {
+                            setState(() {
+                              quiz_type = '${index + 1}';
+                              getData(quiz_type);
+                            })
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+>>>>>>> lemasian/main
             ),
           ),
         )
       : (_isloading ?
         Container(
+<<<<<<< HEAD
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -358,6 +460,9 @@ class _QuizScreenState extends State<QuizScreen> {
               ],
             ),
           ),
+=======
+          color: AppTheme.beige,
+>>>>>>> lemasian/main
           child:
           const Center(
             child: CircularProgressIndicator(),
@@ -365,6 +470,7 @@ class _QuizScreenState extends State<QuizScreen> {
         )
       : ((_questionIndex < questions.length) ? Container(
         height: double.infinity,
+<<<<<<< HEAD
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -378,6 +484,9 @@ class _QuizScreenState extends State<QuizScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+>>>>>>> lemasian/main
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -523,7 +632,11 @@ class _QuizScreenState extends State<QuizScreen> {
                   textInputAction: TextInputAction.go,
                   onFieldSubmitted: (String value) => {
                     if(value.toLowerCase() == "${questions[_questionIndex]['quiz_answer']}".toLowerCase()){
+<<<<<<< HEAD
                       _answerQuestion(1)
+=======
+                      _answerQuestion(0)
+>>>>>>> lemasian/main
                     } else {
                       // _answerQuestion(0)
                       setState(() {
@@ -548,6 +661,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
       ) : Container(
         height: double.infinity,
+<<<<<<< HEAD
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -561,6 +675,9 @@ class _QuizScreenState extends State<QuizScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+>>>>>>> lemasian/main
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -579,6 +696,10 @@ class _QuizScreenState extends State<QuizScreen> {
                     height: 20,
                   ),
                   ElevatedButton(
+<<<<<<< HEAD
+=======
+
+>>>>>>> lemasian/main
                     onPressed: _submitScore,
                     child: const Text('Submit Score'),
                   ),

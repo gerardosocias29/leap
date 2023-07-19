@@ -9,3 +9,10 @@ A new Flutter project.
 > keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 
 <img src="https://raw.githubusercontent.com/gerardosocias29/leap/main/assets/Screenshot%20from%202022-11-20%2022-25-32.png">
+
+## Firebase Setup
+> npm install -g firebase-tools
+> dart pub global activate flutterfire_cli
+> firebase login
+> flutterfire configure
+> 

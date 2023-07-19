@@ -8,6 +8,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:leap/_screens/quiz_screen.dart';
 import 'package:leap/_screens/quizlist_screen.dart';
+<<<<<<< HEAD
+=======
+import 'package:leap/app_theme.dart';
+>>>>>>> lemasian/main
 import 'package:workmanager/workmanager.dart';
 
 import '../api.dart';
@@ -25,7 +29,18 @@ class TopicViewScreen extends StatefulWidget {
   State<TopicViewScreen> createState() => _TopicViewScreenState();
 }
 
+<<<<<<< HEAD
 class _TopicViewScreenState extends State<TopicViewScreen> {
+=======
+class _TopicViewScreenState extends State<TopicViewScreen> with TickerProviderStateMixin {
+  final double infoHeight = 364.0;
+  AnimationController? animationController;
+  Animation<double>? animation;
+  double opacity1 = 0.0;
+  double opacity2 = 0.0;
+  double opacity3 = 0.0;
+
+>>>>>>> lemasian/main
   late FlutterTts flutterTts;
   bool isPlaying = false;
   bool showBtn = false;
@@ -105,6 +120,23 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
       print("isTopicDone::: $isTopicDone $userTopicId");
       _isloading = false;
     });
+<<<<<<< HEAD
+=======
+
+    animationController?.forward();
+    await Future<dynamic>.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      opacity1 = 1.0;
+    });
+    await Future<dynamic>.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      opacity2 = 1.0;
+    });
+    await Future<dynamic>.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      opacity3 = 1.0;
+    });
+>>>>>>> lemasian/main
   }
 
   makePostRequest(requestBody, url) async {
@@ -127,9 +159,15 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
     print("statusCode::$statusCode");
     print(requestBody);
 
+<<<<<<< HEAD
     getUserTopics();
     setState(() {
       Api().getAchievements(userDetails['id'], 'finished_lessons');
+=======
+    setState(() {
+      Api().getAchievements(userDetails['id'], 'finished_lessons', context);
+      getUserTopics();
+>>>>>>> lemasian/main
     });
 
   }
@@ -172,12 +210,288 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
 
   @override
   void initState() {
+<<<<<<< HEAD
     super.initState();
     _initRetrieval();
+=======
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    animation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: animationController!,
+        curve: Interval(0, 1.0, curve: Curves.fastOutSlowIn)));
+    _initRetrieval();
+    super.initState();
+
+>>>>>>> lemasian/main
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+=======
+    final double tempHeight = MediaQuery.of(context).size.height -
+        (MediaQuery.of(context).size.width / 1.5) +
+        24.0;
+    return Container(
+      color: AppTheme.nearlyWhite,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: 1.5,
+                  child: (widget.chapter_name.toString().toLowerCase() == "grammar") ? Image.asset('assets/grammar.png') : Image.asset('assets/pronunciation.jpg'),
+                ),
+              ],
+            ),
+            Positioned(
+              top: (MediaQuery.of(context).size.width / 1.5) - 24.0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.beige,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(32.0),
+                      topRight: Radius.circular(32.0)),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        color: AppTheme.grey.withOpacity(0.2),
+                        offset: const Offset(1.1, 1.1),
+                        blurRadius: 10.0),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: SingleChildScrollView(
+                    child: Container(
+                      constraints: BoxConstraints(
+                          minHeight: infoHeight,
+                          maxHeight: tempHeight > infoHeight
+                              ? tempHeight
+                              : infoHeight),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 32.0, left: 18, right: 16),
+                            child: Text(
+                              '${widget.topic['topic_title']}',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 22,
+                                letterSpacing: 0.27,
+                                color: AppTheme.darkerText,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, bottom: 8, top: 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                if (isTopicDone) const Text(
+                                  'Completed',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w200,
+                                    fontSize: 16,
+                                    letterSpacing: 0.27,
+                                    color: AppTheme.teal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 500),
+                              opacity: opacity2,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16, right: 16, top: 8, bottom: 8),
+                                child: SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
+                                  child: Text(
+                                    '''${widget.topic['topic_details']}''',
+                                    textAlign: TextAlign.justify,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      letterSpacing: 0.27,
+                                      color: AppTheme.teal,
+                                    )
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          AnimatedOpacity(
+                            duration: const Duration(milliseconds: 500),
+                            opacity: opacity3,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, bottom: 0, right: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  if (userDetails['role_id'] == 0) Expanded(
+                                    child: Center(
+                                      child: InkWell(
+                                        onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizListScreen(topic_id: widget.topic['id'] )), (route) => true ); },
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width / 2,
+                                          height: 48,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.nearlyWhite,
+                                              borderRadius: const BorderRadius.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                              border: Border.all(
+                                                  color: AppTheme.grey
+                                                      .withOpacity(0.2)),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Quiz List',
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0.0,
+                                                  color: AppTheme
+                                                      .teal,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: (userDetails['role_id'] == 0) ? 8 : 0,
+                                  ),
+                                  if (showBtn || userDetails['role_id'] == 0 || isTopicDone) Center(
+                                    child: Expanded(
+                                      child: Center(
+                                        child: InkWell(
+                                          onTap: () { Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => QuizScreen(topic_id: widget.topic['id'], topic: widget.topic, user_topic_id: userTopicId, chapter_name: widget.chapter_name)), (route) => true ); },
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width / 2,
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.nearlyBlue,
+                                              borderRadius: const BorderRadius.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                              boxShadow: <BoxShadow>[
+                                                BoxShadow(
+                                                    color: AppTheme
+                                                        .nearlyBlue
+                                                        .withOpacity(0.5),
+                                                    offset: const Offset(1.1, 1.1),
+                                                    blurRadius: 10.0),
+                                              ],
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Take Quiz',
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0.0,
+                                                  color: AppTheme
+                                                      .nearlyWhite,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).padding.bottom,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
+              right: 35,
+              child: ScaleTransition(
+                alignment: Alignment.center,
+                scale: CurvedAnimation(
+                    parent: animationController!, curve: Curves.fastOutSlowIn),
+                child: InkWell(
+                  onTap: () => isPlaying ? _stopRead() : _readText(),
+                  child: Card(
+                    color: AppTheme.nearlyBlue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0)),
+                    elevation: 10.0,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      child: Center(
+                        child: Icon(
+                          isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: AppTheme.nearlyWhite,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: SizedBox(
+                width: AppBar().preferredSize.height,
+                height: AppBar().preferredSize.height,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius:
+                    BorderRadius.circular(AppBar().preferredSize.height),
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: AppTheme.nearlyBlack,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            )
+          ],
+        )
+      ),
+    );
+
+>>>>>>> lemasian/main
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -195,6 +509,7 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
       ),
       body: Container(
         height: double.infinity,
+<<<<<<< HEAD
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -208,6 +523,8 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
             ],
           ),
         ),
+=======
+>>>>>>> lemasian/main
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
@@ -287,4 +604,55 @@ class _TopicViewScreenState extends State<TopicViewScreen> {
       )
     );
   }
+<<<<<<< HEAD
+=======
+}
+
+Widget getTimeBoxUI(String text1, String txt2) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: AppTheme.nearlyWhite,
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+              color: AppTheme.grey.withOpacity(0.2),
+              offset: const Offset(1.1, 1.1),
+              blurRadius: 8.0),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+            left: 18.0, right: 18.0, top: 12.0, bottom: 12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              text1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                letterSpacing: 0.27,
+                color: AppTheme.nearlyBlue,
+              ),
+            ),
+            Text(
+              txt2,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w200,
+                fontSize: 14,
+                letterSpacing: 0.27,
+                color: AppTheme.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+>>>>>>> lemasian/main
 }

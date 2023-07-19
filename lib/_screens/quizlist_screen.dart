@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:leap/_screens/viewquiz_screen.dart';
 
 import '../api.dart';
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../reusable_widgets/reusable_widget.dart';
 
 class QuizListScreen extends StatefulWidget {
@@ -59,7 +63,11 @@ class _QuizListScreenState extends State<QuizListScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
+<<<<<<< HEAD
         backgroundColor: Colors.white,
+=======
+        backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -67,6 +75,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
       ),
       body: _isloading ?
         Container(
+<<<<<<< HEAD
           height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -81,11 +90,16 @@ class _QuizListScreenState extends State<QuizListScreen> {
               ],
             ),
           ),
+=======
+          color: AppTheme.beige,
+          height: double.infinity,
+>>>>>>> lemasian/main
           child: const Center(
             child: CircularProgressIndicator(),
           ),
         )
         : Container(
+<<<<<<< HEAD
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -100,6 +114,10 @@ class _QuizListScreenState extends State<QuizListScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+>>>>>>> lemasian/main
         child: RefreshIndicator(
           onRefresh: () async { _initRetrieval(); },
           child: ListView.builder(
@@ -107,6 +125,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
             itemCount: quizlists.length,
             itemBuilder: (context, index) {
               final item = quizlists[index];
+<<<<<<< HEAD
               return Card(
                 child: ListTile(
                     title: Text("${item['quiz_question']}"),
@@ -146,6 +165,57 @@ class _QuizListScreenState extends State<QuizListScreen> {
                     onTap: () {
                       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => ViewQuizScreen(quiz_data: item)), (route) => true );
                     }
+=======
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(
+                        color: AppTheme.teal
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  elevation: 3,
+                  child: ListTile(
+                      title: Text("${item['quiz_question']}"),
+                      subtitle: Text(item['quiz_type'].toString().toUpperCase()),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            padding: const EdgeInsets.all(0.0),
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 20.0,
+                              // color: Colors.black,
+                            ),
+                            onPressed: () {
+                              //   _onDeleteItemPressed(index);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => alertDialogQuiz(context, 'Update Quiz', item['id'], false, _initRetrieval, item),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            padding: const EdgeInsets.all(0.0),
+                            icon: const Icon(
+                              Icons.delete_outlined,
+                              size: 20.0,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              showDeleteConfirmationDialog(context, () => { _quizDeletion(item['id']) });
+                              //   _onDeleteItemPressed(index);
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => ViewQuizScreen(quiz_data: item)), (route) => true );
+                      }
+                  ),
+>>>>>>> lemasian/main
                 ),
               );
             },

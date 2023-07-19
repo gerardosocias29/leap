@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:achievement_view/achievement_view.dart';
+import 'package:achievement_view/achievement_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
@@ -50,18 +51,22 @@ showDeleteConfirmationDialog(context, callback) async {
   );
 }
 
-showNotificationDialog(context, String message) async {
+showNotificationDialog(context, String message, [String? title]) async {
   return showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (ctx) => AlertDialog(
-      title: const Text('Instructions'),
-      content: Text(message),
+      title: Text( title ?? 'Instructions'),
+      content: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Text(message)
+      ),
       actions: <Widget>[
         MaterialButton(
           onPressed: () {
             Navigator.of(ctx).pop();
           },
-          child: const Text('Proceed'),
+          child: Text( title != null ? 'Close' : 'Agree'),
         ),
       ],
     ),
@@ -197,6 +202,73 @@ Column buildButtonColumn(Color color, Color splashColor, IconData icon,
             fontWeight: FontWeight.w400,
             color: color)))
     ]);
+}
+
+AlertDialog idNumberDialog(context, [callback]){
+  var idNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  var isLoading = false;
+  late var validId = "";
+  checkUserIdNUmber(idNumber) async {
+    print("idNumber:: $idNumber");
+    isLoading = true;
+    var urls = [
+      'check-student-id/${idNumber}', // 0
+    ];
+    var datas = await Api().multipleGetRequest(urls);
+    if(datas[0].length > 0){
+      validId = idNumber;
+      isLoading = false;
+      callback(datas[0]);
+      Navigator.pop(context);
+      return false;
+    } else {
+      validId = "";
+      _formKey.currentState!.validate();
+      return true;
+    }
+  }
+
+  return AlertDialog(
+    title: const Text('Student ID Number'),
+    content: SizedBox(
+      width: double.maxFinite,
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+
+            TextFormField(
+              decoration: reusableInputDecoration(context, 'ID Number', 'Your ID NUMBER'),
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.next,
+              controller: idNumberController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter a valid ID Number';
+                }
+                if(validId == ""){
+                  return 'Please enter a valid ID Number';
+                }
+                return null;
+              },
+              onSaved: (value) { },
+            ),
+          ],
+        ),
+      )
+    ),
+    actions: [
+      TextButton(
+        onPressed: () async {
+          checkUserIdNUmber(idNumberController.text);
+        },
+        child: const Text('Check'),
+      ),
+    ]
+  );
+
 }
 
 AlertDialog alertDialog(context, title, reference_id, shrinkWrap, type, [callback, item = '']) {
@@ -380,7 +452,7 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
   var answerController = TextEditingController(text: data!='' ? data['quiz_answer'] : '');
   var timeLimitController = TextEditingController(text: data!='' ? data['timer'].toString() : '');
 
-  final List<String> quiz_type = <String>['Easy', 'Medium', 'Hard'];
+  final List<String> quiz_type = <String>['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
   final List<String> answer_type = <String>['Choices', 'Speak'];
   String quizTypeDropdownValue = quiz_type.first;
   String answerTypeDropdownValue = answer_type.first;
@@ -524,13 +596,13 @@ AlertDialog alertDialogQuiz(context, title, topic_id, shrinkWrap, [callback, dat
   );
 }
 
-showAchievementView(context){
+showAchievementView(context, achievement){
   print('#' * 200);
   print('Achievement View');
   AchievementView(
       context,
-      title: "Achievement Unlocked!",
-      subTitle: "Training completed successfully",
+      title: achievement['achievement_name'],
+      subTitle: achievement['achievement_details'],
       //onTab: _onTabAchievement,
       icon: const Icon(Icons.star_border_outlined, color: Colors.white,),
       //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
@@ -539,14 +611,23 @@ showAchievementView(context){
       //textStyleTitle: TextStyle(),
       //textStyleSubTitle: TextStyle(),
       alignment: Alignment.topCenter,
-      //duration: Duration(seconds: 3),
+      duration: Duration(seconds: 3),
       isCircle: true,
-      listener: (status){
-        print(status);
+      listener: (status) async {
         //AchievementState.opening
         //AchievementState.open
         //AchievementState.closing
         //AchievementState.closed
+        var stat = (status == AchievementState.closed);
+        if(stat){
+          print("status:: $status");
+          var res = await Api().putRequest({'data':'data'}, 'user_achievement/update/${achievement['user_achievement_id']}');
+          print(res);
+        }
       }
   ).show();
+}
+
+privacyPolicyStatement() {
+  return 'DATA PRIVACY POLICY STATEMENT\n\nThis application is committed to protecting the privacy and accuracy of confidential information to the extent possible, subject to provisions of the law. Other than as required by laws that guarantee public access to certain types of information, or in response to subpoenas or other legal instruments that authorize access, personally identifiable information is not actively shared. Re-distributing or selling personal information collected on our web servers is strictly prohibited.\n\nINFORMATION COLLECTED\n\nThis application collects the following information: Student’s last name, first name, middle name, gender, address, birthdate, student id number, email address, course, and year.\n\nUSE OF COLLECTED DATA\n\nThe data, which was collected from the students’ users are fed into the systems database, which is used to store the data collected and gathered. The student’s data will help the admin to know whom are those students excel in using the English grammar and English pronunciation.\n\nDISTRIBUTION OF COLLECTED INFORMATION\n\nWe will not disclose, without your consent, personal information collected about you, except for certain explicit circumstances in which disclosure is required by law.\n\nWe will not distribute or sell personal information to third-party organizations.';
 }

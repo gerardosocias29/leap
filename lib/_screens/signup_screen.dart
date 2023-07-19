@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:leap/_screens/createprofile_screen.dart';
 import 'package:flutter/material.dart';
 
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../auth_service.dart';
 import '../providers/navigator.dart';
 import '../providers/storage.dart';
@@ -31,6 +35,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
+<<<<<<< HEAD
+=======
+  bool _isChecked = false;
+  void _handlePrivacyPolicy(value) {
+    setState(() {
+      _isChecked = true;
+      showNotificationDialog(context, privacyPolicyStatement(), 'Privacy Policy');
+    });
+  }
+
+>>>>>>> lemasian/main
   void _showErrorDialogBox(String message) async {
     return showDialog(
       context: context,
@@ -54,6 +69,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Container(
+<<<<<<< HEAD
+=======
+        height: double.infinity,
+        color: AppTheme.beige,
+>>>>>>> lemasian/main
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -146,11 +166,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                     const SizedBox(
+<<<<<<< HEAD
+=======
+                      height: 10  ,
+                    ),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text("Privacy Policy"),
+                      activeColor: Theme.of(context).primaryColor,
+                      value: _isChecked,
+                      onChanged: _handlePrivacyPolicy,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    const SizedBox(
+>>>>>>> lemasian/main
                       height: 30  ,
                     ),
                     MaterialButton(
                       color: Theme.of(context).primaryColor,
                       onPressed: () {
+<<<<<<< HEAD
+=======
+                        if(!_isChecked){
+                          showNotificationDialog(context, 'You should agree with the Privacy Policy', 'Notice');
+                          return ;
+                        }
+>>>>>>> lemasian/main
                         if (!_formKey.currentState!.validate()) {
                           return ;
                         }
@@ -159,7 +200,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         progressDialogue(loadingContext);
                         AuthService().createUserWithEmailAndPassword(_emailTextController, _passwordTextController).then((value) async {
                           var user_id = (await AuthService().getUserId());
+<<<<<<< HEAD
                           StorageProvider().storageAddItem(userStorage, 'user_id', user_id);
+=======
+                          await StorageProvider().storageAddItem(userStorage, 'user_id', user_id);
+>>>>>>> lemasian/main
                           Navigator.pop(loadingContext);
                           NavigatorController().pushAndRemoveUntil(context, CreateProfileScreen(), false);
                         }).onError((error, stackTrace) {

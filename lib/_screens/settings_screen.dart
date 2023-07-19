@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:leap/api.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
+<<<<<<< HEAD
+=======
+import '../app_theme.dart';
+>>>>>>> lemasian/main
 import '../reusable_widgets/reusable_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -73,7 +77,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         elevation: 0,
+<<<<<<< HEAD
         backgroundColor: Colors.white,
+=======
+        backgroundColor: AppTheme.beige,
+>>>>>>> lemasian/main
         shadowColor: Colors.white,
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -81,6 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: _isloading ?
       Container(
+<<<<<<< HEAD
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -95,10 +104,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+>>>>>>> lemasian/main
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       ) : Container(
+<<<<<<< HEAD
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -113,6 +127,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ),
+=======
+        color: AppTheme.beige,
+        height: double.infinity,
+>>>>>>> lemasian/main
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(

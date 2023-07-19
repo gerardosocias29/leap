@@ -1,4 +1,4 @@
-package com.example.leap
+package com.example.lema
 
 import io.flutter.embedding.android.FlutterActivity
 
